@@ -18,7 +18,9 @@ RepoLaunch verspricht keine Rankings, Trending-Platzierungen, Sterne oder Umsät
 2. **Run workflow** klicken, das Formular ausfüllen (Repository, Ziel, Sprache, optional Projekttyp, Zielgruppe, Merkmale) und starten.
 3. Nach etwa einer Minute den Lauf öffnen: Der vollständige Bericht steht in der Zusammenfassung, alle Dateien liegen unten unter **Artifacts** (7 Tage aufbewahrt).
 
-Optional KI-Launch-Paket: einmalig unter **Settings > Secrets and variables > Actions** das Secret `ANTHROPIC_API_KEY` anlegen und im Formular das Häkchen setzen. Ohne Häkchen wird der Schlüssel nicht an den Lauf übergeben. Die Ergebnisse sehen nur Personen mit Zugriff auf dieses Repository.
+Optional KI-Launch-Paket: einmalig unter **Settings > Secrets and variables > Actions** das Secret `ANTHROPIC_API_KEY` anlegen und im Formular das Häkchen setzen. Ohne Häkchen wird der Schlüssel nicht an den Lauf übergeben.
+
+**Sichtbarkeit:** In einem öffentlichen Repository sind Zusammenfassung und Artefakte jedes Laufs für alle sichtbar. Starten können den Workflow nur Personen mit Schreibrechten. Alle anderen forken das Repository, aktivieren im Fork unter **Actions** die Workflows und starten den Audit dort. Wer die Ergebnisse nicht öffentlich haben möchte, nutzt eine private Kopie.
 
 Lokal ohne Oberfläche: `INPUT_REPO=owner/repo npm run repo-audit`.
 

@@ -31,13 +31,13 @@ Next.js Route Handler (src/app/api)  ->  Service (src/server/service.ts)
 
 Der Kern (`src/core`) kennt weder Next.js noch SQLite und ist vollständig mit Fixtures testbar.
 
-Zweiter Zugang ohne Server: `src/cli/audit.ts` nutzt denselben Kern und wird vom Workflow `.github/workflows/repolaunch-audit.yml` gestartet. Eingaben kommen aus dem Formular "Run workflow" ausschließlich über Umgebungsvariablen, der Bericht geht in die Zusammenfassung des Laufs, die Dateien in ein Artefakt mit 7 Tagen Aufbewahrung. Das KI-Paket nutzt das Repository-Secret `ANTHROPIC_API_KEY`, das nur bei gesetztem Häkchen an den Lauf übergeben wird.
+Zweiter Zugang ohne Server: `src/cli/audit.ts` nutzt denselben Kern und wird vom Workflow `.github/workflows/repolaunch-audit.yml` gestartet. Eingaben kommen aus dem Formular "Run workflow" ausschließlich über Umgebungsvariablen, der Bericht geht in die Zusammenfassung des Laufs, die Dateien in ein Artefakt mit 7 Tagen Aufbewahrung. Das KI-Paket nutzt das Repository-Secret `ANTHROPIC_API_KEY`, das nur bei gesetztem Häkchen an den Lauf übergeben wird. In öffentlichen Repositories sind Zusammenfassung und Artefakte öffentlich; Läufe starten nur Personen mit Schreibrechten, andere nutzen einen Fork.
 
 ## Entscheidungen
 
 | Thema | Entscheidung | Begründung |
 | --- | --- | --- |
-| Ort | Eigenes privates Repository `ghostfanman/repolaunch` | Zunächst als Unterprojekt in `invoice-kit` entwickelt; Umzug am 8. Oktober 2026 freigegeben, per `git subtree split` samt Historie |
+| Ort | Eigenes Repository `ghostfanman/repolaunch` | Zunächst als Unterprojekt in `invoice-kit` entwickelt; Umzug am 8. Oktober 2026 per `git subtree split` samt Historie, danach auf Wunsch des Maintainers öffentlich |
 | Laufzeit | Ein Node-Prozess (`next start` bzw. `server.js` standalone) mit einem Worker | Vorgabe "einzelner Prozess"; serielle GitHub-Anfragen; keine serverlosen Annahmen |
 | Datenbank | `node:sqlite` mit WAL | Keine nativen Builds, Backup per Datei-Snapshot, ausreichend für ein MVP |
 | Worker-Start | `instrumentation.ts` beim Serverstart, zusätzlich beim ersten API-Zugriff | Funktioniert mit `next start` und standalone |

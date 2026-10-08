@@ -28,6 +28,10 @@ Strukturierte JSON-Logs auf stdout enthalten Zeit, Ereignis, Auftrags-ID, Pfadmu
 
 Nur nach ausdrücklicher Zustimmung im Ergebnis. Übermittelt werden genau die vorher angezeigten Inhaltsgruppen an den angezeigten Anbieter (Standard: Anthropic, `api.anthropic.com`). Dort gelten dessen Bedingungen zur Datenverarbeitung.
 
+## Audit per GitHub Actions
+
+Beim Workflow "RepoLaunch: Repository analysieren" speichert RepoLaunch selbst nichts. GitHub bewahrt den Lauf auf: die Zusammenfassung mit dem Bericht nach den Log-Einstellungen des Repositorys, die Artefakte 7 Tage. In öffentlichen Repositories sind beide für alle sichtbar. Der Repository-Owner kann einzelne Läufe unter **Actions** löschen. Wer Ergebnisse nicht öffentlich haben möchte, nutzt eine private Kopie des Repositorys.
+
 ## Pilotdaten
 
 Für den Validierungsplan werden Pilotaufzeichnungen manuell und anonymisiert außerhalb der Anwendung geführt, siehe [validation-plan.md](validation-plan.md).

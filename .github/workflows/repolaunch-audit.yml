@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       repo:
-        description: "Öffentliches GitHub-Repository (owner/repo oder https://github.com/owner/repo)"
+        description: "Öffentliches GitHub-Repository (owner/repo oder https://github.com/owner/repo). Hinweis: In öffentlichen Repositories ist das Ergebnis dieses Laufs öffentlich sichtbar."
         required: true
         type: string
       goal:

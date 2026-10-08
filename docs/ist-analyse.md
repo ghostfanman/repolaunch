@@ -13,7 +13,7 @@ Stand: 7. Oktober 2026.
 
 ## Entscheidung zum Ort
 
-Am 8. Oktober 2026 wurde der Umzug in ein eigenes privates Repository `ghostfanman/repolaunch` freigegeben. Er erfolgt mit `git subtree split --prefix repolaunch`; alle Commits bleiben erhalten, der Workflow liegt im eigenen Repository in `.github/workflows/ci.yml`. Der folgende Abschnitt beschreibt die ursprüngliche Entscheidung.
+Am 8. Oktober 2026 wurde der Umzug in ein eigenes Repository `ghostfanman/repolaunch` freigegeben (zunächst privat, danach auf Wunsch des Maintainers öffentlich). Er erfolgt mit `git subtree split --prefix repolaunch`; alle Commits bleiben erhalten, der Workflow liegt im eigenen Repository in `.github/workflows/ci.yml`. Der folgende Abschnitt beschreibt die ursprüngliche Entscheidung.
 
 RepoLaunch entstand zunächst als eigenständiges Unterprojekt im Verzeichnis `repolaunch/` auf dem vorgegebenen Feature-Branch. Gründe:
 

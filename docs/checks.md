@@ -1,6 +1,6 @@
 # Bestandene Prüfungen und verbleibende Blocker
 
-Entwickelt bis 7. Oktober 2026 als Unterprojekt in `ghostfanman/invoice-kit` (Branch `claude/new-session-5blm3j`). Umzug in das private Repository `ghostfanman/repolaunch` am 8. Oktober 2026 freigegeben, per `git subtree split` samt Historie. Alle Prüfungen lokal in der Entwicklungsumgebung (Node 22.22, npm 10.9 und 11.21) ausgeführt.
+Entwickelt bis 7. Oktober 2026 als Unterprojekt in `ghostfanman/invoice-kit` (Branch `claude/new-session-5blm3j`). Umzug in das eigene Repository `ghostfanman/repolaunch` am 8. Oktober 2026, per `git subtree split` samt Historie. Vor der Veröffentlichung wurde die gesamte Historie auf Geheimnisse geprüft; gefunden wurden nur offensichtliche Test-Platzhalter. Alle Prüfungen lokal in der Entwicklungsumgebung (Node 22.22, npm 10.9 und 11.21) ausgeführt.
 
 ## Eigenständiger Checkout (Probelauf für den Umzug)
 

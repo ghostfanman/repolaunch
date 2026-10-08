@@ -33,6 +33,7 @@
 | Kostenexplosion beim KI-Anbieter | Zustimmung pro Auftrag, Budget je Auftrag inklusive Fallback-Worst-Case, Ausgabegrenze, Zeitlimit, höchstens zwei Läufe je Auftrag, KI-Ratenlimit | `test/ai.test.ts`, `test/jobs.test.ts` |
 | CSRF auf schreibende Endpunkte | JSON-Pflicht, Origin- und `Sec-Fetch-Site`-Prüfung, Bearer-Schlüssel nötig | Manuell geprüft mit curl |
 | Clickjacking | `X-Frame-Options: DENY` | Antwort-Header geprüft |
+| Ungewollte Veröffentlichung von Ergebnissen über GitHub Actions | Hinweis im Formular, in README und Datenaufbewahrung: in öffentlichen Repositories sind Lauf-Ergebnisse öffentlich; Läufe nur durch Personen mit Schreibrechten; Secret nur bei gesetztem Häkchen übergeben, GitHub maskiert es in Logs | Dokumentation, Workflow-Datei |
 | Trojan-Source und Steuerzeichen | Steuerzeichen und Bidi-Overrides werden entfernt, Eingabe ist ASCII | `test/security.test.ts` |
 | Gefälschtes X-Forwarded-For | Nur mit `TRUST_PROXY_HOPS` > 0 ausgewertet, sonst gemeinsames Limit | `test/jobs.test.ts` |
 
