@@ -18,7 +18,11 @@ export const FORM_LABELS = {
 
 export type FormField = keyof typeof FORM_LABELS;
 
-/** Grenzen gegen Missbrauch. 30 Analysen × höchstens 24 Anfragen bleiben unter dem Stundenlimit des Workflow-Tokens (1000). */
+/**
+ * Grenzen gegen Missbrauch. Je Analyse höchstens 31 Anfragen mit dem Workflow-Token: 24 für die Erfassung,
+ * 4 für frühere Berichte (Issue-Liste und bis zu drei Kommentarlisten), 3 für Grenzen, Kommentar und Schließen.
+ * 30 Analysen × 31 = 930 bleiben unter dem Stundenlimit des Workflow-Tokens (1000).
+ */
 export const ISSUE_LIMITS = { perAuthorPerHour: 3, globalPerHour: 30 };
 
 /** Wer das Repository verwaltet, ist von den Grenzen ausgenommen. */

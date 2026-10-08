@@ -5,6 +5,7 @@ import { AI_SECTIONS, type AiSection } from "@/core/ai/types";
 import type { Language } from "@/core/types";
 import { t } from "@/i18n/messages";
 import type { JobView } from "@/server/service";
+import { ScrollPre } from "./ScrollPre";
 
 
 export function AiPanel({ lang, view, onStart }: { lang: Language; view: JobView; onStart: (sections: string[]) => Promise<string | null> }) {
@@ -153,13 +154,13 @@ function AiResult({ lang, view }: { lang: Language; view: JobView }) {
       {o.readme && (
         <details>
           <summary>README.suggested.md ({m.ai.preview})</summary>
-          <pre>{r.readmeAnnotated ?? o.readme.markdown}</pre>
+          <ScrollPre>{r.readmeAnnotated ?? o.readme.markdown}</ScrollPre>
         </details>
       )}
       {o.descriptionTopics && (
         <details>
           <summary>{m.ai.sectionLabels.descriptionTopics}</summary>
-          <pre>{o.descriptionTopics.description}</pre>
+          <ScrollPre>{o.descriptionTopics.description}</ScrollPre>
           <p>Topics: {o.descriptionTopics.topics.join(", ")}</p>
           <p className="muted">{o.descriptionTopics.rationale}</p>
         </details>
@@ -180,11 +181,11 @@ function AiResult({ lang, view }: { lang: Language; view: JobView }) {
         <details>
           <summary>{m.ai.sectionLabels.launchTexts}</summary>
           <h4>LinkedIn</h4>
-          <pre>{o.launchTexts.linkedin}</pre>
+          <ScrollPre>{o.launchTexts.linkedin}</ScrollPre>
           <h4>{o.launchTexts.community.name}</h4>
-          <pre>{o.launchTexts.community.text}</pre>
+          <ScrollPre>{o.launchTexts.community.text}</ScrollPre>
           <h4>Release</h4>
-          <pre>{o.launchTexts.releaseAnnouncement}</pre>
+          <ScrollPre>{o.launchTexts.releaseAnnouncement}</ScrollPre>
         </details>
       )}
       {o.monetization && (
@@ -203,7 +204,7 @@ function AiResult({ lang, view }: { lang: Language; view: JobView }) {
       {o.landingPage && (
         <details>
           <summary>{m.ai.sectionLabels.landingPage}</summary>
-          <pre>{o.landingPage.markdown}</pre>
+          <ScrollPre>{o.landingPage.markdown}</ScrollPre>
         </details>
       )}
       {o.openQuestions.length > 0 && (

@@ -7,6 +7,7 @@ import { requestLines, scoreVerdict, siteScopeText, strengths } from "@/core/rep
 import type { Category, Evidence, Finding, Language, TaskGuide } from "@/core/types";
 import { t } from "@/i18n/messages";
 import type { JobView } from "@/server/service";
+import { ScrollPre } from "./ScrollPre";
 
 const CATEGORY_ORDER: Category[] = ["understanding", "usability", "trust", "distribution"];
 
@@ -47,7 +48,7 @@ function EvidenceItem({ e, lang }: { e: Evidence; lang: Language }) {
         <span>{e.label}</span>
       )}
       {range}
-      {e.snippet && <pre>{e.snippet}</pre>}
+      {e.snippet && <ScrollPre>{e.snippet}</ScrollPre>}
     </li>
   );
 }
@@ -79,7 +80,7 @@ function GuideView({ g, lang }: { g: TaskGuide; lang: Language }) {
       {g.template && (
         <>
           <p className="muted">{g.template.label}:</p>
-          <pre>{g.template.content.trimEnd()}</pre>
+          <ScrollPre>{g.template.content.trimEnd()}</ScrollPre>
         </>
       )}
       {g.note && (
@@ -375,7 +376,7 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
               <ul>
                 {audit.injectionFlags.map((f, i) => (
                   <li key={i}>
-                    <code>{f.path}</code> {m.report.lines} {f.line} ({f.pattern})<pre>{f.excerpt}</pre>
+                    <code>{f.path}</code> {m.report.lines} {f.line} ({f.pattern})<ScrollPre>{f.excerpt}</ScrollPre>
                   </li>
                 ))}
               </ul>
