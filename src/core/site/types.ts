@@ -29,8 +29,10 @@ export type SiteFetchResult =
       /** true, wenn das Dokument wegen des Größenlimits nur teilweise gelesen wurde. */
       truncated: boolean;
       redirects: string[];
+      /** Gesendete HTTP-Anfragen; jede Weiterleitung zählt als eigener Abruf. */
+      requests: number;
     }
-  | { ok: false; requestedUrl: string; failure: SiteFetchFailure; redirects: string[] };
+  | { ok: false; requestedUrl: string; failure: SiteFetchFailure; redirects: string[]; requests: number };
 
 /** Genau ein GET (plus höchstens die erlaubten Weiterleitungen) auf eine http(s)-Adresse. Wirft nie. */
 export type SiteFetcher = (url: string) => Promise<SiteFetchResult>;

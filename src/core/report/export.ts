@@ -35,6 +35,7 @@ export function snapshotSummary(s: RepoSnapshot) {
     releases: s.releases,
     goodFirstIssues: s.goodFirstIssues,
     stats: s.stats,
+    site: s.site,
     notes: s.notes,
   };
 }

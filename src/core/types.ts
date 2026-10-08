@@ -143,6 +143,8 @@ export interface SiteCheck {
   /** Dokument wegen des Größenlimits nur teilweise gelesen. */
   truncated?: boolean;
   redirects?: string[];
+  /** Gesendete HTTP-Anfragen an die Website, Weiterleitungen eingeschlossen. */
+  requests?: number;
   /** Antwort ist HTML (text/html oder application/xhtml+xml). */
   html?: boolean;
   facts?: SiteFacts;

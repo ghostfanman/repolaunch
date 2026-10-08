@@ -197,8 +197,9 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
 
   return async (startUrl: string): Promise<SiteFetchResult> => {
     const redirects: string[] = [];
+    let requests = 0;
     const signal = AbortSignal.timeout(timeoutMs);
-    const fail = (failure: SiteFetchFailure): SiteFetchResult => ({ ok: false, requestedUrl: startUrl, failure, redirects });
+    const fail = (failure: SiteFetchFailure): SiteFetchResult => ({ ok: false, requestedUrl: startUrl, failure, redirects, requests });
     let current = startUrl;
     try {
       for (let hop = 0; ; hop += 1) {
@@ -232,6 +233,7 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
         }
 
         let res: IncomingMessage;
+        requests += 1;
         try {
           res = await sendRequest(url, target, signal);
         } catch {
@@ -258,7 +260,7 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
         // Inhalt nur bei Erfolg und HTML lesen; sonst genügt der Statuscode.
         if (status < 200 || status >= 300 || !isHtmlContentType(contentType)) {
           res.destroy();
-          return { ok: true, requestedUrl: startUrl, finalUrl: url.toString(), status, contentType, contentEncoding, body: "", documentBytes: 0, transferBytes: 0, truncated: false, redirects };
+          return { ok: true, requestedUrl: startUrl, finalUrl: url.toString(), status, contentType, contentEncoding, body: "", documentBytes: 0, transferBytes: 0, truncated: false, redirects, requests };
         }
         let read: BodyRead;
         try {
@@ -279,6 +281,7 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
           transferBytes: read.transferBytes,
           truncated: read.truncated,
           redirects,
+          requests,
         };
       }
     } catch (err) {

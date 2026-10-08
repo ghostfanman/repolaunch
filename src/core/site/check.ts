@@ -54,7 +54,7 @@ export async function checkHomepage(snapshot: RepoSnapshot, projectTypeOverride:
   } catch {
     return { state: "failed", url: url.toString(), reason: SITE_FAILURE_TEXT.network_error };
   }
-  if (!result.ok) return { state: "failed", url: url.toString(), reason: SITE_FAILURE_TEXT[result.failure], redirects: result.redirects };
+  if (!result.ok) return { state: "failed", url: url.toString(), reason: SITE_FAILURE_TEXT[result.failure], redirects: result.redirects, requests: result.requests, transferBytes: 0 };
   const html = isHtmlContentType(result.contentType);
   const ok = result.status >= 200 && result.status < 300;
   return {
@@ -68,6 +68,7 @@ export async function checkHomepage(snapshot: RepoSnapshot, projectTypeOverride:
     transferBytes: result.transferBytes,
     truncated: result.truncated,
     redirects: result.redirects,
+    requests: result.requests,
     html,
     facts: ok && html ? parseSiteHtml(result.body) : undefined,
   };

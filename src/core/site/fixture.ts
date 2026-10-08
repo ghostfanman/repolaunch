@@ -11,9 +11,9 @@ export function fixtureSiteFetcher(fixtures: FixtureRepo[], maxRedirects = 3): S
     let current = startUrl;
     for (let hop = 0; ; hop += 1) {
       const page = pages.get(current);
-      if (!page) return { ok: false, requestedUrl: startUrl, failure: "network_error", redirects };
+      if (!page) return { ok: false, requestedUrl: startUrl, failure: "network_error", redirects, requests: hop + 1 };
       if (page.location) {
-        if (hop >= maxRedirects) return { ok: false, requestedUrl: startUrl, failure: "too_many_redirects", redirects };
+        if (hop >= maxRedirects) return { ok: false, requestedUrl: startUrl, failure: "too_many_redirects", redirects, requests: hop + 1 };
         current = new URL(page.location, current).toString();
         redirects.push(current);
         continue;
@@ -34,6 +34,7 @@ export function fixtureSiteFetcher(fixtures: FixtureRepo[], maxRedirects = 3): S
         transferBytes: body ? (page.transferBytes ?? documentBytes) : 0,
         truncated: false,
         redirects,
+        requests: hop + 1,
       };
     }
   };

@@ -4,6 +4,7 @@ import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { gzipSync } from "node:zlib";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { requestLines } from "@/core/report/plain";
 import { runAudit } from "@/core/rules/engine";
 import { isPublicAddress } from "@/core/site/address";
 import { checkHomepage } from "@/core/site/check";
@@ -111,6 +112,21 @@ describe("Abruf der Website", () => {
   it("entpackt gzip", async () => {
     const r = await fetcher()(`${base}/gzip`);
     expect(r.ok && r.body.includes("Datenschutzerklärung")).toBe(true);
+  });
+
+  it("zählt Weiterleitungen als eigene Abrufe", async () => {
+    const r = await fetcher()(`${base}/chain/2`);
+    expect(r).toMatchObject({ ok: true, requests: 4, redirects: [`${base}/chain/1`, `${base}/chain/0`, `${base}/ok`] });
+    const s = await fixtureSnapshot("web-app", "users", cloneFixture("web-app", (x) => (x.repo.homepage = `${base}/chain/2`)));
+    s.site = await checkHomepage(s, undefined, fetcher());
+    const lines = requestLines(s, "de");
+    expect(lines[0]!.label).toBe("GitHub-API");
+    expect(lines[1]).toEqual({ label: "Website", value: `4 Abrufe (davon 3 Weiterleitungen), ${Buffer.byteLength(PAGE)} B übertragen` });
+    expect(requestLines(s, "en")[1]!.value).toBe(`4 fetches (3 of them redirects), ${Buffer.byteLength(PAGE)} B transferred`);
+    // Gesperrte Adresse: keine Anfrage gesendet, daher keine Website-Zeile
+    const blocked = await fetcher()(`${base}/to-private`);
+    expect(blocked).toMatchObject({ ok: false, requests: 1 });
+    expect(await createSiteFetcher()("http://127.0.0.1:1/")).toMatchObject({ ok: false, requests: 0 });
   });
 
   it("folgt höchstens drei Weiterleitungen", async () => {
@@ -247,7 +263,7 @@ describe("Website-Regeln", () => {
 
   it("fehlgeschlagener Abruf ist unbekannt, nicht fehlend, und senkt nur die Abdeckung", async () => {
     const fixtures = withSite({ status: 200, html: PAGE });
-    const failing = async (url: string) => ({ ok: false as const, requestedUrl: url, failure: "timeout" as const, redirects: [] });
+    const failing = async (url: string) => ({ ok: false as const, requestedUrl: url, failure: "timeout" as const, redirects: [], requests: 1 });
     const a = await audit(fixtures, failing);
     const ok = await audit(fixtures);
     for (const id of ["usability.site_reachable", "distribution.site_title", "trust.site_privacy"]) expect(f(a, id).status, id).toBe("unknown");
@@ -320,11 +336,19 @@ describe("Website-Regeln", () => {
     expect(f(a, "distribution.site_description").status).toBe("unknown");
   });
 
+  it("ohne Website-Abruf (anderer Projekttyp, kein Website-Feld) nur die GitHub-Zeile", async () => {
+    const cli = await fixtureSnapshot("cli-tool");
+    expect(requestLines(cli, "de").map((r) => r.label)).toEqual(["GitHub-API"]);
+    const noHome = await fixtureSnapshot("web-app");
+    expect(noHome.site?.skip).toBe("no_homepage");
+    expect(requestLines(noHome, "de")).toHaveLength(1);
+  });
+
   it("nur Webprodukte: andere Projekttypen rufen keine Website ab und bewerten die Regeln nicht", async () => {
     let calls = 0;
     const counting = async (url: string) => {
       calls += 1;
-      return { ok: false as const, requestedUrl: url, failure: "network_error" as const, redirects: [] };
+      return { ok: false as const, requestedUrl: url, failure: "network_error" as const, redirects: [], requests: 1 };
     };
     const s = await fixtureSnapshot("cli-tool", "users", cloneFixture("cli-tool", (x) => (x.repo.homepage = "https://logtrim.example/")));
     expect((await checkHomepage(s, undefined, counting)).skip).toBe("not_webapp");

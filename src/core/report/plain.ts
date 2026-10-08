@@ -1,7 +1,7 @@
 // Verständliche Einordnung für Einsteiger: Score in Worten, Stärken und kurze Begriffserklärungen.
 // Die Einordnung beschreibt nur den internen Score; sie ist keine Erfolgsprognose.
 
-import type { AuditResult, Finding, Language, PreviousAudit } from "../types";
+import type { AuditResult, Finding, Language, PreviousAudit, RepoSnapshot } from "../types";
 
 export function scoreVerdict(value: number | null, lang: Language): string {
   const de = lang === "de";
@@ -55,4 +55,34 @@ export function previousAuditSentence(prev: PreviousAudit, current: { rulesetVer
   return de
     ? `${head} Gleiches Regelwerk, die Scores sind vergleichbar.${sameCommit ? ` Derselbe Commit; ein Unterschied stammt aus ${outside}.` : ""}`
     : `${head} Same ruleset, the scores are comparable.${sameCommit ? ` Same commit; a difference comes from ${outside}.` : ""}`;
+}
+
+/**
+ * Getrennte Zähler: GitHub-API-Anfragen und Website-Abrufe, jeweils mit Anzahl und Bytes. Weiterleitungen
+ * zählen als eigene Abrufe. Ohne Website-Abruf entfällt die zweite Zeile.
+ */
+export function requestLines(snapshot: Pick<RepoSnapshot, "stats" | "site">, lang: Language): { label: string; value: string }[] {
+  const de = lang === "de";
+  const st = snapshot.stats;
+  const lines = [
+    {
+      label: "GitHub-API",
+      value: de
+        ? `${st.requests} ${st.requests === 1 ? "Anfrage" : "Anfragen"} (${st.notModified} × 304), ${st.bytes} B`
+        : `${st.requests} ${st.requests === 1 ? "request" : "requests"} (${st.notModified} × 304), ${st.bytes} B`,
+    },
+  ];
+  const site = snapshot.site;
+  const n = site?.requests ?? 0;
+  if (site && n > 0) {
+    const hops = site.redirects?.length ?? 0;
+    const redirects = hops > 0 ? (de ? ` (davon ${hops} ${hops === 1 ? "Weiterleitung" : "Weiterleitungen"})` : ` (${hops} of them ${hops === 1 ? "a redirect" : "redirects"})`) : "";
+    lines.push({
+      label: "Website",
+      value: de
+        ? `${n} ${n === 1 ? "Abruf" : "Abrufe"}${redirects}, ${site.transferBytes ?? 0} B übertragen`
+        : `${n} ${n === 1 ? "fetch" : "fetches"}${redirects}, ${site.transferBytes ?? 0} B transferred`,
+    });
+  }
+  return lines;
 }

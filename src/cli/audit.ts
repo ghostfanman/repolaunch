@@ -11,6 +11,7 @@ import { fetchTransport, GitHubHttp, type Transport } from "@/core/github/http";
 import { DEFAULT_COLLECT_LIMITS } from "@/core/limits";
 import { parseRepoInput, suggestRepoInput } from "@/core/repo-input";
 import { buildExport } from "@/core/report/export";
+import { requestLines } from "@/core/report/plain";
 import { createSiteFetcher } from "@/core/site/fetch";
 import type { SiteFetcher } from "@/core/site/types";
 import { applyRuleOverrides, DEFAULT_RULE_CONFIG } from "@/core/rules/config";
@@ -188,7 +189,8 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
     head.push(`- ${m.ai.redacted}: ${d.redactedLines}`, "");
   }
   const summary = `${head.join("\n")}\n${bundle.contents["audit.md"]}`;
-  log(`${snapshot.fullName} @ ${snapshot.commitSha}: Score ${audit.score.value}, ${audit.tasks.length} Aufgaben, Dateien: ${files.join(", ")}`);
+  log(`${snapshot.fullName} @ ${snapshot.commitSha}: Score ${audit.score.value} (Regelwerk ${audit.rulesetVersion}), ${audit.tasks.length} Aufgaben, Dateien: ${files.join(", ")}`);
+  for (const r of requestLines(snapshot, "de")) log(`${r.label}: ${r.value}`);
   return {
     exitCode: 0,
     summary,

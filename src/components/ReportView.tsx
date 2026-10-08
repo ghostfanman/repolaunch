@@ -1,8 +1,9 @@
 "use client";
 
+import { Fragment } from "react";
 import type React from "react";
 
-import { scoreVerdict, strengths } from "@/core/report/plain";
+import { requestLines, scoreVerdict, strengths } from "@/core/report/plain";
 import type { Category, Evidence, Finding, Language, TaskGuide } from "@/core/types";
 import { t } from "@/i18n/messages";
 import type { JobView } from "@/server/service";
@@ -203,10 +204,12 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
           <dd>
             <code>{audit.rulesetVersion}</code>
           </dd>
-          <dt>{m.report.requests}</dt>
-          <dd>
-            {snap.stats.requests} ({snap.stats.notModified} × 304), {snap.stats.bytes} B
-          </dd>
+          {requestLines(snap, lang).map((r) => (
+            <Fragment key={r.label}>
+              <dt>{r.label}</dt>
+              <dd>{r.value}</dd>
+            </Fragment>
+          ))}
           <dt>{m.report.stars}</dt>
           <dd>{snap.display.stars ?? "?"}</dd>
         </dl>

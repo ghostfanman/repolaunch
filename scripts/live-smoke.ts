@@ -3,6 +3,7 @@
 // Optional GITHUB_TOKEN (ohne Scopes) für höhere Ratenlimits; hinter einem Proxy NODE_USE_ENV_PROXY=1.
 
 import { collectSnapshot } from "@/core/github/collector";
+import { requestLines } from "@/core/report/plain";
 import { createSiteFetcher } from "@/core/site/fetch";
 import { CollectError } from "@/core/github/errors";
 import { GitHubHttp } from "@/core/github/http";
@@ -29,7 +30,8 @@ try {
   const audit = runAudit(snapshot, user);
   const bundle = buildExport(snapshot, audit, user, null);
   console.log(`Repository: ${snapshot.fullName} @ ${snapshot.commitSha} (${snapshot.defaultBranch})`);
-  console.log(`Analysezeit: ${snapshot.analyzedAt}, Anfragen: ${snapshot.stats.requests}, Bytes: ${snapshot.stats.bytes}`);
+  console.log(`Analysezeit: ${snapshot.analyzedAt}`);
+  for (const r of requestLines(snapshot, "de")) console.log(`${r.label}: ${r.value}`);
   console.log(`Projekttyp: ${audit.classification.used}, interner Bereitschaftsscore: ${audit.score.value}, Abdeckung: ${Math.round(audit.score.coverage * 100)} %`);
   const site = snapshot.site;
   console.log(`Website: ${site?.state ?? "nicht geprüft"}${site?.url ? ` ${site.url}` : ""}${site?.status ? `, Status ${site.status}` : ""}${site?.reason ? ` (${site.reason.de})` : ""}`);
