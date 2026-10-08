@@ -268,3 +268,35 @@ describe("Demo-Erkennung (usability.visual_demo@2)", () => {
     expect(a.score.formula).toContain("Teilgutschriften");
   });
 });
+
+describe("Hinweis auf abgeschaltete Regeln", () => {
+  it("nennt die Ziele, mit denen eine Regel bei gleichem Projekttyp aktiv würde", async () => {
+    const a = audit(await fixtureSnapshot("web-app"), "users");
+    const offer = finding(a, "distribution.commercial_offer");
+    expect(offer.status).toBe("not_relevant");
+    expect(offer.exclusionReason).toContain('Aktiv mit Ziel "Supportkunden", "SaaS-Kunden".');
+    expect(offer.activeWith).toEqual({ goals: ["support_clients", "saas_customers"], projectTypes: [] });
+    expect(finding(a, "trust.contributing").activeWith?.goals).toEqual(["contributors", "sponsors", "support_clients", "saas_customers"]);
+    expect(finding(a, "distribution.funding").exclusionReason).toContain('Aktiv mit Ziel "Sponsoren", "Supportkunden".');
+  });
+
+  it("ohne passendes Ziel: nennt den Projekttyp", async () => {
+    const a = audit(await fixtureSnapshot("web-app"), "users");
+    expect(finding(a, "usability.cli_reference").exclusionReason).toContain('Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "CLI-Tool".');
+    const cli = audit(await fixtureSnapshot("cli-tool"), "users");
+    expect(finding(cli, "trust.site_privacy").activeWith).toEqual({ goals: [], projectTypes: ["webapp"] });
+  });
+
+  it("steht im Bericht unter \"Nicht bewertete Regeln\", auch auf Englisch", async () => {
+    const s = await fixtureSnapshot("web-app");
+    const en = runAudit(s, user("users", "en"), { now: NOW });
+    expect(finding(en, "distribution.commercial_offer").exclusionReason).toContain('Active with goal "Support customers", "SaaS customers".');
+    expect(en.score.excluded.find((x) => x.ruleId === "distribution.commercial_offer")!.reason).toContain("Active with goal");
+  });
+
+  it("per Konfiguration abgeschaltete Regeln bekommen keinen Hinweis", async () => {
+    const cfg = applyRuleOverrides(DEFAULT_RULE_CONFIG, { rules: { "distribution.topics": { enabled: false } } });
+    const a = runAudit(await fixtureSnapshot("web-app"), user(), { config: cfg, now: NOW });
+    expect(finding(a, "distribution.topics").activeWith).toBeUndefined();
+  });
+});

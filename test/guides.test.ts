@@ -70,6 +70,7 @@ describe("Anleitungen für Einsteiger", () => {
     for (const i of order) expect(i).toBeGreaterThan(-1);
     expect([...order].sort((x, y) => x - y)).toEqual(order);
     expect(md).toContain("**36 von 100 Punkten.**");
+    expect(md).toMatch(/`distribution\.funding`: nicht relevant\. .*Aktiv mit Ziel "Sponsoren", "Supportkunden"\./);
     expect(md).toContain("[README bearbeiten](https://github.com/repolaunch-fixtures/web-app/edit/main/README.md)");
   });
 

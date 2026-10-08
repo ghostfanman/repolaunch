@@ -162,6 +162,8 @@ export interface Finding {
   partialCredit?: number;
   /** Ausprägung eines Befunds, wenn eine Regel mehrere fehlende Zustände unterscheidet (z. B. "screenshot_only"). */
   variant?: string;
+  /** Nur bei Gewicht 0: Ziele (gleicher Projekttyp) oder, falls keines, Projekttypen, mit denen die Regel bewertet würde. */
+  activeWith?: { goals: Goal[]; projectTypes: ProjectType[] };
 }
 
 /** Ein Schritt einer Anleitung. Links zeigen nur auf github.com oder docs.github.com. */

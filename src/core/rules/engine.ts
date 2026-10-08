@@ -8,7 +8,7 @@ import { buildLaunchPlan } from "../launch-plan";
 import { assessMonetization } from "../monetization";
 import { detectInjection } from "../security/injection";
 import { t } from "@/i18n/messages";
-import type { AuditResult, Category, Finding, PrioritizedTask, ReadinessScore, RepoSnapshot, Severity, UserContext } from "../types";
+import { GOALS, PROJECT_TYPES, type AuditResult, type Category, type Finding, type Goal, type PrioritizedTask, type ProjectType, type ReadinessScore, type RepoSnapshot, type Severity, type UserContext } from "../types";
 import { DEFAULT_RULE_CONFIG, effectiveWeight, type RuleConfig } from "./config";
 import { RULES, type RuleContext } from "./definitions";
 import { buildGuide } from "./guides";
@@ -20,6 +20,20 @@ export function severityForWeight(weight: number): Severity {
   if (weight === 2) return "medium";
   if (weight === 1) return "low";
   return "none";
+}
+
+/** Satz für "Nicht bewertete Regeln": mit welchem Ziel oder Projekttyp die Regel aktiv würde. */
+function activationHint(lang: "de" | "en", goals: Goal[], projectTypes: ProjectType[]): string {
+  const m = t(lang);
+  if (goals.length > 0) {
+    const list = goals.map((g) => `"${m.goals[g]}"`).join(", ");
+    return lang === "de" ? ` Aktiv mit Ziel ${list}.` : ` Active with goal ${list}.`;
+  }
+  if (projectTypes.length > 0) {
+    const list = projectTypes.map((pt) => `"${m.projectTypes[pt]}"`).join(", ");
+    return lang === "de" ? ` Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp ${list}.` : ` Not active with any goal for this project type; active for project type ${list}.`;
+  }
+  return "";
 }
 
 export interface AuditOptions {
@@ -73,6 +87,9 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
     }
     const weight = effectiveWeight(cfg, classification.used, user.goal);
     if (weight === 0) {
+      // Hinweis, mit welchem Ziel (bei gleichem Projekttyp) oder welchem Projekttyp die Regel bewertet würde
+      const goals = GOALS.filter((g) => g !== user.goal && effectiveWeight(cfg, classification.used, g) > 0);
+      const projectTypes = goals.length > 0 ? [] : PROJECT_TYPES.filter((pt) => pt !== classification.used && GOALS.some((g) => effectiveWeight(cfg, pt, g) > 0));
       findings.push({
         ...base,
         status: "not_relevant",
@@ -83,10 +100,12 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
         effort: null,
         effortMinutes: null,
         impactHypothesis: null,
-        exclusionReason:
+        exclusionReason: `${
           lang === "de"
             ? `Für Projekttyp "${t(lang).projectTypes[classification.used]}" und Ziel "${t(lang).goals[user.goal]}" nicht relevant (Gewicht 0).`
-            : `Not relevant for project type "${t(lang).projectTypes[classification.used]}" and goal "${t(lang).goals[user.goal]}" (weight 0).`,
+            : `Not relevant for project type "${t(lang).projectTypes[classification.used]}" and goal "${t(lang).goals[user.goal]}" (weight 0).`
+        }${activationHint(lang, goals, projectTypes)}`,
+        ...(goals.length || projectTypes.length ? { activeWith: { goals, projectTypes } } : {}),
       });
       continue;
     }
