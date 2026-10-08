@@ -3,7 +3,7 @@
 import { Fragment } from "react";
 import type React from "react";
 
-import { requestLines, scoreVerdict, strengths } from "@/core/report/plain";
+import { requestLines, scoreVerdict, siteScopeText, strengths } from "@/core/report/plain";
 import type { Category, Evidence, Finding, Language, TaskGuide } from "@/core/types";
 import { t } from "@/i18n/messages";
 import type { JobView } from "@/server/service";
@@ -331,7 +331,7 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
       <section aria-labelledby="findings-h">
         <h2 id="findings-h">{m.report.findingsHeading}</h2>
         {CATEGORY_ORDER.map((cat) => {
-          const items = audit.findings.filter((f) => f.category === cat);
+          const items = audit.findings.filter((f) => f.category === cat && f.scope !== "website");
           return (
             <section key={cat} aria-labelledby={`cat-${cat}`}>
               <h3 id={`cat-${cat}`}>{m.categories[cat]}</h3>
@@ -343,6 +343,19 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
             </section>
           );
         })}
+        {audit.findings.some((f) => f.scope === "website" && f.status !== "not_relevant") && (
+          <section aria-labelledby="cat-website">
+            <h3 id="cat-website">{m.report.websiteHeading}</h3>
+            {audit.siteScope && <p className="muted">{siteScopeText(audit.siteScope, lang)}</p>}
+            {audit.findings
+              .filter((f) => f.scope === "website")
+              .map((f) => (
+                <div key={f.id} id={`finding-${f.id}`}>
+                  <FindingItem f={f} lang={lang} />
+                </div>
+              ))}
+          </section>
+        )}
       </section>
 
       {(snap.notes.length > 0 || audit.injectionFlags.length > 0) && (

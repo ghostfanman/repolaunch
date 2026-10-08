@@ -4,7 +4,7 @@ import type { AiPackageResult } from "../ai/generate";
 import { t } from "@/i18n/messages";
 import { fencedBlock, inlineText, safeUrl, stripControl } from "../security/sanitize";
 import type { AuditResult, Category, Evidence, Finding, Language, PreviousAudit, RepoSnapshot, TaskGuide, UserContext } from "../types";
-import { glossaryFor, previousAuditSentence, requestLines, scoreVerdict, strengths } from "./plain";
+import { glossaryFor, previousAuditSentence, requestLines, scoreVerdict, siteScopeText, strengths } from "./plain";
 
 const CATEGORY_ORDER: Category[] = ["understanding", "usability", "trust", "distribution"];
 
@@ -104,12 +104,19 @@ export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, 
 
   // Befunde
   out.push(`## ${m.report.findingsHeading}`, "");
+  const rankOf = (f: Finding) => audit.tasks.find((x) => x.findingId === f.id)?.rank;
   for (const cat of CATEGORY_ORDER) {
     out.push(`### ${m.categories[cat]}`, "");
-    for (const f of audit.findings.filter((x) => x.category === cat && x.status !== "not_relevant")) {
-      const rank = audit.tasks.find((x) => x.findingId === f.id)?.rank;
-      out.push(findingMd(f, lang, rank), "");
+    for (const f of audit.findings.filter((x) => x.category === cat && x.status !== "not_relevant" && x.scope !== "website")) {
+      out.push(findingMd(f, lang, rankOf(f)), "");
     }
+  }
+  // Website: eigene Gruppe mit Hinweis auf den Umfang der Prüfung
+  const siteFindings = audit.findings.filter((x) => x.scope === "website" && x.status !== "not_relevant");
+  if (siteFindings.length > 0) {
+    out.push(`### ${m.report.websiteHeading}`, "");
+    if (audit.siteScope) out.push(`> ${inlineText(siteScopeText(audit.siteScope, lang), 1200)}`, "");
+    for (const f of siteFindings) out.push(findingMd(f, lang, rankOf(f)), "");
   }
 
   // Nicht bewertete Regeln

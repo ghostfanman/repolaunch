@@ -1,7 +1,7 @@
 // Verständliche Einordnung für Einsteiger: Score in Worten, Stärken und kurze Begriffserklärungen.
 // Die Einordnung beschreibt nur den internen Score; sie ist keine Erfolgsprognose.
 
-import type { AuditResult, Finding, Language, PreviousAudit, RepoSnapshot } from "../types";
+import type { AuditResult, Finding, Language, PreviousAudit, RepoSnapshot, SiteScope } from "../types";
 
 export function scoreVerdict(value: number | null, lang: Language): string {
   const de = lang === "de";
@@ -85,4 +85,20 @@ export function requestLines(snapshot: Pick<RepoSnapshot, "stats" | "site">, lan
     });
   }
   return lines;
+}
+
+/** Grenze der Website-Prüfung: genau eine Seite; weitere README-Links derselben Website werden nur gezählt. */
+export function siteScopeText(scope: SiteScope, lang: Language): string {
+  const de = lang === "de";
+  const n = scope.uncheckedReadmeLinks.length;
+  const redirected = scope.finalUrl && scope.finalUrl !== scope.url ? (de ? ` Gelesen nach Weiterleitung: ${scope.finalUrl}.` : ` Read after redirect: ${scope.finalUrl}.`) : "";
+  const more =
+    n > 0
+      ? de
+        ? ` Die README verlinkt ${n} weitere ${n === 1 ? "Seite" : "Seiten"} derselben Website; ${n === 1 ? "sie wurde" : "sie wurden"} nicht geprüft.`
+        : ` The README links ${n} more ${n === 1 ? "page" : "pages"} of the same website; ${n === 1 ? "it was" : "they were"} not checked.`
+      : "";
+  return de
+    ? `Geprüft wurde genau eine Seite: die Adresse aus dem Website-Feld (${scope.url}), ohne JavaScript und ohne Unterseiten.${redirected}${more}`
+    : `Exactly one page was checked: the address from the website field (${scope.url}), without JavaScript and without subpages.${redirected}${more}`;
 }

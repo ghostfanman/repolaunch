@@ -2,15 +2,15 @@
 
 import { classifyProject } from "../analysis/classify";
 import { readManifests } from "../analysis/manifests";
-import { parseMarkdown } from "../analysis/markdown";
+import { parseMarkdown, type MarkdownDoc } from "../analysis/markdown";
 import { formatEffort } from "../format";
 import { buildLaunchPlan } from "../launch-plan";
 import { assessMonetization } from "../monetization";
 import { detectInjection } from "../security/injection";
 import { t } from "@/i18n/messages";
-import { GOALS, PROJECT_TYPES, type AuditResult, type Category, type Finding, type Goal, type PrioritizedTask, type ProjectType, type ReadinessScore, type RepoSnapshot, type Severity, type UserContext } from "../types";
+import { GOALS, PROJECT_TYPES, type AuditResult, type Category, type Finding, type Goal, type PrioritizedTask, type ProjectType, type ReadinessScore, type RepoSnapshot, type Severity, type SiteScope, type UserContext } from "../types";
 import { DEFAULT_RULE_CONFIG, effectiveWeight, type RuleConfig } from "./config";
-import { RULES, WEBSITE_RULE_IDS, type RuleContext } from "./definitions";
+import { comparableUrl, RULES, WEBSITE_RULE_IDS, type RuleContext } from "./definitions";
 import { buildGuide } from "./guides";
 
 const CATEGORY_ORDER: Category[] = ["understanding", "usability", "trust", "distribution"];
@@ -69,6 +69,7 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
       category: rule.category,
       title: rule.title[lang],
       rationale: rule.rationale[lang],
+      ...(rule.scope ? { scope: rule.scope } : {}),
     };
     if (!cfg || !cfg.enabled) {
       findings.push({
@@ -157,6 +158,7 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
 
   const tasks = prioritize(findings, classification.used);
   const score = computeScore(findings, lang);
+  const scope = siteScope(snapshot, readme);
   return {
     schemaVersion: 1,
     rulesetVersion: config.version,
@@ -168,7 +170,29 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
     monetization: assessMonetization(snapshot, user, classification.used, findings),
     launchPlan: buildLaunchPlan(findings, tasks, user, snapshot),
     injectionFlags: detectInjection(snapshot),
+    ...(scope ? { siteScope: scope } : {}),
   };
+}
+
+/**
+ * Umfang der Website-Prüfung: die eine geprüfte Adresse und README-Links auf weitere Seiten derselben Website
+ * (gleiche Adresse oder Unterpfad der geprüften bzw. weitergeleiteten Adresse). Diese Seiten werden nicht abgerufen.
+ */
+export function siteScope(snapshot: RepoSnapshot, readme: MarkdownDoc | null): SiteScope | undefined {
+  const site = snapshot.site;
+  if (!site || (site.state !== "fetched" && site.state !== "failed") || !site.url) return undefined;
+  const roots = [comparableUrl(site.url), comparableUrl(site.finalUrl)].filter((x): x is NonNullable<typeof x> => x !== null);
+  const seen = new Set(roots.map((r) => r.key));
+  const unchecked: string[] = [];
+  for (const link of readme?.links ?? []) {
+    if (link.image) continue;
+    const c = comparableUrl(link.target);
+    if (!c || seen.has(c.key)) continue;
+    if (!roots.some((r) => c.key.startsWith(`${r.key}/`))) continue;
+    seen.add(c.key);
+    unchecked.push(link.target);
+  }
+  return { url: site.url, ...(site.finalUrl ? { finalUrl: site.finalUrl } : {}), uncheckedReadmeLinks: unchecked };
 }
 
 /** Offenes Gewicht eines fehlenden Befunds: volles Gewicht abzüglich einer Teilgutschrift. */

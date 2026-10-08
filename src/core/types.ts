@@ -189,6 +189,8 @@ export interface Finding {
   variant?: string;
   /** Nur bei Gewicht 0: Ziele (gleicher Projekttyp) oder, falls keines, Projekttypen, mit denen die Regel bewertet würde. */
   activeWith?: { goals: Goal[]; projectTypes: ProjectType[] };
+  /** "website": Befund zur Website aus dem Website-Feld (Gruppe "Website"), nicht zum Repository. */
+  scope?: "website";
 }
 
 /** Ein Schritt einer Anleitung. Links zeigen nur auf github.com oder docs.github.com. */
@@ -300,4 +302,14 @@ export interface AuditResult {
   monetization: MonetizationAssessment;
   launchPlan: LaunchPlan;
   injectionFlags: InjectionFlag[];
+  /** Umfang der Website-Prüfung, nur wenn ein Abruf versucht wurde. */
+  siteScope?: SiteScope;
+}
+
+/** Geprüft wird genau eine Seite (Adresse aus dem Website-Feld). Weitere von der README verlinkte Seiten derselben Website bleiben ungeprüft. */
+export interface SiteScope {
+  url: string;
+  finalUrl?: string;
+  /** Links der README auf weitere Seiten derselben Website (gleiche Adresse oder Unterpfad), nicht abgerufen. */
+  uncheckedReadmeLinks: string[];
 }

@@ -4,6 +4,7 @@ import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { gzipSync } from "node:zlib";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { buildExport } from "@/core/report/export";
 import { requestLines } from "@/core/report/plain";
 import { runAudit } from "@/core/rules/engine";
 import { isPublicAddress } from "@/core/site/address";
@@ -334,6 +335,32 @@ describe("Website-Regeln", () => {
     const a = runAudit(s, user("users"), { now: NOW });
     expect(f(a, "distribution.site_title").status).toBe("unknown");
     expect(f(a, "distribution.site_description").status).toBe("unknown");
+  });
+
+  it("Grenze der Prüfung: genau eine Seite; README-Links derselben Website werden gezählt, nicht abgerufen", async () => {
+    const SITE = "https://shiftboard.example/app/";
+    const readme = `# Shiftboard\n\nPlanung im Browser für kleine Teams mit Schichtbetrieb, ohne Installation.\n\n[App](https://shiftboard.example/app/) · [Hilfe](https://Shiftboard.example/app/hilfe.html#start) · [Hilfe nochmal](https://shiftboard.example/app/hilfe.html) · [Preise](https://shiftboard.example/app/preise) · [Blog](https://shiftboard.example/blog) · [Anderes](https://other.example/app/x)\n`;
+    const fixtures = cloneFixture("web-app", (x) => {
+      x.repo.homepage = SITE;
+      x.readme = { path: "README.md", text: readme };
+      x.site = { [SITE]: { status: 200, html: PAGE } };
+    });
+    let calls = 0;
+    const base = fixtureSiteFetcher(fixtures);
+    const counting = async (u: string) => {
+      calls += 1;
+      return base(u);
+    };
+    const s = await fixtureSnapshot("web-app", "users", fixtures);
+    s.site = await checkHomepage(s, undefined, counting);
+    const a = runAudit(s, user("users"), { now: NOW });
+    expect(calls).toBe(1);
+    expect(a.siteScope).toEqual({ url: SITE, finalUrl: SITE, uncheckedReadmeLinks: ["https://Shiftboard.example/app/hilfe.html#start", "https://shiftboard.example/app/preise"] });
+    const md = buildExport(s, a, user("users"), null).contents["audit.md"]!;
+    expect(md).toContain("### Website");
+    expect(md).toContain("> Geprüft wurde genau eine Seite: die Adresse aus dem Website-Feld (https://shiftboard.example/app/), ohne JavaScript und ohne Unterseiten. Die README verlinkt 2 weitere Seiten derselben Website; sie wurden nicht geprüft.");
+    // Website-Befunde stehen nur in der Gruppe Website, nicht zusätzlich in den Kategorien
+    expect(md.split("Website: Datenschutzerklärung verlinkt (`trust.site_privacy@2`)")).toHaveLength(2);
   });
 
   it("ohne Website-Abruf (anderer Projekttyp, kein Website-Feld) nur die GitHub-Zeile", async () => {

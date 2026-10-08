@@ -24,6 +24,8 @@ Eine Regelversion steigt, wenn sich ihre Auswertung ändert. Reine Gewichtsände
 
 Größenlimit: Gelesen werden höchstens 1 MB entpacktes HTML; die Antwort wird dabei gestreamt entpackt. Ist das Dokument größer, wird es abgeschnitten und der Beleg sagt das. Fehlt eine Angabe im gelesenen Teil, ist der Befund dann "unbekannt" statt "fehlt": für Titel, Beschreibung und Vorschaubild nur, solange der Kopfbereich unvollständig ist, für Impressum und Datenschutz immer. Der Beleg der Erreichbarkeit nennt die entpackte Dokumentgröße und, bei komprimierter Übertragung, zusätzlich die übertragenen Bytes.
 
+Umfang: Geprüft wird genau eine Seite, die Adresse aus dem Website-Feld (nach höchstens drei Weiterleitungen), ohne JavaScript und ohne Unterseiten. Der Bericht führt die Website-Befunde in einer eigenen Gruppe "Website" und sagt das dort. Verlinkt die README weitere Seiten derselben Website (gleiche Adresse oder Unterpfad), nennt er deren Anzahl als nicht geprüft; abgerufen werden sie nicht.
+
 Ohne Website-Feld oder mit einer Adresse auf github.com sind die Regeln nicht relevant (das Feld selbst bewertet `distribution.homepage`). Ist der Abruf abgeschaltet (`REPOLAUNCH_SITE_CHECK=0`) oder fehlgeschlagen, gelten sie als unbekannt und senken nur die Abdeckung. Enthält das HTML keine Links, aber Skripte, bleiben Impressum und Datenschutz unbekannt, weil RepoLaunch kein JavaScript ausführt.
 
 ## Vergleichbarkeit von Scores
