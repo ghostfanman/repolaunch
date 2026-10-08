@@ -121,7 +121,7 @@
       "requests": 7,
       "notModified": 0,
       "bytes": 2756,
-      "durationMs": 56
+      "durationMs": 53
     },
     "notes": []
   },
@@ -366,7 +366,35 @@
           20,
           60
         ],
-        "impactHypothesis": "Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten."
+        "impactHypothesis": "Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten.",
+        "guide": {
+          "action": "Screenshot oder Demo-Link in die README einfügen",
+          "steps": [
+            {
+              "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
+            },
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Klicke unter die Einleitung und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein."
+            },
+            {
+              "text": "Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Alternative: Link zu einer Demo",
+            "content": "[Live-Demo ansehen](https://[Adresse deiner Demo])"
+          }
+        }
       },
       {
         "id": "usability.docs@1",
@@ -391,7 +419,32 @@
           60,
           240
         ],
-        "impactHypothesis": "Fortgeschrittene Nutzer bleiben, wiederkehrende Fragen nehmen ab."
+        "impactHypothesis": "Fortgeschrittene Nutzer bleiben, wiederkehrende Fragen nehmen ab.",
+        "guide": {
+          "action": "Dokumentationsseite anlegen und verlinken",
+          "steps": [
+            {
+              "text": "Öffne die neue Datei docs/README.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "docs/README.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=docs%2FREADME.md&value=%23%20Dokumentation%20f%C3%BCr%20cli-tool%0A%0A%23%23%20Erste%20Schritte%0A%0A%5BWie%20man%20anf%C3%A4ngt%5D%0A%0A%23%23%20Konfiguration%0A%0A%5BWelche%20Einstellungen%20es%20gibt%5D%0A%0A%23%23%20H%C3%A4ufige%20Fragen%0A%0A%5BFrage%20und%20Antwort%5D%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Dokumentation für cli-tool\n\n## Erste Schritte\n\n[Wie man anfängt]\n\n## Konfiguration\n\n[Welche Einstellungen es gibt]\n\n## Häufige Fragen\n\n[Frage und Antwort]\n",
+            "filename": "docs/README.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=docs%2FREADME.md&value=%23%20Dokumentation%20f%C3%BCr%20cli-tool%0A%0A%23%23%20Erste%20Schritte%0A%0A%5BWie%20man%20anf%C3%A4ngt%5D%0A%0A%23%23%20Konfiguration%0A%0A%5BWelche%20Einstellungen%20es%20gibt%5D%0A%0A%23%23%20H%C3%A4ufige%20Fragen%0A%0A%5BFrage%20und%20Antwort%5D%0A"
+          },
+          "note": "Verlinke die Seite danach in der README, z. B. mit der Zeile: Ausführliche Dokumentation: [docs/README.md](docs/README.md)"
+        }
       },
       {
         "id": "usability.cli_reference@1",
@@ -553,7 +606,32 @@
           30,
           90
         ],
-        "impactHypothesis": "Mehr und besser vorbereitete Beiträge."
+        "impactHypothesis": "Mehr und besser vorbereitete Beiträge.",
+        "guide": {
+          "action": "CONTRIBUTING.md mit Vorlage anlegen",
+          "steps": [
+            {
+              "text": "Öffne die neue Datei CONTRIBUTING.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "CONTRIBUTING.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=CONTRIBUTING.md&value=%23%20Mitmachen%20bei%20cli-tool%0A%0ADanke%20f%C3%BCr%20dein%20Interesse%21%20So%20kannst%20du%20beitragen%3A%0A%0A%23%23%20Fehler%20melden%20und%20Ideen%20vorschlagen%0A%0A%C3%96ffne%20ein%20%5BIssue%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fcli-tool%2Fissues%29%20und%20beschreibe%2C%20was%20passiert%20ist%20und%20was%20du%20erwartet%20hast.%0A%0A%23%23%20Entwicklungsumgebung%20einrichten%0A%0A1.%20%5BRepository%20forken%20und%20herunterladen%5D%0A2.%20%5BBefehl%20zum%20Installieren%20der%20Abh%C3%A4ngigkeiten%5D%0A3.%20%5BBefehl%20zum%20Starten%20der%20Tests%5D%0A%0A%23%23%20Pull%20Requests%0A%0A-%20%5BRegeln%2C%20z.%20B.%20ein%20Thema%20pro%20Pull%20Request%2C%20Tests%20erg%C3%A4nzen%5D%0A-%20%5BCode-Stil%20oder%20Formatierungswerkzeug%5D%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Mitmachen bei cli-tool\n\nDanke für dein Interesse! So kannst du beitragen:\n\n## Fehler melden und Ideen vorschlagen\n\nÖffne ein [Issue](https://github.com/repolaunch-fixtures/cli-tool/issues) und beschreibe, was passiert ist und was du erwartet hast.\n\n## Entwicklungsumgebung einrichten\n\n1. [Repository forken und herunterladen]\n2. [Befehl zum Installieren der Abhängigkeiten]\n3. [Befehl zum Starten der Tests]\n\n## Pull Requests\n\n- [Regeln, z. B. ein Thema pro Pull Request, Tests ergänzen]\n- [Code-Stil oder Formatierungswerkzeug]\n",
+            "filename": "CONTRIBUTING.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=CONTRIBUTING.md&value=%23%20Mitmachen%20bei%20cli-tool%0A%0ADanke%20f%C3%BCr%20dein%20Interesse%21%20So%20kannst%20du%20beitragen%3A%0A%0A%23%23%20Fehler%20melden%20und%20Ideen%20vorschlagen%0A%0A%C3%96ffne%20ein%20%5BIssue%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fcli-tool%2Fissues%29%20und%20beschreibe%2C%20was%20passiert%20ist%20und%20was%20du%20erwartet%20hast.%0A%0A%23%23%20Entwicklungsumgebung%20einrichten%0A%0A1.%20%5BRepository%20forken%20und%20herunterladen%5D%0A2.%20%5BBefehl%20zum%20Installieren%20der%20Abh%C3%A4ngigkeiten%5D%0A3.%20%5BBefehl%20zum%20Starten%20der%20Tests%5D%0A%0A%23%23%20Pull%20Requests%0A%0A-%20%5BRegeln%2C%20z.%20B.%20ein%20Thema%20pro%20Pull%20Request%2C%20Tests%20erg%C3%A4nzen%5D%0A-%20%5BCode-Stil%20oder%20Formatierungswerkzeug%5D%0A"
+          },
+          "note": "Trage nur Befehle ein, die du selbst ausprobiert hast. RepoLaunch erfindet keine Befehle."
+        }
       },
       {
         "id": "trust.security_policy@1",
@@ -578,7 +656,38 @@
           15,
           30
         ],
-        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern."
+        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern.",
+        "guide": {
+          "action": "Sicherheitsrichtlinie mit Meldeweg anlegen",
+          "steps": [
+            {
+              "text": "Schalte zuerst vertrauliche Meldungen ein: Einstellungen → „Advanced Security“ (je nach Ansicht „Code security“) → bei „Private vulnerability reporting“ auf „Enable“ klicken.",
+              "link": {
+                "label": "Sicherheitseinstellungen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/settings/security_analysis"
+              }
+            },
+            {
+              "text": "Öffne die neue Datei SECURITY.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "SECURITY.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fcli-tool%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Sicherheitsrichtlinie\n\n## Sicherheitslücke melden\n\nBitte melde Sicherheitslücken nicht öffentlich als Issue, sondern vertraulich über [Report a vulnerability](https://github.com/repolaunch-fixtures/cli-tool/security/advisories/new).\n\n## Unterstützte Versionen\n\n| Version | Unterstützt |\n| --- | --- |\n| [z. B. 1.x] | ja |\n| [ältere Versionen] | nein |\n\n## Reaktionszeit\n\nIch bemühe mich, innerhalb von [Zeitraum, z. B. 14 Tagen] zu antworten. Das ist keine Garantie.\n",
+            "filename": "SECURITY.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fcli-tool%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+          }
+        }
       },
       {
         "id": "trust.contact@1",
@@ -666,7 +775,33 @@
           5,
           10
         ],
-        "impactHypothesis": "Mehr Besucher über Themenseiten und Suche; keine Garantie für Rankings."
+        "impactHypothesis": "Mehr Besucher über Themenseiten und Suche; keine Garantie für Rankings.",
+        "guide": {
+          "action": "Topics (Schlagwörter) vergeben",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Topics“ drei bis acht Schlagwörter (nach jedem Wort Enter drücken; GitHub schlägt passende vor) ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "template": {
+            "label": "Vorschläge aus erkannten Daten (bitte prüfen und um das Problemfeld ergänzen)",
+            "content": "command-line-tool javascript"
+          },
+          "note": "Gute Topics beschreiben Sprache, Problemfeld und Art des Projekts, z. B. „pdf“, „invoices“, „cli“."
+        }
       },
       {
         "id": "distribution.homepage@1",
@@ -692,7 +827,29 @@
           2,
           10
         ],
-        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite."
+        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite.",
+        "guide": {
+          "action": "Website im About-Bereich eintragen",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Website“ die Adresse deiner Demo, Doku oder Produktseite ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "note": "Noch keine Website? GitHub Pages ist kostenlos (Einstellungen → „Pages“). Sonst das Feld leer lassen, bis es eine passende Seite gibt."
+        }
       },
       {
         "id": "distribution.next_step@1",
@@ -746,7 +903,36 @@
           5,
           60
         ],
-        "impactHypothesis": "Einfachere Installation über bekannte Paketmanager."
+        "impactHypothesis": "Einfachere Installation über bekannte Paketmanager.",
+        "guide": {
+          "action": "Paketseite in der README verlinken",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor in den Abschnitt zur Installation."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "Paket: [Adresse der Paketseite, z. B. auf npmjs.com, pypi.org oder crates.io]"
+          },
+          "note": "Ist das Projekt noch in keinem Paketregister veröffentlicht, prüfe zuerst, ob eine Veröffentlichung für deine Nutzer sinnvoll ist."
+        }
       },
       {
         "id": "distribution.funding@1",
@@ -808,7 +994,34 @@
         "task": "Vergib drei bis acht präzise Topics (Sprache, Problemfeld, Projekttyp).",
         "severity": "medium",
         "effort": "5 bis 10 Min.",
-        "impactHypothesis": "Mehr Besucher über Themenseiten und Suche; keine Garantie für Rankings."
+        "impactHypothesis": "Mehr Besucher über Themenseiten und Suche; keine Garantie für Rankings.",
+        "why": "Topics machen ein Repository über GitHub-Themenseiten und Suche auffindbar. Nur 2 Topic(s).",
+        "guide": {
+          "action": "Topics (Schlagwörter) vergeben",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Topics“ drei bis acht Schlagwörter (nach jedem Wort Enter drücken; GitHub schlägt passende vor) ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "template": {
+            "label": "Vorschläge aus erkannten Daten (bitte prüfen und um das Problemfeld ergänzen)",
+            "content": "command-line-tool javascript"
+          },
+          "note": "Gute Topics beschreiben Sprache, Problemfeld und Art des Projekts, z. B. „pdf“, „invoices“, „cli“."
+        }
       },
       {
         "rank": 2,
@@ -817,7 +1030,37 @@
         "task": "Falls veröffentlicht: verlinke die Registry-Seite (npm, PyPI, crates.io usw.) in der README. Falls nicht: Veröffentlichung prüfen.",
         "severity": "medium",
         "effort": "5 bis 60 Min.",
-        "impactHypothesis": "Einfachere Installation über bekannte Paketmanager."
+        "impactHypothesis": "Einfachere Installation über bekannte Paketmanager.",
+        "why": "Ein Link oder Badge zum Paketregister zeigt, dass eine installierbare Version existiert. Die Veröffentlichung selbst wurde nicht extern geprüft.",
+        "guide": {
+          "action": "Paketseite in der README verlinken",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor in den Abschnitt zur Installation."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "Paket: [Adresse der Paketseite, z. B. auf npmjs.com, pypi.org oder crates.io]"
+          },
+          "note": "Ist das Projekt noch in keinem Paketregister veröffentlicht, prüfe zuerst, ob eine Veröffentlichung für deine Nutzer sinnvoll ist."
+        }
       },
       {
         "rank": 3,
@@ -826,7 +1069,39 @@
         "task": "Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.",
         "severity": "medium",
         "effort": "15 bis 30 Min.",
-        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern."
+        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern.",
+        "why": "Eine SECURITY.md sagt, wie Schwachstellen vertraulich gemeldet werden. Für Unternehmen ist das oft ein Prüfpunkt.",
+        "guide": {
+          "action": "Sicherheitsrichtlinie mit Meldeweg anlegen",
+          "steps": [
+            {
+              "text": "Schalte zuerst vertrauliche Meldungen ein: Einstellungen → „Advanced Security“ (je nach Ansicht „Code security“) → bei „Private vulnerability reporting“ auf „Enable“ klicken.",
+              "link": {
+                "label": "Sicherheitseinstellungen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/settings/security_analysis"
+              }
+            },
+            {
+              "text": "Öffne die neue Datei SECURITY.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "SECURITY.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fcli-tool%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Sicherheitsrichtlinie\n\n## Sicherheitslücke melden\n\nBitte melde Sicherheitslücken nicht öffentlich als Issue, sondern vertraulich über [Report a vulnerability](https://github.com/repolaunch-fixtures/cli-tool/security/advisories/new).\n\n## Unterstützte Versionen\n\n| Version | Unterstützt |\n| --- | --- |\n| [z. B. 1.x] | ja |\n| [ältere Versionen] | nein |\n\n## Reaktionszeit\n\nIch bemühe mich, innerhalb von [Zeitraum, z. B. 14 Tagen] zu antworten. Das ist keine Garantie.\n",
+            "filename": "SECURITY.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fcli-tool%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+          }
+        }
       },
       {
         "rank": 4,
@@ -835,7 +1110,33 @@
         "task": "Lege einen docs-Ordner oder eine Doku-Seite an und verlinke sie prominent in der README.",
         "severity": "medium",
         "effort": "1 bis 4 Std.",
-        "impactHypothesis": "Fortgeschrittene Nutzer bleiben, wiederkehrende Fragen nehmen ab."
+        "impactHypothesis": "Fortgeschrittene Nutzer bleiben, wiederkehrende Fragen nehmen ab.",
+        "why": "Über den Einstieg hinaus brauchen Nutzer eine Stelle für Details: docs-Ordner, Wiki oder Doku-Seite.",
+        "guide": {
+          "action": "Dokumentationsseite anlegen und verlinken",
+          "steps": [
+            {
+              "text": "Öffne die neue Datei docs/README.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "docs/README.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=docs%2FREADME.md&value=%23%20Dokumentation%20f%C3%BCr%20cli-tool%0A%0A%23%23%20Erste%20Schritte%0A%0A%5BWie%20man%20anf%C3%A4ngt%5D%0A%0A%23%23%20Konfiguration%0A%0A%5BWelche%20Einstellungen%20es%20gibt%5D%0A%0A%23%23%20H%C3%A4ufige%20Fragen%0A%0A%5BFrage%20und%20Antwort%5D%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Dokumentation für cli-tool\n\n## Erste Schritte\n\n[Wie man anfängt]\n\n## Konfiguration\n\n[Welche Einstellungen es gibt]\n\n## Häufige Fragen\n\n[Frage und Antwort]\n",
+            "filename": "docs/README.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/cli-tool/new/main?filename=docs%2FREADME.md&value=%23%20Dokumentation%20f%C3%BCr%20cli-tool%0A%0A%23%23%20Erste%20Schritte%0A%0A%5BWie%20man%20anf%C3%A4ngt%5D%0A%0A%23%23%20Konfiguration%0A%0A%5BWelche%20Einstellungen%20es%20gibt%5D%0A%0A%23%23%20H%C3%A4ufige%20Fragen%0A%0A%5BFrage%20und%20Antwort%5D%0A"
+          },
+          "note": "Verlinke die Seite danach in der README, z. B. mit der Zeile: Ausführliche Dokumentation: [docs/README.md](docs/README.md)"
+        }
       },
       {
         "rank": 5,
@@ -844,7 +1145,30 @@
         "task": "Trage im Repository unter \"About\" eine Website ein (Demo, Doku oder Produktseite).",
         "severity": "low",
         "effort": "2 bis 10 Min.",
-        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite."
+        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite.",
+        "why": "Das Website-Feld erscheint prominent neben der Beschreibung und führt zu Demo, Doku oder Produktseite.",
+        "guide": {
+          "action": "Website im About-Bereich eintragen",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/cli-tool"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Website“ die Adresse deiner Demo, Doku oder Produktseite ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "note": "Noch keine Website? GitHub Pages ist kostenlos (Einstellungen → „Pages“). Sonst das Feld leer lassen, bis es eine passende Seite gibt."
+        }
       }
     ],
     "score": {

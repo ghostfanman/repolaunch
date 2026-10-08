@@ -123,6 +123,24 @@ export interface Finding {
   impactHypothesis: string | null;
   /** Nur bei unknown oder not_relevant: warum die Regel nicht bewertet wurde. */
   exclusionReason?: string;
+  /** Schritt-für-Schritt-Anleitung für die GitHub-Webseite, nur bei offenen Aufgaben. */
+  guide?: TaskGuide;
+}
+
+/** Ein Schritt einer Anleitung. Links zeigen nur auf github.com oder docs.github.com. */
+export interface GuideStep {
+  text: string;
+  link?: { label: string; url: string };
+}
+
+/** Anfängerfreundliche Anleitung zu einer Aufgabe: ohne Terminal, nur über die GitHub-Webseite. */
+export interface TaskGuide {
+  /** Verständliche Handlung als Überschrift, z. B. "Website im About-Bereich eintragen". */
+  action: string;
+  steps: GuideStep[];
+  /** Vorlage mit Platzhaltern in eckigen Klammern. Sie enthält keine erfundenen Fakten über das Projekt. */
+  template?: { label: string; content: string; filename?: string; createUrl?: string };
+  note?: string;
 }
 
 export interface ScoreBreakdown {
@@ -160,6 +178,9 @@ export interface PrioritizedTask {
   severity: Severity;
   effort: string;
   impactHypothesis: string;
+  /** Begründung aus dem Befund, damit die Aufgabe ohne Fachwissen verständlich ist. */
+  why: string;
+  guide?: TaskGuide;
 }
 
 export interface MonetizationOption {

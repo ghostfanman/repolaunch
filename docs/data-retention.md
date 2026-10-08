@@ -28,6 +28,10 @@ Strukturierte JSON-Logs auf stdout enthalten Zeit, Ereignis, Auftrags-ID, Pfadmu
 
 Nur nach ausdrücklicher Zustimmung im Ergebnis. Übermittelt werden genau die vorher angezeigten Inhaltsgruppen an den angezeigten Anbieter (Standard: Anthropic, `api.anthropic.com`). Dort gelten dessen Bedingungen zur Datenverarbeitung.
 
+## Analyse per Issue (für alle)
+
+Wer das Issue-Formular nutzt, veröffentlicht die Anfrage als Issue. RepoLaunch selbst speichert nichts: Der Workflow schreibt den Bericht als Kommentar, schließt das Issue und lädt die Dateien als Artefakt hoch (7 Tage). Issue und Kommentar bleiben öffentlich, bis die Person mit Schreibrechten sie löscht oder sperrt. Das Formular weist vor dem Absenden darauf hin und verlangt eine Bestätigung. Für die Grenzen pro Stunde liest der Workflow nur die Issues der letzten Stunde (Nummer, Zeit, Autor, Text) und speichert sie nicht.
+
 ## Audit per GitHub Actions
 
 Beim Workflow "RepoLaunch: Repository analysieren" speichert RepoLaunch selbst nichts. GitHub bewahrt den Lauf auf: die Zusammenfassung mit dem Bericht nach den Log-Einstellungen des Repositorys, die Artefakte 7 Tage. In öffentlichen Repositories sind beide für alle sichtbar. Der Repository-Owner kann einzelne Läufe unter **Actions** löschen. Wer Ergebnisse nicht öffentlich haben möchte, nutzt eine private Kopie des Repositorys.

@@ -12,6 +12,8 @@ Entwickelt bis 7. Oktober 2026 als Unterprojekt in `ghostfanman/invoice-kit` (Br
 | `npm run build` | erfolgreich |
 | Browser-Smoke-Test | 18 von 18 Prüfungen bestanden |
 | Audit direkt auf GitHub (`.github/workflows/repolaunch-audit.yml`, `npm run repo-audit`) | 12 eigene Tests (Eingaben, Fehler, KI ohne Schlüssel, KI mit Testadapter, KI-Fehler); Probelauf gegen `ghostfanman/invoice-kit` mit Zusammenfassung und Ausgabedateien wie auf dem Runner |
+| Analyse per Issue für alle (`.github/ISSUE_TEMPLATE/repolaunch-audit.yml`, `.github/workflows/repolaunch-issue.yml`) | 16 eigene Tests: Formular und Workflow passen zum Code, Bericht als Kommentar, Schließen, Englisch, häufige Kopierformen der Adresse, verständliche Hilfe bei Fehlern, Grenzen pro Person und insgesamt, Ausnahme für Verwalter, entschärfte Erwähnungen, Kürzung, feste API-Adressen |
+| Einsteigerfreundlicher Bericht | 6 eigene Tests: Anleitung für jede Regel in beiden Sprachen, Links nur auf GitHub, Vorlagen ohne erfundene Befehle, vorausgefüllte Datei-Links, Kurzfassung vor den Details, Score in Worten ohne Erfolgsversprechen; 10 Tests für das Erkennen kopierter Adressen; Browser-Smoke mit axe ohne Verstöße auf der Ergebnisseite |
 | Workflow `.github/workflows/ci.yml` | übernommen aus dem Ursprungsrepository, ohne Pfadfilter und Unterverzeichnis |
 
 ## Bestanden (im Ursprungsrepository, 7. Oktober 2026)

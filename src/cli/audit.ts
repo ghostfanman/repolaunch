@@ -9,7 +9,7 @@ import { collectSnapshot } from "@/core/github/collector";
 import { CollectError } from "@/core/github/errors";
 import { fetchTransport, GitHubHttp, type Transport } from "@/core/github/http";
 import { DEFAULT_COLLECT_LIMITS } from "@/core/limits";
-import { parseRepoInput } from "@/core/repo-input";
+import { parseRepoInput, suggestRepoInput } from "@/core/repo-input";
 import { buildExport } from "@/core/report/export";
 import { applyRuleOverrides, DEFAULT_RULE_CONFIG } from "@/core/rules/config";
 import { runAudit } from "@/core/rules/engine";
@@ -26,6 +26,8 @@ export interface CliDeps {
   secrets?: string[];
   now?: () => Date;
   log?: (line: string) => void;
+  /** Link auf den Workflow-Lauf mit den Artefakten, wenn der Bericht nicht auf der Lauf-Seite selbst erscheint (z. B. als Issue-Kommentar). */
+  artifactsUrl?: string;
 }
 
 export interface CliResult {
@@ -56,8 +58,19 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
   const de = lang === "de";
   if (langRaw !== "de" && langRaw !== "en") return fail(lang, de ? "Sprache muss de oder en sein." : "Language must be de or en.");
 
-  const repoInput = parseRepoInput(env.INPUT_REPO);
-  if (!repoInput.ok) return fail(lang, `${m.form.repoLabel}: ${m.inputErrors[repoInput.error] ?? repoInput.error}`);
+  let repoInput = parseRepoInput(env.INPUT_REPO);
+  let readAs: string | null = null;
+  if (!repoInput.ok) {
+    // Häufige Kopierformen (z. B. mit /tree/main) als owner/repo lesen; geprüft wird danach wie immer.
+    const suggestion = suggestRepoInput(env.INPUT_REPO);
+    const retry = suggestion ? parseRepoInput(suggestion) : null;
+    if (!retry?.ok) {
+      const example = de ? "Beispiel: octocat/hello-world oder https://github.com/octocat/hello-world" : "Example: octocat/hello-world or https://github.com/octocat/hello-world";
+      return fail(lang, `${m.form.repoLabel}: ${m.inputErrors[repoInput.error] ?? repoInput.error} ${example}`);
+    }
+    repoInput = retry;
+    readAs = suggestion;
+  }
 
   const goal = (env.INPUT_GOAL || "users").trim() as Goal;
   if (!GOALS.includes(goal)) return fail(lang, de ? `Unbekanntes Ziel: ${goal}` : `Unknown goal: ${goal}`);
@@ -139,12 +152,16 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
 
   // 5. Zusammenfassung für die Ergebnisseite des Workflows
   const head: string[] = [];
+  const where = deps.artifactsUrl
+    ? de ? `im [Workflow-Lauf](${deps.artifactsUrl}) unter **Artifacts** (7 Tage)` : `in the [workflow run](${deps.artifactsUrl}) under **Artifacts** (7 days)`
+    : de ? "unten auf dieser Seite unter **Artifacts**" : "at the bottom of this page under **Artifacts**";
   head.push(
     de
-      ? `> Alle Dateien (${files.join(", ")}) stehen unten auf dieser Seite unter **Artifacts** als \`${artifactName}\` zum Download bereit.`
-      : `> All files (${files.join(", ")}) are available for download at the bottom of this page under **Artifacts** as \`${artifactName}\`.`,
+      ? `> Alle Dateien (${files.join(", ")}) stehen ${where} als \`${artifactName}\` zum Download bereit.`
+      : `> All files (${files.join(", ")}) are available for download ${where} as \`${artifactName}\`.`,
     "",
   );
+  if (readAs) head.push(de ? `> Die Eingabe wurde als \`${readAs}\` gelesen.` : `> The input was read as \`${readAs}\`.`, "");
   for (const n of aiNotes) head.push(`> ${n}`, "");
   if (ai) {
     const d = ai.disclosure;

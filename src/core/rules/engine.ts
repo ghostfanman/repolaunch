@@ -11,6 +11,7 @@ import { t } from "@/i18n/messages";
 import type { AuditResult, Category, Finding, PrioritizedTask, ReadinessScore, RepoSnapshot, Severity, UserContext } from "../types";
 import { DEFAULT_RULE_CONFIG, effectiveWeight, type RuleConfig } from "./config";
 import { RULES, type RuleContext } from "./definitions";
+import { buildGuide } from "./guides";
 
 const CATEGORY_ORDER: Category[] = ["understanding", "usability", "trust", "distribution"];
 
@@ -114,6 +115,12 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
     });
   }
 
+  // Anleitungen für Einsteiger zu jeder offenen Aufgabe
+  const guideCtx = { snapshot, lang, readmePath: ctx.readmePath, projectType: classification.used, manifests: ctx.manifests };
+  for (const f of findings) {
+    if (f.status === "missing" && f.task) f.guide = buildGuide(f.ruleId, guideCtx);
+  }
+
   // Fehlt die README, werden die README-Inhaltsregeln in einer Aufgabe gebündelt.
   if (readmeMissing) {
     const readmeFinding = findings.find((f) => f.ruleId === "understanding.readme");
@@ -159,6 +166,8 @@ export function prioritize(findings: Finding[]): PrioritizedTask[] {
       severity: f.severity,
       effort: f.effort!,
       impactHypothesis: f.impactHypothesis!,
+      why: f.rationale,
+      ...(f.guide ? { guide: f.guide } : {}),
     }));
 }
 

@@ -61,3 +61,23 @@ export function parseRepoInput(raw: unknown): RepoInputResult {
   if (!isValidRepoName(repo)) return { ok: false, error: "invalid_repo" };
   return { ok: true, owner, repo, canonicalUrl: `https://github.com/${owner}/${repo}` };
 }
+
+/**
+ * Hilfe für Einsteiger: Erkennt häufige Kopierformen einer github.com-Adresse (ohne https, mit www,
+ * mit /tree/main, .git, SSH-Form) und liefert daraus "owner/repo". Das Ergebnis muss danach
+ * parseRepoInput bestehen; andere Hosts als github.com ergeben null.
+ */
+export function suggestRepoInput(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  let s = raw.trim().replace(/^[<`'"(]+|[>`'".,;)]+$/g, "");
+  if (s.length === 0 || s.length > 300 || !/^[\x21-\x7e]+$/.test(s)) return null;
+  const ssh = s.match(/^git@github\.com:([^/]+)\/([^/]+?)(?:\.git)?$/i);
+  if (ssh) return `${ssh[1]}/${ssh[2]}`;
+  s = s.replace(/^https?:\/\//i, "").replace(/^www\./i, "");
+  if (!/^github\.com\//i.test(s)) return null;
+  const parts = s.slice("github.com/".length).split(/[?#]/)[0]!.split("/").filter(Boolean);
+  if (parts.length < 2) return null;
+  const repo = parts[1]!.replace(/\.git$/i, "");
+  const candidate = `${parts[0]}/${repo}`;
+  return parseRepoInput(candidate).ok ? candidate : null;
+}

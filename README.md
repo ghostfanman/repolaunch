@@ -1,5 +1,29 @@
 # RepoLaunch
 
+**Kostenloser Check für dein GitHub-Projekt.** RepoLaunch sagt dir in einfachen Worten, was Besuchern an deinem Repository fehlt, und zeigt dir Klick für Klick, wie du es behebst. Du brauchst keine Installation und kein technisches Vorwissen, nur ein GitHub-Konto.
+
+### 👉 [Jetzt Repository analysieren](https://github.com/ghostfanman/repolaunch/issues/new?template=repolaunch-audit.yml)
+
+1. Auf den Link oben klicken. Du musst bei GitHub angemeldet sein.
+2. Die Adresse deines Repositories einfügen, z. B. `https://github.com/octocat/hello-world`. Alles andere kann so bleiben.
+3. Das Häkchen beim Hinweis setzen und auf **Create** klicken.
+4. Nach etwa 1 bis 2 Minuten steht dein Bericht als Kommentar darunter. GitHub benachrichtigt dich zusätzlich per E-Mail.
+
+**Das bekommst du:**
+
+- eine Kurzfassung in einfachen Worten: Wo steht das Projekt, was ist schon gut?
+- fünf Aufgaben, sortiert nach Wirkung und Aufwand, jede mit Klick-für-Klick-Anleitung für die GitHub-Webseite,
+- Vorlagen zum Kopieren und Direktlinks wie „README bearbeiten“ oder „Datei mit Vorlage anlegen“,
+- kurze Erklärungen der Fachbegriffe und für jeden Befund einen Beleg (Datei, Zeile, Ausschnitt).
+
+[Beispielbericht ansehen](docs/examples/web-app/audit.md)
+
+**Gut zu wissen:** Es funktioniert nur mit öffentlichen Repositories. RepoLaunch liest nur und führt keinen Code aus. Anfrage und Bericht sind öffentlich sichtbar. Pro Person sind 3 Analysen pro Stunde möglich. Diese Variante nutzt keine KI.
+
+**English:** [Analyse a repository now](https://github.com/ghostfanman/repolaunch/issues/new?template=repolaunch-audit.yml). Paste your repository address, choose “en – English” as report language and click **Create**. The report arrives as a comment within about two minutes.
+
+---
+
 Arbeitstitel; Marken-, Domain- und Repository-Verfügbarkeit sind nicht geprüft.
 
 RepoLaunch analysiert ein öffentliches GitHub-Repository mit reinem Lesezugriff und liefert:
@@ -12,15 +36,19 @@ RepoLaunch analysiert ein öffentliches GitHub-Repository mit reinem Lesezugriff
 
 RepoLaunch verspricht keine Rankings, Trending-Platzierungen, Sterne oder Umsätze. Der angezeigte Score ist ein interner Bereitschaftsscore dieses Werkzeugs; Sterne fließen nicht ein.
 
-## Direkt auf GitHub nutzen (ohne Server)
+## Für Maintainer: Audit über Actions, optional mit KI-Paket
+
+Das Issue-Formular oben steht allen offen und nutzt keine KI. Für Personen mit Schreibrechten gibt es zusätzlich den Workflow mit KI-Paket:
 
 1. Im Repository den Reiter **Actions** öffnen und links **RepoLaunch: Repository analysieren** wählen.
 2. **Run workflow** klicken, das Formular ausfüllen (Repository, Ziel, Sprache, optional Projekttyp, Zielgruppe, Merkmale) und starten.
 3. Nach etwa einer Minute den Lauf öffnen: Der vollständige Bericht steht in der Zusammenfassung, alle Dateien liegen unten unter **Artifacts** (7 Tage aufbewahrt).
 
-Optional KI-Launch-Paket: einmalig unter **Settings > Secrets and variables > Actions** das Secret `ANTHROPIC_API_KEY` anlegen und im Formular das Häkchen setzen. Ohne Häkchen wird der Schlüssel nicht an den Lauf übergeben.
+Optional KI-Launch-Paket: einmalig unter **Settings > Secrets and variables > Actions** das Secret `ANTHROPIC_API_KEY` anlegen und im Formular das Häkchen setzen. Ohne Häkchen wird der Schlüssel nicht an den Lauf übergeben. Der Issue-Workflow erhält den Schlüssel nie.
 
-**Sichtbarkeit:** In einem öffentlichen Repository sind Zusammenfassung und Artefakte jedes Laufs für alle sichtbar. Starten können den Workflow nur Personen mit Schreibrechten. Alle anderen forken das Repository, aktivieren im Fork unter **Actions** die Workflows und starten den Audit dort. Wer die Ergebnisse nicht öffentlich haben möchte, nutzt eine private Kopie.
+**Sichtbarkeit:** In einem öffentlichen Repository sind Issues, Kommentare, Zusammenfassungen und Artefakte für alle sichtbar. Wer Ergebnisse nicht öffentlich haben möchte, nutzt eine private Kopie des Repositorys und startet den Audit dort über **Actions**.
+
+**Abläufe im Repository:** `.github/ISSUE_TEMPLATE/repolaunch-audit.yml` (Formular), `.github/workflows/repolaunch-issue.yml` (Analyse per Issue, Kommentar, Schließen; höchstens 3 Anfragen pro Person und 30 insgesamt pro Stunde; Erwähnungen und Querverweise im Bericht werden entschärft), `.github/workflows/repolaunch-audit.yml` (Workflow-Formular mit KI-Option).
 
 Lokal ohne Oberfläche: `INPUT_REPO=owner/repo npm run repo-audit`.
 
@@ -52,7 +80,7 @@ REPOLAUNCH_DEMO=1 AI_PROVIDER=fake npm start
 ```sh
 npm run typecheck
 npm run lint
-npm test                    # 136 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, LLM-Fehler, Exporte, Ende-zu-Ende
+npm test                    # 174 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, LLM-Fehler, Exporte, Ende-zu-Ende
 npm run build
 npm run smoke:browser       # gegen laufenden Server mit REPOLAUNCH_DEMO=1 AI_PROVIDER=fake (axe-core, WCAG 2.2 A/AA)
 npm run smoke:live          # Live-Audit eines öffentlichen Repositorys, Standard: ghostfanman/invoice-kit (nur lesend)

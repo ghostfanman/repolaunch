@@ -24,7 +24,8 @@
     "smoke:browser": "tsx scripts/browser-smoke.ts",
     "smoke:live": "tsx scripts/live-smoke.ts",
     "repo-audit": "tsx scripts/repo-audit.ts",
-    "examples": "tsx scripts/generate-examples.ts"
+    "examples": "tsx scripts/generate-examples.ts",
+    "issue-audit": "tsx scripts/issue-audit.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.132.0",

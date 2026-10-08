@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseRepoInput } from "@/core/repo-input";
+import { parseRepoInput, suggestRepoInput } from "@/core/repo-input";
 
 describe("URL-Validierung", () => {
   it.each([
@@ -47,4 +47,27 @@ describe("URL-Validierung", () => {
   ])("lehnt %s ab (%s)", (input, error) => {
     expect(parseRepoInput(input)).toEqual({ ok: false, error });
   });
+});
+
+describe("Hilfe bei kopierten Adressen (suggestRepoInput)", () => {
+  it.each([
+    ["github.com/octocat/hello-world", "octocat/hello-world"],
+    ["http://github.com/octocat/hello-world", "octocat/hello-world"],
+    ["https://www.github.com/octocat/hello-world/", "octocat/hello-world"],
+    ["https://github.com/octocat/hello-world/tree/main/src", "octocat/hello-world"],
+    ["https://github.com/octocat/hello-world.git", "octocat/hello-world"],
+    ["https://github.com/octocat/hello-world?tab=readme-ov-file#install", "octocat/hello-world"],
+    ["git@github.com:octocat/hello-world.git", "octocat/hello-world"],
+    ["<https://github.com/octocat/hello-world>", "octocat/hello-world"],
+  ])("%s -> %s", (raw, expected) => {
+    expect(suggestRepoInput(raw)).toBe(expected);
+    expect(parseRepoInput(expected).ok).toBe(true);
+  });
+
+  it.each(["https://gitlab.com/a/b", "https://github.com.evil.com/a/b", "https://evil.com/github.com/a/b", "github.com/onlyowner", "https://github.com/a/b c", "", "javascript:alert(1)", "https://user:pw@github.com/a/b"])(
+    "kein Vorschlag für %s",
+    (raw) => {
+      expect(suggestRepoInput(raw)).toBeNull();
+    },
+  );
 });

@@ -1,0 +1,81 @@
+name: "Repository analysieren / Analyse a repository"
+description: "RepoLaunch prüft ein öffentliches GitHub-Repository und antwortet mit einem Bericht als Kommentar. / RepoLaunch audits a public GitHub repository and replies with a report as a comment."
+title: "Analyse: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **So funktioniert es:** Formular ausfüllen, Issue erstellen, nach etwa 1–2 Minuten steht der Bericht als Kommentar hier. Das Issue wird danach automatisch geschlossen.
+
+        - Nur **öffentliche** Repositories. RepoLaunch liest Metadaten, README und einige Dateien über die GitHub-API, nur lesend. Code des Repositories wird nie ausgeführt.
+        - Regelbasierter Audit ohne KI: fünf priorisierte Aufgaben, Belege, Launch- und Monetarisierungsplan. Sterne zählen nicht zur Bewertung.
+        - **Anfrage und Bericht sind öffentlich sichtbar.** Bitte keine vertraulichen Angaben eintragen.
+        - Höchstens 3 Anfragen pro Person und Stunde.
+
+        **How it works:** fill in the form, create the issue, and the report arrives as a comment after about 1–2 minutes. Public repositories only, read-only, no code is executed. Request and report are public.
+  - type: input
+    id: repo
+    attributes:
+      label: "Repository"
+      description: "owner/repo oder https://github.com/owner/repo"
+      placeholder: "octocat/hello-world"
+    validations:
+      required: true
+  - type: dropdown
+    id: goal
+    attributes:
+      label: "Ziel / Goal"
+      options:
+        - "users – mehr Nutzer / more users"
+        - "contributors – mehr Mitwirkende / more contributors"
+        - "sponsors – Sponsoren / sponsors"
+        - "support_clients – Supportkunden / support clients"
+        - "saas_customers – SaaS-Kunden / SaaS customers"
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: "Berichtssprache / Report language"
+      options:
+        - "de – Deutsch"
+        - "en – English"
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: project_type
+    attributes:
+      label: "Projekttyp / Project type"
+      options:
+        - "auto – automatisch erkennen / detect automatically"
+        - "cli – CLI-Tool"
+        - "library – Bibliothek / library"
+        - "webapp – Webprodukt, SaaS / web product, SaaS"
+        - "template – Vorlage / template"
+        - "other – Sonstiges / other"
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: "Zielgruppe / Audience (optional)"
+      description: "Höchstens 500 Zeichen. Wird im Bericht als Nutzerangabe gekennzeichnet. / At most 500 characters, marked as user input."
+    validations:
+      required: false
+  - type: textarea
+    id: known_features
+    attributes:
+      label: "Bekannte Projektmerkmale / Known characteristics (optional)"
+      description: "Höchstens 2000 Zeichen. Wird nicht als geprüfte Tatsache übernommen. / At most 2000 characters, not treated as verified fact."
+    validations:
+      required: false
+  - type: checkboxes
+    id: public
+    attributes:
+      label: "Hinweis / Notice"
+      options:
+        - label: "Mir ist bewusst, dass Anfrage und Bericht öffentlich sichtbar sind. / I understand that request and report are publicly visible."
+          required: true

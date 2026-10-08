@@ -1,0 +1,50 @@
+name: "RepoLaunch: Analyse per Issue"
+
+# Für alle nutzbar: Jede Person mit GitHub-Konto öffnet das Issue-Formular "Repository analysieren".
+# Dieser Workflow liest nur öffentliche Daten über die GitHub-API, schreibt den Bericht als Kommentar
+# und schließt das Issue. Kein KI-Paket, kein Code des geprüften Repositories wird ausgeführt.
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    # Nur Issues aus dem Formular, keine Bots
+    if: github.event.issue.user.type != 'Bot' && contains(github.event.issue.body, '### Repository') && contains(github.event.issue.body, '### Ziel / Goal')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Abhängigkeiten (Lockfile)
+        run: npm ci --no-audit --no-fund
+      - name: Repository analysieren und antworten
+        id: audit
+        env:
+          # Issue-Inhalte nur über Umgebungsvariablen, nie direkt im Skript (Schutz vor Einschleusung)
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_AUTHOR_ASSOCIATION: ${{ github.event.issue.author_association }}
+          GITHUB_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          OUTPUT_DIR: ${{ runner.temp }}/repolaunch-output
+        run: npm run issue-audit --silent
+      - name: Ergebnisdateien bereitstellen
+        if: steps.audit.outputs.artifact_name != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.audit.outputs.artifact_name }}
+          path: ${{ runner.temp }}/repolaunch-output
+          retention-days: 7
+          if-no-files-found: error

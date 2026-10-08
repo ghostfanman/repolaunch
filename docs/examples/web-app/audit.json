@@ -112,7 +112,7 @@
       "requests": 7,
       "notModified": 0,
       "bytes": 1672,
-      "durationMs": 2
+      "durationMs": 4
     },
     "notes": []
   },
@@ -172,7 +172,33 @@
           5,
           15
         ],
-        "impactHypothesis": "Besucher erkennen schneller, ob das Projekt zu ihrem Problem passt."
+        "impactHypothesis": "Besucher erkennen schneller, ob das Projekt zu ihrem Problem passt.",
+        "guide": {
+          "action": "Beschreibung in einem Satz formulieren",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/web-app"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Description“ einen Satz nach der Vorlage unten ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "template": {
+            "label": "Satzbaustein (Platzhalter ersetzen)",
+            "content": "web-app ist ein [Art: z. B. Kommandozeilen-Werkzeug, Bibliothek, Web-App] für [Zielgruppe], das [konkreter Nutzen]."
+          },
+          "note": "Gut sind 60 bis 160 Zeichen. Nenne Nutzen statt Technik."
+        }
       },
       {
         "id": "understanding.readme@1",
@@ -226,7 +252,35 @@
           15,
           45
         ],
-        "impactHypothesis": "Weniger Absprünge auf der Repository-Seite, weniger Grundsatzfragen in Issues."
+        "impactHypothesis": "Weniger Absprünge auf der Repository-Seite, weniger Grundsatzfragen in Issues.",
+        "guide": {
+          "action": "Einleitung unter den Titel schreiben",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor direkt unter die erste Überschrift (die Zeile mit #)."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "web-app hilft [Zielgruppe], [Problem] zu lösen. [Ein Satz, wie es das tut und was danach besser ist.]"
+          }
+        }
       },
       {
         "id": "understanding.audience@1",
@@ -252,7 +306,36 @@
           20,
           60
         ],
-        "impactHypothesis": "Passende Nutzer erkennen sich wieder, unpassende Anfragen nehmen ab."
+        "impactHypothesis": "Passende Nutzer erkennen sich wieder, unpassende Anfragen nehmen ab.",
+        "guide": {
+          "action": "Abschnitt „Für wen“ und „Funktionen“ ergänzen",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor unter die Einleitung, vor die Installation."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "## Für wen ist web-app?\n\n- [Zielgruppe 1, z. B. „Teams, die …“]\n- [Zielgruppe 2]\n\n## Funktionen\n\n- [Konkrete Funktion 1]\n- [Konkrete Funktion 2]\n- [Konkrete Funktion 3]"
+          },
+          "note": "Nenne nur Funktionen, die es wirklich gibt."
+        }
       },
       {
         "id": "understanding.example@1",
@@ -278,7 +361,36 @@
           20,
           60
         ],
-        "impactHypothesis": "Mehr erfolgreiche erste Nutzungen, weniger Fragen zur Grundbedienung."
+        "impactHypothesis": "Mehr erfolgreiche erste Nutzungen, weniger Fragen zur Grundbedienung.",
+        "guide": {
+          "action": "Ein kurzes Beispiel zeigen",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor unter den Abschnitt zur Installation."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "## Beispiel\n\n```\n[Ein kurzer Befehl oder Code, den man direkt ausprobieren kann]\n```\n\nErgebnis:\n\n```\n[Was dabei herauskommt]\n```"
+          },
+          "note": "Trage nur Befehle ein, die du selbst ausprobiert hast. RepoLaunch erfindet keine Befehle."
+        }
       },
       {
         "id": "usability.quickstart@1",
@@ -332,7 +444,35 @@
           10,
           20
         ],
-        "impactHypothesis": "Weniger Issues zu Installationsfehlern."
+        "impactHypothesis": "Weniger Issues zu Installationsfehlern.",
+        "guide": {
+          "action": "Voraussetzungen vor der Installation nennen",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor direkt über den Abschnitt zur Installation."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "## Voraussetzungen\n\n- [Software, z. B. Node.js, Python oder Docker] ab Version [Mindestversion]\n- [Betriebssystem, falls relevant]"
+          }
+        }
       },
       {
         "id": "usability.visual_demo@1",
@@ -358,7 +498,35 @@
           20,
           60
         ],
-        "impactHypothesis": "Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten."
+        "impactHypothesis": "Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten.",
+        "guide": {
+          "action": "Screenshot oder Demo-Link in die README einfügen",
+          "steps": [
+            {
+              "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
+            },
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Klicke unter die Einleitung und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein."
+            },
+            {
+              "text": "Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Alternative: Link zu einer Demo",
+            "content": "[Live-Demo ansehen](https://[Adresse deiner Demo])"
+          }
+        }
       },
       {
         "id": "usability.docs@1",
@@ -383,7 +551,32 @@
           60,
           240
         ],
-        "impactHypothesis": "Fortgeschrittene Nutzer bleiben, wiederkehrende Fragen nehmen ab."
+        "impactHypothesis": "Fortgeschrittene Nutzer bleiben, wiederkehrende Fragen nehmen ab.",
+        "guide": {
+          "action": "Dokumentationsseite anlegen und verlinken",
+          "steps": [
+            {
+              "text": "Öffne die neue Datei docs/README.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "docs/README.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=docs%2FREADME.md&value=%23%20Dokumentation%20f%C3%BCr%20web-app%0A%0A%23%23%20Erste%20Schritte%0A%0A%5BWie%20man%20anf%C3%A4ngt%5D%0A%0A%23%23%20Konfiguration%0A%0A%5BWelche%20Einstellungen%20es%20gibt%5D%0A%0A%23%23%20H%C3%A4ufige%20Fragen%0A%0A%5BFrage%20und%20Antwort%5D%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Dokumentation für web-app\n\n## Erste Schritte\n\n[Wie man anfängt]\n\n## Konfiguration\n\n[Welche Einstellungen es gibt]\n\n## Häufige Fragen\n\n[Frage und Antwort]\n",
+            "filename": "docs/README.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=docs%2FREADME.md&value=%23%20Dokumentation%20f%C3%BCr%20web-app%0A%0A%23%23%20Erste%20Schritte%0A%0A%5BWie%20man%20anf%C3%A4ngt%5D%0A%0A%23%23%20Konfiguration%0A%0A%5BWelche%20Einstellungen%20es%20gibt%5D%0A%0A%23%23%20H%C3%A4ufige%20Fragen%0A%0A%5BFrage%20und%20Antwort%5D%0A"
+          },
+          "note": "Verlinke die Seite danach in der README, z. B. mit der Zeile: Ausführliche Dokumentation: [docs/README.md](docs/README.md)"
+        }
       },
       {
         "id": "usability.cli_reference@1",
@@ -505,7 +698,29 @@
           20,
           60
         ],
-        "impactHypothesis": "Mehr produktive Nutzung, weil Nutzer eine Version festlegen können."
+        "impactHypothesis": "Mehr produktive Nutzung, weil Nutzer eine Version festlegen können.",
+        "guide": {
+          "action": "Erstes Release veröffentlichen",
+          "steps": [
+            {
+              "text": "Öffne die Seite für ein neues Release:",
+              "link": {
+                "label": "Neues Release",
+                "url": "https://github.com/repolaunch-fixtures/web-app/releases/new"
+              }
+            },
+            {
+              "text": "Klicke auf „Choose a tag“, tippe eine Versionsnummer ein, z. B. v0.1.0, und wähle „Create new tag“."
+            },
+            {
+              "text": "Klicke auf „Generate release notes“. GitHub schreibt die Änderungen selbst zusammen; prüfe und ergänze den Text."
+            },
+            {
+              "text": "Klicke auf „Publish release“."
+            }
+          ],
+          "note": "Eine Versionsnummer wie v0.1.0 signalisiert eine frühe Version, v1.0.0 eine stabile."
+        }
       },
       {
         "id": "trust.contributing@1",
@@ -530,7 +745,32 @@
           30,
           90
         ],
-        "impactHypothesis": "Mehr und besser vorbereitete Beiträge."
+        "impactHypothesis": "Mehr und besser vorbereitete Beiträge.",
+        "guide": {
+          "action": "CONTRIBUTING.md mit Vorlage anlegen",
+          "steps": [
+            {
+              "text": "Öffne die neue Datei CONTRIBUTING.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "CONTRIBUTING.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=CONTRIBUTING.md&value=%23%20Mitmachen%20bei%20web-app%0A%0ADanke%20f%C3%BCr%20dein%20Interesse%21%20So%20kannst%20du%20beitragen%3A%0A%0A%23%23%20Fehler%20melden%20und%20Ideen%20vorschlagen%0A%0A%C3%96ffne%20ein%20%5BIssue%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fweb-app%2Fissues%29%20und%20beschreibe%2C%20was%20passiert%20ist%20und%20was%20du%20erwartet%20hast.%0A%0A%23%23%20Entwicklungsumgebung%20einrichten%0A%0A1.%20%5BRepository%20forken%20und%20herunterladen%5D%0A2.%20%5BBefehl%20zum%20Installieren%20der%20Abh%C3%A4ngigkeiten%5D%0A3.%20%5BBefehl%20zum%20Starten%20der%20Tests%5D%0A%0A%23%23%20Pull%20Requests%0A%0A-%20%5BRegeln%2C%20z.%20B.%20ein%20Thema%20pro%20Pull%20Request%2C%20Tests%20erg%C3%A4nzen%5D%0A-%20%5BCode-Stil%20oder%20Formatierungswerkzeug%5D%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Mitmachen bei web-app\n\nDanke für dein Interesse! So kannst du beitragen:\n\n## Fehler melden und Ideen vorschlagen\n\nÖffne ein [Issue](https://github.com/repolaunch-fixtures/web-app/issues) und beschreibe, was passiert ist und was du erwartet hast.\n\n## Entwicklungsumgebung einrichten\n\n1. [Repository forken und herunterladen]\n2. [Befehl zum Installieren der Abhängigkeiten]\n3. [Befehl zum Starten der Tests]\n\n## Pull Requests\n\n- [Regeln, z. B. ein Thema pro Pull Request, Tests ergänzen]\n- [Code-Stil oder Formatierungswerkzeug]\n",
+            "filename": "CONTRIBUTING.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=CONTRIBUTING.md&value=%23%20Mitmachen%20bei%20web-app%0A%0ADanke%20f%C3%BCr%20dein%20Interesse%21%20So%20kannst%20du%20beitragen%3A%0A%0A%23%23%20Fehler%20melden%20und%20Ideen%20vorschlagen%0A%0A%C3%96ffne%20ein%20%5BIssue%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fweb-app%2Fissues%29%20und%20beschreibe%2C%20was%20passiert%20ist%20und%20was%20du%20erwartet%20hast.%0A%0A%23%23%20Entwicklungsumgebung%20einrichten%0A%0A1.%20%5BRepository%20forken%20und%20herunterladen%5D%0A2.%20%5BBefehl%20zum%20Installieren%20der%20Abh%C3%A4ngigkeiten%5D%0A3.%20%5BBefehl%20zum%20Starten%20der%20Tests%5D%0A%0A%23%23%20Pull%20Requests%0A%0A-%20%5BRegeln%2C%20z.%20B.%20ein%20Thema%20pro%20Pull%20Request%2C%20Tests%20erg%C3%A4nzen%5D%0A-%20%5BCode-Stil%20oder%20Formatierungswerkzeug%5D%0A"
+          },
+          "note": "Trage nur Befehle ein, die du selbst ausprobiert hast. RepoLaunch erfindet keine Befehle."
+        }
       },
       {
         "id": "trust.security_policy@1",
@@ -555,7 +795,38 @@
           15,
           30
         ],
-        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern."
+        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern.",
+        "guide": {
+          "action": "Sicherheitsrichtlinie mit Meldeweg anlegen",
+          "steps": [
+            {
+              "text": "Schalte zuerst vertrauliche Meldungen ein: Einstellungen → „Advanced Security“ (je nach Ansicht „Code security“) → bei „Private vulnerability reporting“ auf „Enable“ klicken.",
+              "link": {
+                "label": "Sicherheitseinstellungen",
+                "url": "https://github.com/repolaunch-fixtures/web-app/settings/security_analysis"
+              }
+            },
+            {
+              "text": "Öffne die neue Datei SECURITY.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "SECURITY.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fweb-app%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Sicherheitsrichtlinie\n\n## Sicherheitslücke melden\n\nBitte melde Sicherheitslücken nicht öffentlich als Issue, sondern vertraulich über [Report a vulnerability](https://github.com/repolaunch-fixtures/web-app/security/advisories/new).\n\n## Unterstützte Versionen\n\n| Version | Unterstützt |\n| --- | --- |\n| [z. B. 1.x] | ja |\n| [ältere Versionen] | nein |\n\n## Reaktionszeit\n\nIch bemühe mich, innerhalb von [Zeitraum, z. B. 14 Tagen] zu antworten. Das ist keine Garantie.\n",
+            "filename": "SECURITY.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fweb-app%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+          }
+        }
       },
       {
         "id": "trust.contact@1",
@@ -620,7 +891,32 @@
           15,
           45
         ],
-        "impactHypothesis": "Nutzer aktualisieren eher und melden weniger Überraschungen."
+        "impactHypothesis": "Nutzer aktualisieren eher und melden weniger Überraschungen.",
+        "guide": {
+          "action": "Änderungen nachvollziehbar machen",
+          "steps": [
+            {
+              "text": "Öffne die neue Datei CHANGELOG.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "CHANGELOG.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=CHANGELOG.md&value=%23%20%C3%84nderungsprotokoll%0A%0AAlle%20wichtigen%20%C3%84nderungen%20an%20web-app%20stehen%20in%20dieser%20Datei.%0A%0A%23%23%20Unver%C3%B6ffentlicht%0A%0A%23%23%23%20Neu%0A%0A-%20%5BNeue%20Funktion%5D%0A%0A%23%23%23%20Ge%C3%A4ndert%0A%0A-%20%5B%C3%84nderung%5D%0A%0A%23%23%23%20Behoben%0A%0A-%20%5BFehlerbehebung%5D%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Änderungsprotokoll\n\nAlle wichtigen Änderungen an web-app stehen in dieser Datei.\n\n## Unveröffentlicht\n\n### Neu\n\n- [Neue Funktion]\n\n### Geändert\n\n- [Änderung]\n\n### Behoben\n\n- [Fehlerbehebung]\n",
+            "filename": "CHANGELOG.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=CHANGELOG.md&value=%23%20%C3%84nderungsprotokoll%0A%0AAlle%20wichtigen%20%C3%84nderungen%20an%20web-app%20stehen%20in%20dieser%20Datei.%0A%0A%23%23%20Unver%C3%B6ffentlicht%0A%0A%23%23%23%20Neu%0A%0A-%20%5BNeue%20Funktion%5D%0A%0A%23%23%23%20Ge%C3%A4ndert%0A%0A-%20%5B%C3%84nderung%5D%0A%0A%23%23%23%20Behoben%0A%0A-%20%5BFehlerbehebung%5D%0A"
+          },
+          "note": "Einfachste Alternative: Bei jedem Release auf „Generate release notes“ klicken. Dann ist keine eigene Datei nötig."
+        }
       },
       {
         "id": "distribution.topics@1",
@@ -646,7 +942,33 @@
           5,
           10
         ],
-        "impactHypothesis": "Mehr Besucher über Themenseiten und Suche; keine Garantie für Rankings."
+        "impactHypothesis": "Mehr Besucher über Themenseiten und Suche; keine Garantie für Rankings.",
+        "guide": {
+          "action": "Topics (Schlagwörter) vergeben",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/web-app"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Topics“ drei bis acht Schlagwörter (nach jedem Wort Enter drücken; GitHub schlägt passende vor) ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "template": {
+            "label": "Vorschläge aus erkannten Daten (bitte prüfen und um das Problemfeld ergänzen)",
+            "content": "web-app javascript"
+          },
+          "note": "Gute Topics beschreiben Sprache, Problemfeld und Art des Projekts, z. B. „pdf“, „invoices“, „cli“."
+        }
       },
       {
         "id": "distribution.homepage@1",
@@ -672,7 +994,29 @@
           2,
           10
         ],
-        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite."
+        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite.",
+        "guide": {
+          "action": "Website im About-Bereich eintragen",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/web-app"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Website“ die Adresse deiner Demo, Doku oder Produktseite ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "note": "Noch keine Website? GitHub Pages ist kostenlos (Einstellungen → „Pages“). Sonst das Feld leer lassen, bis es eine passende Seite gibt."
+        }
       },
       {
         "id": "distribution.next_step@1",
@@ -760,7 +1104,36 @@
           30,
           90
         ],
-        "impactHypothesis": "Interessierte Unternehmen melden sich direkt statt abzuwandern."
+        "impactHypothesis": "Interessierte Unternehmen melden sich direkt statt abzuwandern.",
+        "guide": {
+          "action": "Bezahltes Angebot in der README nennen",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor ans Ende der README, vor die Lizenz."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "## Support und kommerzielle Nutzung\n\nDu brauchst Hilfe bei Einrichtung, Anpassung oder Betrieb? [Was du anbietest, z. B. Einrichtung, Schulung, Wartung]\n\nKontakt: [E-Mail-Adresse oder Link]"
+          },
+          "note": "Nenne nur Leistungen, die du wirklich anbietest, und versprich keine Ergebnisse."
+        }
       },
       {
         "id": "distribution.contributor_entry@1",
@@ -788,7 +1161,30 @@
         "task": "Trage im Repository unter \"About\" eine Website ein (Demo, Doku oder Produktseite).",
         "severity": "high",
         "effort": "2 bis 10 Min.",
-        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite."
+        "impactHypothesis": "Mehr Besuche der Demo- oder Produktseite.",
+        "why": "Das Website-Feld erscheint prominent neben der Beschreibung und führt zu Demo, Doku oder Produktseite.",
+        "guide": {
+          "action": "Website im About-Bereich eintragen",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/web-app"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Website“ die Adresse deiner Demo, Doku oder Produktseite ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "note": "Noch keine Website? GitHub Pages ist kostenlos (Einstellungen → „Pages“). Sonst das Feld leer lassen, bis es eine passende Seite gibt."
+        }
       },
       {
         "rank": 2,
@@ -797,7 +1193,34 @@
         "task": "Formuliere die Beschreibung als einen Satz: Was ist das Projekt, für wen, welcher Nutzen.",
         "severity": "high",
         "effort": "5 bis 15 Min.",
-        "impactHypothesis": "Besucher erkennen schneller, ob das Projekt zu ihrem Problem passt."
+        "impactHypothesis": "Besucher erkennen schneller, ob das Projekt zu ihrem Problem passt.",
+        "why": "Die Beschreibung erscheint in Suchergebnissen, Vorschauen und Listen. Sie ist oft der erste Kontakt. Beschreibung ist sehr kurz oder wiederholt nur den Namen.",
+        "guide": {
+          "action": "Beschreibung in einem Satz formulieren",
+          "steps": [
+            {
+              "text": "Öffne die Startseite deines Repositories:",
+              "link": {
+                "label": "Repository öffnen",
+                "url": "https://github.com/repolaunch-fixtures/web-app"
+              }
+            },
+            {
+              "text": "Klicke rechts neben der Überschrift „About“ auf das Zahnrad-Symbol (⚙)."
+            },
+            {
+              "text": "Trage im Feld „Description“ einen Satz nach der Vorlage unten ein."
+            },
+            {
+              "text": "Klicke auf „Save changes“. Die Änderung ist sofort sichtbar."
+            }
+          ],
+          "template": {
+            "label": "Satzbaustein (Platzhalter ersetzen)",
+            "content": "web-app ist ein [Art: z. B. Kommandozeilen-Werkzeug, Bibliothek, Web-App] für [Zielgruppe], das [konkreter Nutzen]."
+          },
+          "note": "Gut sind 60 bis 160 Zeichen. Nenne Nutzen statt Technik."
+        }
       },
       {
         "rank": 3,
@@ -806,7 +1229,39 @@
         "task": "Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.",
         "severity": "high",
         "effort": "15 bis 30 Min.",
-        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern."
+        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern.",
+        "why": "Eine SECURITY.md sagt, wie Schwachstellen vertraulich gemeldet werden. Für Unternehmen ist das oft ein Prüfpunkt.",
+        "guide": {
+          "action": "Sicherheitsrichtlinie mit Meldeweg anlegen",
+          "steps": [
+            {
+              "text": "Schalte zuerst vertrauliche Meldungen ein: Einstellungen → „Advanced Security“ (je nach Ansicht „Code security“) → bei „Private vulnerability reporting“ auf „Enable“ klicken.",
+              "link": {
+                "label": "Sicherheitseinstellungen",
+                "url": "https://github.com/repolaunch-fixtures/web-app/settings/security_analysis"
+              }
+            },
+            {
+              "text": "Öffne die neue Datei SECURITY.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "SECURITY.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fweb-app%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Sicherheitsrichtlinie\n\n## Sicherheitslücke melden\n\nBitte melde Sicherheitslücken nicht öffentlich als Issue, sondern vertraulich über [Report a vulnerability](https://github.com/repolaunch-fixtures/web-app/security/advisories/new).\n\n## Unterstützte Versionen\n\n| Version | Unterstützt |\n| --- | --- |\n| [z. B. 1.x] | ja |\n| [ältere Versionen] | nein |\n\n## Reaktionszeit\n\nIch bemühe mich, innerhalb von [Zeitraum, z. B. 14 Tagen] zu antworten. Das ist keine Garantie.\n",
+            "filename": "SECURITY.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/web-app/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Fweb-app%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+          }
+        }
       },
       {
         "rank": 4,
@@ -815,7 +1270,37 @@
         "task": "Ergänze einen Abschnitt \"Funktionen\" oder \"Für wen\" mit drei bis fünf konkreten Punkten.",
         "severity": "high",
         "effort": "20 bis 60 Min.",
-        "impactHypothesis": "Passende Nutzer erkennen sich wieder, unpassende Anfragen nehmen ab."
+        "impactHypothesis": "Passende Nutzer erkennen sich wieder, unpassende Anfragen nehmen ab.",
+        "why": "Besucher entscheiden schneller, wenn Funktionen, Anwendungsfälle oder die Zielgruppe ausdrücklich genannt sind.",
+        "guide": {
+          "action": "Abschnitt „Für wen“ und „Funktionen“ ergänzen",
+          "steps": [
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Setze den Cursor unter die Einleitung, vor die Installation."
+            },
+            {
+              "text": "Kopiere die Vorlage unten an diese Stelle und ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben."
+            },
+            {
+              "text": "Prüfe das Ergebnis über den Reiter „Preview“ oben im Editor."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "## Für wen ist web-app?\n\n- [Zielgruppe 1, z. B. „Teams, die …“]\n- [Zielgruppe 2]\n\n## Funktionen\n\n- [Konkrete Funktion 1]\n- [Konkrete Funktion 2]\n- [Konkrete Funktion 3]"
+          },
+          "note": "Nenne nur Funktionen, die es wirklich gibt."
+        }
       },
       {
         "rank": 5,
@@ -824,7 +1309,36 @@
         "task": "Füge einen aktuellen Screenshot, eine kurze Aufnahme oder einen Demo-Link in die README ein.",
         "severity": "high",
         "effort": "20 bis 60 Min.",
-        "impactHypothesis": "Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten."
+        "impactHypothesis": "Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten.",
+        "why": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss.",
+        "guide": {
+          "action": "Screenshot oder Demo-Link in die README einfügen",
+          "steps": [
+            {
+              "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
+            },
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/web-app/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Klicke unter die Einleitung und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein."
+            },
+            {
+              "text": "Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Alternative: Link zu einer Demo",
+            "content": "[Live-Demo ansehen](https://[Adresse deiner Demo])"
+          }
+        }
       }
     ],
     "score": {

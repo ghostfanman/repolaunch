@@ -3,13 +3,14 @@
 import type { AiPackageResult } from "../ai/generate";
 import { t } from "@/i18n/messages";
 import { fencedBlock, inlineText, safeUrl, stripControl } from "../security/sanitize";
-import type { AuditResult, Category, Evidence, Finding, Language, RepoSnapshot, UserContext } from "../types";
+import type { AuditResult, Category, Evidence, Finding, Language, RepoSnapshot, TaskGuide, UserContext } from "../types";
+import { glossaryFor, scoreVerdict, strengths } from "./plain";
 
 const CATEGORY_ORDER: Category[] = ["understanding", "usability", "trust", "distribution"];
 
 function link(label: string, url: string | undefined | null): string {
   const u = safeUrl(url);
-  return u ? `[${inlineText(label)}](${u.replace(/[()]/g, encodeURIComponent)})` : inlineText(label);
+  return u ? `[${inlineText(label)}](${u.replace(/\(/g, "%28").replace(/\)/g, "%29")})` : inlineText(label);
 }
 
 function evidenceMd(e: Evidence, lang: Language): string {
@@ -48,39 +49,59 @@ export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, 
   const m = t(lang);
   const de = lang === "de";
   const out: string[] = [header(snapshot, lang, de ? "RepoLaunch-Audit" : "RepoLaunch audit")];
+  const s = audit.score;
+  const classification = `${m.projectTypes[audit.classification.used]}${audit.classification.overridden ? ` (${m.report.overriddenBy}; ${m.report.detectedAs} ${m.projectTypes[audit.classification.detected]})` : ""}`;
+
+  // Kurzfassung für Einsteiger
+  out.push(`## ${m.report.inShort}`, "");
+  out.push(`${s.value === null ? "" : `**${s.value} ${m.report.points}.** `}${scoreVerdict(s.value, lang)}`, "");
+  out.push(`- ${m.report.projectType}: ${classification}`, `- ${m.report.goal}: ${m.goals[user.goal]}`, "");
+  const good = strengths(audit);
+  out.push(`**${m.report.strengthsLabel}:** ${good.length ? good.map((f) => inlineText(f.title)).join(", ") : m.report.noStrengths}`, "");
+  out.push(`> ${m.report.howToUse}`, "");
+
+  // Aufgaben mit Anleitung
+  const tasksStart = out.length;
+  out.push(`## ${m.report.tasksHeading}`, "");
+  if (audit.tasks.length < 5) out.push(m.report.tasksFewer, "");
+  for (const task of audit.tasks) {
+    out.push(`### ${task.rank}. ${inlineText(task.guide?.action ?? task.title)}`, "");
+    out.push(`**${m.report.why}:** ${inlineText(task.why, 800)}`, "");
+    out.push(`**${m.report.task}:** ${inlineText(task.task, 600)}`, "");
+    out.push(`${m.report.effort}: ${task.effort} · ${m.report.importance}: ${m.severities[task.severity]}`, "");
+    if (task.guide) out.push(...guideMd(task.guide, lang));
+    out.push(`${m.report.impact}: ${inlineText(task.impactHypothesis, 400)}`, "");
+    out.push(`${m.report.ruleRef}: ${inlineText(task.title)} (\`${task.findingId}\`), ${de ? "siehe „Alle Befunde“" : "see “All findings”"}.`, "");
+  }
+  const terms = glossaryFor(out.slice(tasksStart).join("\n"), lang);
+  if (terms.length) {
+    out.push(`## ${m.report.glossary}`, "");
+    for (const g of terms) out.push(`- **${g.term}**: ${g.text}`);
+    out.push("");
+  }
+
+  // Score und Kennzahlen
+  out.push(`## ${m.report.scoreHeading}`, "", `> ${m.report.scoreDisclaimer}`, "");
+  out.push(s.value === null ? m.report.scoreNone : `**${s.value} / 100**, ${m.report.coverage} ${Math.round(s.coverage * 100)} %`, "");
+  out.push(`${m.report.calculation}: ${s.formula}`, "");
+  out.push(`| ${de ? "Kategorie" : "Category"} | ${de ? "Erfüllt" : "Met"} | ${de ? "Bewertet" : "Scored"} | ${de ? "Unbekannt" : "Unknown"} |`, "| --- | --- | --- | --- |");
+  for (const c of s.byCategory) out.push(`| ${m.categories[c.category]} | ${c.achieved} | ${c.possible} | ${c.unknownWeight} |`);
   out.push(
-    `- ${m.report.projectType}: ${m.projectTypes[audit.classification.used]}${audit.classification.overridden ? ` (${m.report.overriddenBy}; ${m.report.detectedAs} ${m.projectTypes[audit.classification.detected]})` : ""}`,
-    `- ${m.report.goal}: ${m.goals[user.goal]}`,
+    "",
     `- ${m.report.rulesetVersion}: \`${audit.rulesetVersion}\``,
     `- ${m.report.requests}: ${snapshot.stats.requests} (${snapshot.stats.notModified} × 304), ${snapshot.stats.bytes} B`,
     `- ${m.report.stars}: ${snapshot.display.stars ?? "?"}`,
     "",
   );
 
-  // Score
-  const s = audit.score;
-  out.push(`## ${m.report.scoreHeading}`, "", `> ${m.report.scoreDisclaimer}`, "");
-  out.push(s.value === null ? m.report.scoreNone : `**${s.value} / 100**, ${m.report.coverage} ${Math.round(s.coverage * 100)} %`, "");
-  out.push(`${m.report.calculation}: ${s.formula}`, "");
-  out.push(`| ${de ? "Kategorie" : "Category"} | ${de ? "Erfüllt" : "Met"} | ${de ? "Bewertet" : "Scored"} | ${de ? "Unbekannt" : "Unknown"} |`, "| --- | --- | --- | --- |");
-  for (const c of s.byCategory) out.push(`| ${m.categories[c.category]} | ${c.achieved} | ${c.possible} | ${c.unknownWeight} |`);
-  out.push("");
-
-  // Aufgaben
-  out.push(`## ${m.report.tasksHeading}`, "");
-  if (audit.tasks.length < 5) out.push(m.report.tasksFewer, "");
-  for (const task of audit.tasks) {
-    out.push(`${task.rank}. **${inlineText(task.title)}** (\`${task.findingId}\`, ${m.report.severity}: ${m.severities[task.severity]}, ${m.report.effort}: ${task.effort})`);
-    out.push(`   - ${m.report.task}: ${inlineText(task.task, 600)}`);
-    out.push(`   - ${m.report.impact}: ${inlineText(task.impactHypothesis, 400)}`);
-  }
-  out.push("");
-
   // Befunde
   out.push(`## ${m.report.findingsHeading}`, "");
   for (const cat of CATEGORY_ORDER) {
     out.push(`### ${m.categories[cat]}`, "");
-    for (const f of audit.findings.filter((x) => x.category === cat && x.status !== "not_relevant")) out.push(findingMd(f, lang), "");
+    for (const f of audit.findings.filter((x) => x.category === cat && x.status !== "not_relevant")) {
+      const rank = audit.tasks.find((x) => x.findingId === f.id)?.rank;
+      out.push(findingMd(f, lang, rank), "");
+    }
   }
 
   // Nicht bewertete Regeln
@@ -124,7 +145,22 @@ export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, 
   return out.join("\n");
 }
 
-function findingMd(f: Finding, lang: Language): string {
+/** Anleitung als Markdown: nummerierte Schritte, Vorlage im Codeblock, Hinweis. Texte sind fest, Links nur github.com. */
+function guideMd(g: TaskGuide, lang: Language): string[] {
+  const m = t(lang);
+  const out = [`**${m.report.howTo}:**`, ""];
+  g.steps.forEach((step, i) => out.push(`${i + 1}. ${inlineText(step.text, 600)}${step.link ? ` ${link(step.link.label, step.link.url)}` : ""}`));
+  out.push("");
+  if (g.template) {
+    const ext = g.template.filename?.split(".").pop()?.toLowerCase();
+    const syntax = ext === "md" ? "markdown" : ext === "yml" || ext === "yaml" ? "yaml" : "text";
+    out.push(`${inlineText(g.template.label)}:`, "", fencedBlock(g.template.content.trimEnd(), syntax), "");
+  }
+  if (g.note) out.push(`> ${m.report.noteLabel}: ${inlineText(g.note, 600)}`, "");
+  return out;
+}
+
+function findingMd(f: Finding, lang: Language, taskRank?: number): string {
   const m = t(lang);
   const lines = [`#### ${inlineText(f.title)} (\`${f.id}\`)`, ""];
   lines.push(`- ${m.report.status}: **${m.statuses[f.status]}**${f.status === "missing" ? `, ${m.report.severity}: ${m.severities[f.severity]}` : ""}, ${m.report.weight}: ${f.weight}`);
@@ -133,6 +169,8 @@ function findingMd(f: Finding, lang: Language): string {
   if (f.effort) lines.push(`- ${m.report.effort}: ${f.effort}`);
   if (f.impactHypothesis) lines.push(`- ${m.report.impact}: ${inlineText(f.impactHypothesis, 400)}`);
   if (f.exclusionReason) lines.push(`- ${inlineText(f.exclusionReason, 300)}`);
+  if (f.guide && taskRank) lines.push(`- ${m.report.howTo}: ${lang === "de" ? `siehe Aufgabe ${taskRank} oben` : `see task ${taskRank} above`}`);
+  if (f.guide && !taskRank) lines.push("", ...guideMd(f.guide, lang).join("\n").split("\n").map((l) => (l ? `  ${l}` : l)));
   lines.push(`- ${m.report.evidence}:`, "");
   if (f.evidence.length === 0) lines.push(`  ${m.report.noEvidence}`);
   for (const e of f.evidence) lines.push(indent(evidenceMd(e, lang)));

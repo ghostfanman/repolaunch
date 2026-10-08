@@ -2,7 +2,8 @@
 
 import type React from "react";
 
-import type { Category, Evidence, Finding, Language } from "@/core/types";
+import { scoreVerdict, strengths } from "@/core/report/plain";
+import type { Category, Evidence, Finding, Language, TaskGuide } from "@/core/types";
 import { t } from "@/i18n/messages";
 import type { JobView } from "@/server/service";
 
@@ -47,6 +48,45 @@ function EvidenceItem({ e, lang }: { e: Evidence; lang: Language }) {
       {range}
       {e.snippet && <pre>{e.snippet}</pre>}
     </li>
+  );
+}
+
+/** Klick-für-Klick-Anleitung zu einer Aufgabe. */
+function GuideView({ g, lang }: { g: TaskGuide; lang: Language }) {
+  const m = t(lang);
+  return (
+    <div className="guide">
+      <h4>{m.report.howTo}</h4>
+      <ol>
+        {g.steps.map((step, i) => {
+          const href = safeHref(step.link?.url);
+          return (
+            <li key={i}>
+              {step.text}
+              {step.link && href && (
+                <>
+                  {" "}
+                  <a href={href} rel="noopener noreferrer nofollow" target="_blank">
+                    {step.link.label}
+                  </a>
+                </>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      {g.template && (
+        <>
+          <p className="muted">{g.template.label}:</p>
+          <pre>{g.template.content.trimEnd()}</pre>
+        </>
+      )}
+      {g.note && (
+        <p className="muted">
+          {m.report.noteLabel}: {g.note}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -98,6 +138,7 @@ function FindingItem({ f, lang }: { f: Finding; lang: Language }) {
             </>
           )}
         </dl>
+        {f.guide && <GuideView g={f.guide} lang={lang} />}
         <h4>{m.report.evidence}</h4>
         {f.evidence.length === 0 ? (
           <p>{m.report.noEvidence}</p>
@@ -185,6 +226,13 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
 
       <section aria-labelledby="score-h" className="panel">
         <h2 id="score-h">{m.report.scoreHeading}</h2>
+        <p>
+          <strong>{scoreVerdict(s.value, lang)}</strong>
+        </p>
+        <p>
+          {m.report.strengthsLabel}:{" "}
+          {strengths(audit).length ? strengths(audit).map((f) => f.title).join(", ") : m.report.noStrengths}
+        </p>
         <p className="muted">{m.report.scoreDisclaimer}</p>
         {s.value === null ? (
           <p>{m.report.scoreNone}</p>
@@ -243,18 +291,21 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
 
       <section aria-labelledby="tasks-h">
         <h2 id="tasks-h">{m.report.tasksHeading}</h2>
+        <p className="muted">{m.report.howToUse}</p>
         {audit.tasks.length < 5 && <p>{m.report.tasksFewer}</p>}
         <ol className="tasks">
           {audit.tasks.map((task) => (
             <li key={task.findingId}>
-              <strong>{task.title}</strong> <span className="badge sev">{m.severities[task.severity]}</span>
+              <strong>{task.guide?.action ?? task.title}</strong> <span className="badge sev">{m.severities[task.severity]}</span>
               <br />
-              {task.task}
+              {m.report.why}: {task.why}
+              <br />
+              {m.report.task}: {task.task}
               <br />
               <span className="muted">
                 {m.report.effort}: {task.effort}
               </span>
-              <br />
+              {task.guide && <GuideView g={task.guide} lang={lang} />}
               <span className="muted">
                 {m.report.impact}: {task.impactHypothesis}
               </span>

@@ -31,7 +31,11 @@ Next.js Route Handler (src/app/api)  ->  Service (src/server/service.ts)
 
 Der Kern (`src/core`) kennt weder Next.js noch SQLite und ist vollständig mit Fixtures testbar.
 
-Zweiter Zugang ohne Server: `src/cli/audit.ts` nutzt denselben Kern und wird vom Workflow `.github/workflows/repolaunch-audit.yml` gestartet. Eingaben kommen aus dem Formular "Run workflow" ausschließlich über Umgebungsvariablen, der Bericht geht in die Zusammenfassung des Laufs, die Dateien in ein Artefakt mit 7 Tagen Aufbewahrung. Das KI-Paket nutzt das Repository-Secret `ANTHROPIC_API_KEY`, das nur bei gesetztem Häkchen an den Lauf übergeben wird. In öffentlichen Repositories sind Zusammenfassung und Artefakte öffentlich; Läufe starten nur Personen mit Schreibrechten, andere nutzen einen Fork.
+Zweiter Zugang ohne Server: `src/cli/audit.ts` nutzt denselben Kern und wird vom Workflow `.github/workflows/repolaunch-audit.yml` gestartet. Eingaben kommen aus dem Formular "Run workflow" ausschließlich über Umgebungsvariablen, der Bericht geht in die Zusammenfassung des Laufs, die Dateien in ein Artefakt mit 7 Tagen Aufbewahrung. Das KI-Paket nutzt das Repository-Secret `ANTHROPIC_API_KEY`, das nur bei gesetztem Häkchen an den Lauf übergeben wird. In öffentlichen Repositories sind Zusammenfassung und Artefakte öffentlich; diesen Workflow starten nur Personen mit Schreibrechten.
+
+Dritter Zugang für alle: Jede Person mit GitHub-Konto öffnet das Issue-Formular `.github/ISSUE_TEMPLATE/repolaunch-audit.yml`. Der Workflow `.github/workflows/repolaunch-issue.yml` übergibt den Issue-Text per Umgebungsvariable an `src/cli/issue.ts`; dort werden die Formularfelder gelesen, die Grenzen pro Stunde geprüft und `runAuditCli` ohne KI aufgerufen. Der Bericht wird mit entschärften Erwähnungen als Kommentar geschrieben, danach wird das Issue geschlossen.
+
+Einsteigerhilfe im Kern: `src/core/rules/guides.ts` liefert zu jeder Regel eine Klick-für-Klick-Anleitung für die GitHub-Webseite mit Direktlinks (Datei bearbeiten, Datei mit Vorlage anlegen, Einstellungen) und Vorlagen mit Platzhaltern. Der Audit hängt sie an offene Befunde und Aufgaben an; Web-Oberfläche, `audit.md` und Issue-Kommentar zeigen sie an. `src/core/report/plain.ts` ordnet den Score in Worten ein und erklärt Fachbegriffe.
 
 ## Entscheidungen
 
