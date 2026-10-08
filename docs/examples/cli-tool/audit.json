@@ -121,7 +121,16 @@
       "requests": 7,
       "notModified": 0,
       "bytes": 2756,
-      "durationMs": 64
+      "durationMs": 48
+    },
+    "site": {
+      "state": "not_checked",
+      "url": null,
+      "skip": "not_webapp",
+      "reason": {
+        "de": "nur bei Webprodukten",
+        "en": "only for web products"
+      }
     },
     "notes": []
   },
@@ -131,7 +140,7 @@
   },
   "audit": {
     "schemaVersion": 1,
-    "rulesetVersion": "2026.10.1",
+    "rulesetVersion": "2026.10.2",
     "generatedAt": "2026-10-07T12:00:00.000Z",
     "classification": {
       "detected": "cli",
@@ -1030,6 +1039,7 @@
         "category": "usability",
         "title": "Website: erreichbar",
         "rationale": "Bei einem Webprodukt ist die Website der eigentliche Einstieg. Ist sie nicht erreichbar, endet der Besuch dort.",
+        "scope": "website",
         "status": "not_relevant",
         "severity": "none",
         "weight": 0,
@@ -1047,12 +1057,13 @@
         }
       },
       {
-        "id": "distribution.site_title@1",
+        "id": "distribution.site_title@2",
         "ruleId": "distribution.site_title",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "distribution",
         "title": "Website: Seitentitel",
         "rationale": "Der Seitentitel (title-Element) erscheint in Suchergebnissen, Lesezeichen und Browser-Tabs.",
+        "scope": "website",
         "status": "not_relevant",
         "severity": "none",
         "weight": 0,
@@ -1070,12 +1081,13 @@
         }
       },
       {
-        "id": "distribution.site_description@1",
+        "id": "distribution.site_description@2",
         "ruleId": "distribution.site_description",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "distribution",
         "title": "Website: Meta-Beschreibung",
         "rationale": "Suchmaschinen und Link-Vorschauen zeigen die Meta-Beschreibung oft als Kurztext unter dem Titel.",
+        "scope": "website",
         "status": "not_relevant",
         "severity": "none",
         "weight": 0,
@@ -1093,12 +1105,13 @@
         }
       },
       {
-        "id": "distribution.site_og_image@1",
+        "id": "distribution.site_og_image@2",
         "ruleId": "distribution.site_og_image",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "distribution",
         "title": "Website: Vorschaubild für geteilte Links",
         "rationale": "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens.",
+        "scope": "website",
         "status": "not_relevant",
         "severity": "none",
         "weight": 0,
@@ -1116,12 +1129,13 @@
         }
       },
       {
-        "id": "trust.site_imprint@1",
+        "id": "trust.site_imprint@2",
         "ruleId": "trust.site_imprint",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "trust",
         "title": "Website: Impressum verlinkt",
         "rationale": "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung.",
+        "scope": "website",
         "status": "not_relevant",
         "severity": "none",
         "weight": 0,
@@ -1139,12 +1153,13 @@
         }
       },
       {
-        "id": "trust.site_privacy@1",
+        "id": "trust.site_privacy@2",
         "ruleId": "trust.site_privacy",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "trust",
         "title": "Website: Datenschutzerklärung verlinkt",
         "rationale": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
+        "scope": "website",
         "status": "not_relevant",
         "severity": "none",
         "weight": 0,

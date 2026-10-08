@@ -8,14 +8,14 @@
 
 ## Das Wichtigste in Kürze
 
-**76 von 100 Punkten.** Gut vorbereitet. Einige Punkte fehlen noch.
+**76 von 100 Punkten** (Regelwerk `2026.10.2`). Gut vorbereitet. Einige Punkte fehlen noch.
 
 - Projekttyp: CLI-Tool
 - Ziel: Mehr Nutzer
 
 **Das ist schon gut:** Aussagekräftige Repository-Beschreibung, README vorhanden, Konkretes Nutzungsbeispiel, Dokumentierter Schnellstart
 
-> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Klick-für-Klick-Anleitung für die GitHub-Webseite, ein Terminal brauchst du nicht. Für die meisten Schritte brauchst du Schreibrechte am Repository. Lass danach einfach erneut analysieren, um den Fortschritt zu sehen.
+> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Klick-für-Klick-Anleitung für die GitHub-Webseite, ein Terminal brauchst du nicht. Für die meisten Schritte brauchst du Schreibrechte am Repository. Lass danach erneut analysieren: Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion, die neben dem Score steht.
 
 ## Fünf priorisierte Aufgaben
 
@@ -186,7 +186,9 @@ Prüfregel und Belege: Website-Feld gesetzt (`distribution.homepage@1`), siehe �
 
 > Interne Kennzahl dieses Werkzeugs. Kein GitHub- oder Google-Ranking und keine Erfolgswahrscheinlichkeit. Sterne fließen nicht ein.
 
-**76 / 100**, Abdeckung 100 %
+**76 / 100** (Regelwerk `2026.10.2`), Abdeckung 100 %
+
+> Scores sind nur innerhalb derselben Regelwerkversion vergleichbar. Mit einem anderen Regelwerk kann sich der Score auch ohne Änderung am Repository verschieben.
 
 Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = 35 / 46 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 46 / 46.
 
@@ -197,8 +199,8 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgu
 | Vertrauen | 12 | 15 | 0 |
 | Verbreitung und Vermarktung | 2 | 7 | 0 |
 
-- Regelwerk: `2026.10.1`
-- API-Anfragen: 7 (0 × 304), 2756 B
+- Regelwerk: `2026.10.2`
+- GitHub-API: 7 Anfragen (0 × 304), 2756 B
 - Sterne (nur Anzeige, nicht bewertet): 42
 
 ## Alle Befunde

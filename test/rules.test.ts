@@ -103,7 +103,7 @@ describe("Projekttypabhängige Gewichtung", () => {
 
   it("Überschreibungen werden validiert und ändern die Version", async () => {
     const cfg = applyRuleOverrides(DEFAULT_RULE_CONFIG, { version: "team", rules: { "distribution.topics": { enabled: false }, "usability.visual_demo": { weights: { cli: 3 } } } });
-    expect(cfg.version).toMatch(/^2026\.10\.1\+team\.[0-9a-f]{8}$/);
+    expect(cfg.version).toMatch(/^2026\.10\.2\+team\.[0-9a-f]{8}$/);
     const a = runAudit(await fixtureSnapshot("cli-tool"), user(), { config: cfg, now: NOW });
     expect(finding(a, "distribution.topics")).toMatchObject({ status: "not_relevant" });
     expect(finding(a, "usability.visual_demo").severity).toBe("high");

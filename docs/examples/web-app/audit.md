@@ -8,14 +8,14 @@
 
 ## Das Wichtigste in Kürze
 
-**36 von 100 Punkten.** Am Anfang: Wichtige Grundlagen fehlen noch. Die Aufgaben unten bringen am meisten.
+**36 von 100 Punkten** (Regelwerk `2026.10.2`). Am Anfang: Wichtige Grundlagen fehlen noch. Die Aufgaben unten bringen am meisten.
 
 - Projekttyp: Webprodukt / SaaS
 - Ziel: SaaS-Kunden
 
 **Das ist schon gut:** README vorhanden, Lizenzinformation, Erkennbarer Wartungsstatus, Klarer nächster Schritt oben in der README
 
-> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Klick-für-Klick-Anleitung für die GitHub-Webseite, ein Terminal brauchst du nicht. Für die meisten Schritte brauchst du Schreibrechte am Repository. Lass danach einfach erneut analysieren, um den Fortschritt zu sehen.
+> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Klick-für-Klick-Anleitung für die GitHub-Webseite, ein Terminal brauchst du nicht. Für die meisten Schritte brauchst du Schreibrechte am Repository. Lass danach erneut analysieren: Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion, die neben dem Score steht.
 
 ## Fünf priorisierte Aufgaben
 
@@ -182,7 +182,9 @@ Prüfregel und Belege: Screenshot, Animation oder Demo (`usability.visual_demo@2
 
 > Interne Kennzahl dieses Werkzeugs. Kein GitHub- oder Google-Ranking und keine Erfolgswahrscheinlichkeit. Sterne fließen nicht ein.
 
-**36 / 100**, Abdeckung 100 %
+**36 / 100** (Regelwerk `2026.10.2`), Abdeckung 100 %
+
+> Scores sind nur innerhalb derselben Regelwerkversion vergleichbar. Mit einem anderen Regelwerk kann sich der Score auch ohne Änderung am Repository verschieben.
 
 Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = 16 / 45 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 45 / 45.
 
@@ -193,8 +195,8 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgu
 | Vertrauen | 8 | 14 | 0 |
 | Verbreitung und Vermarktung | 3 | 11 | 0 |
 
-- Regelwerk: `2026.10.1`
-- API-Anfragen: 7 (0 × 304), 1672 B
+- Regelwerk: `2026.10.2`
+- GitHub-API: 7 Anfragen (0 × 304), 1672 B
 - Sterne (nur Anzeige, nicht bewertet): 7
 
 ## Alle Befunde

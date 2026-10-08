@@ -1,8 +1,8 @@
 // Erfundene Beispiel-Repositories für Tests und den gekennzeichneten Demo-Modus.
 // Sie bilden keine echten Projekte ab. Alle Namen sind fiktiv.
 // Ausnahme: "invoice-kit" bildet Aufbau, README und Startseite von ghostfanman/invoice-kit nach (Stand
-// Commit f288a59, Startseite gekürzt), um den Fall aus Issue #2 von ghostfanman/repolaunch reproduzierbar
-// zu prüfen. Adressen zeigen auf den Fixture-Besitzer statt auf das echte Konto.
+// Commit f288a59), um die Fälle aus Issue #2 und #4 von ghostfanman/repolaunch reproduzierbar zu prüfen.
+// README und Website-Feld zeigen auf den Fixture-Besitzer; die Startseite ist byte-gleich mit dem Original.
 
 import type { FixtureRepo } from "@/core/github/fixture-transport";
 
@@ -219,12 +219,83 @@ const INVOICE_KIT_SITE = `<!DOCTYPE html>
 <meta property="og:title" content="Invoice Kit: E-Rechnung kostenlos, ohne Abo, ohne Cloud">
 <meta property="og:description" content="XRechnung und PDF-Rechnung mit lokaler Eingabeprüfung. Unbegrenzt, offline, Open Source.">
 <meta property="og:type" content="website">
-<link rel="canonical" href="https://repolaunch-fixtures.github.io/invoice-kit/">
+<link rel="canonical" href="https://ghostfanman.github.io/invoice-kit/">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#1c2230">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Invoice Kit","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"de","url":"https://repolaunch-fixtures.github.io/invoice-kit/","description":"E-Rechnungen im Format XRechnung und ZUGFeRD kostenlos erstellen, öffnen und prüfen. Ohne Anmeldung, ohne Abo, Daten bleiben im Browser.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"featureList":["XRechnung 3.0","ZUGFeRD 2.3 / Factur-X (PDF/A-3)","GiroCode","Reverse Charge","7 Rechnungssprachen","E-Rechnung-Viewer"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Invoice Kit","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"de","url":"https://ghostfanman.github.io/invoice-kit/","description":"E-Rechnungen im Format XRechnung und ZUGFeRD kostenlos erstellen, öffnen und prüfen. Ohne Anmeldung, ohne Abo, Daten bleiben im Browser.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"featureList":["XRechnung 3.0","ZUGFeRD 2.3 / Factur-X (PDF/A-3)","GiroCode","Reverse Charge","7 Rechnungssprachen","E-Rechnung-Viewer"]}</script>
 <link rel="stylesheet" href="accessibility.css">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2230;--muted:#6b7280;--line:#e5e7eb;--accent:#1d4ed8;--ok:#15803d;--err:#b91c1c;--warn:#b45309}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;background:var(--ink);color:#fff;flex-wrap:wrap}
+header .brand{font-weight:700}
+header .brand small{font-weight:400;opacity:.75;margin-left:8px}
+header nav{display:flex;gap:8px;flex-wrap:wrap}
+header nav a{color:#fff;text-decoration:none;font-weight:600;padding:6px 12px;border-radius:6px;font-size:13px;border:1px solid rgba(255,255,255,.3)}
+header nav a.pro{background:#f59e0b;border-color:#f59e0b;color:#1c2230}
+.pro-badge{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:6px 14px;border-radius:999px;background:#f59e0b;color:#1c2230;font-weight:700;font-size:13px;text-decoration:none;max-width:100%;overflow-wrap:anywhere}
+.pro-badge::before{content:"✓"}
+.pro-badge+h2{margin-top:0}
+#proPanel.active{border-color:#f59e0b;border-style:solid}
+.pro-state{margin:10px 0;font-size:14px}
+.pro-state p{margin:0}
+.pro-state.active{padding:10px 14px;border-radius:8px;background:#dcfce7;border:1px solid var(--ok);color:#14532d}
+.pro-state.active strong::before{content:"✓ "}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;max-width:1300px;margin:20px auto;padding:0 16px}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px}
+h2{font-size:13px;margin:20px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+h2:first-child{margin-top:0}
+label{display:block;font-size:12px;color:var(--muted);margin-top:8px}
+input,textarea,select{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff;color:var(--ink)}
+input.missing,select.missing,textarea.missing{border-color:var(--err);background:#fef2f2}
+textarea{min-height:56px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 2fr 1fr;gap:10px}
+.mt{margin-top:8px}
+.hint{font-size:12px;color:var(--muted);margin:4px 0 0}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink);margin-top:10px}
+.check input{width:auto;margin-top:3px}
+details{margin-top:10px;border:1px dashed var(--line);border-radius:6px;padding:6px 10px}
+summary{cursor:pointer;font-size:13px;color:var(--accent);font-weight:600}
+table.items{width:100%;border-collapse:collapse}
+table.items th{font-size:12px;color:var(--muted);text-align:left;font-weight:500;padding:2px 3px}
+table.items td{padding:3px}
+table.items input,table.items select{padding:6px}
+table.items select{min-width:80px}
+.hide{display:none!important}
+button{cursor:pointer;border:0;border-radius:6px;padding:9px 14px;font:inherit;font-weight:600}
+.primary{background:var(--accent);color:#fff}
+.ghost{background:#eef2ff;color:var(--accent)}
+.del{background:none;color:var(--err);padding:4px 8px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+#msg{margin-top:12px;font-size:13px;white-space:pre-line}
+#msg.ok{color:var(--ok)}#msg.err{color:var(--err)}
+#warn{margin-top:8px;font-size:13px;color:var(--warn);white-space:pre-line}
+#preview{background:#fff;color:#111;padding:40px;min-height:800px;border:1px solid var(--line);border-radius:10px;font-size:13px}
+#preview h1{font-size:26px;margin:0 0 4px}
+#preview .top{display:flex;justify-content:space-between;gap:20px;margin-bottom:30px}
+#preview table{width:100%;border-collapse:collapse;margin:20px 0}
+#preview th{text-align:left;border-bottom:2px solid #111;padding:6px 4px}
+#preview td{border-bottom:1px solid #ddd;padding:6px 4px;vertical-align:top}
+#preview .r{text-align:right;white-space:nowrap}
+#preview .tot{width:320px;margin-left:auto}
+#preview .tot div{display:flex;justify-content:space-between;padding:3px 0}
+#preview .tot .big{font-weight:700;font-size:16px;border-top:2px solid #111;margin-top:4px;padding-top:6px}
+#preview .legal{margin-top:18px;font-weight:600}
+#preview .payrow{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+#preview figure.qr{margin:0;text-align:center;font-size:10px;color:#555;width:120px}
+#preview .foot{margin-top:40px;font-size:11px;color:#555;white-space:pre-line;border-top:1px solid #ddd;padding-top:8px}
+.pre{white-space:pre-line}
+section.info{max-width:1300px;margin:0 auto 20px;padding:0 16px}
+section.info .card{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+section.info h3{margin:0 0 6px;font-size:16px}
+section.info p{margin:0;color:#374151}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media print{header,.card.form,footer,section.info{display:none!important}main{display:block;margin:0;padding:0}#preview{border:0;padding:0}body{background:#fff}}
+</style>
 </head>
 <body>
 <header>
@@ -232,21 +303,194 @@ const INVOICE_KIT_SITE = `<!DOCTYPE html>
   <nav>
     <a class="pro" id="proNav" href="#proPanel">Pro aktivieren</a>
     <a href="anzeigen.html">E-Rechnung öffnen</a>
-    <a href="https://github.com/repolaunch-fixtures/invoice-kit" target="_blank" rel="noopener">★ GitHub</a>
+    <a href="https://github.com/ghostfanman/invoice-kit" target="_blank" rel="noopener">★ GitHub</a>
   </nav>
 </header>
 
 <main>
   <section class="card form">
     <a class="pro-badge" id="proBadge" href="#proPanel" hidden></a>
-    <a id="proAdminLink" href="admin.html" hidden>Admin: Pro als Geschenk ausstellen</a>
+    <h2>Lokale Daten</h2>
+    <label class="check" for="saveDraft"><input id="saveDraft" type="checkbox" aria-describedby="storageHint"> Entwurf auf diesem Gerät speichern</label>
+    <p id="storageHint" class="hint">Ohne Auswahl bleibt die Rechnung nur bis zum Schließen geöffnet. Gespeicherte Rechnungsdaten können auf gemeinsam genutzten Geräten für andere sichtbar bleiben. JSON-Sicherungen und Downloads musst du separat löschen.</p>
+    <button class="ghost" id="clearData">Alle lokal gespeicherten Invoice-Kit-Daten löschen</button>
+    <p id="storageStatus" class="hint" role="status"></p>
+
+    <details id="proPanel">
+      <summary id="proSummary">Invoice Kit Pro: aktivieren und verwenden</summary>
+      <div id="proState" class="pro-state">
+        <p id="proLicenseStatus" role="status" tabindex="-1">Pro ist nicht aktiviert.</p>
+        <label class="check" for="proRemember"><input id="proRemember" type="checkbox"> Lizenz auf diesem Gerät merken</label>
+      </div>
+      <p>Kunden und Artikel wiederverwenden, Rechnungen lokal als bearbeitbare Kopien archivieren. Die Basisfunktionen bleiben kostenlos verfügbar.</p>
+      <div id="proActivation">
+      <label for="proLicenseCode">Admin- oder Geschenk-Lizenzcode</label>
+      <textarea id="proLicenseCode" rows="3" maxlength="8000" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="proCodeHint proCodeError"></textarea>
+      <p id="proCodeHint" class="hint">Öffne deine Lizenzdatei in einem Texteditor und füge den vollständigen Inhalt hier ein. Der Code beginnt mit IKPRO1. Die Prüfung findet nur auf deinem Gerät statt.</p>
+      <p id="proCodeError" class="hint" role="alert"></p>
+      <button id="proActivateCode" type="button">Lizenzcode aktivieren</button>
+      <label for="proLicenseFile">Alternativ: Lizenzdatei auswählen</label>
+      <input id="proLicenseFile" type="file" accept=".txt,.invoicekit-license,text/plain" aria-describedby="proLicenseHint">
+      <p id="proLicenseHint" class="hint">TXT-Dateien und bisherige .invoicekit-license-Dateien werden unterstützt. Unter Linux zeigt Strg+H im Dateidialog auch versteckte Ordner wie .local an.</p>
+      </div>
+      <button class="ghost" id="proDeactivate" type="button" hidden>Pro auf diesem Gerät deaktivieren</button>
+      <p><a id="proAdminLink" href="admin.html" hidden>Admin: Pro als Geschenk ausstellen</a></p>
+      <div id="proFeatures" hidden>
+        <label class="check" for="proSaveData"><input id="proSaveData" type="checkbox" aria-describedby="proDataHint"> Pro-Daten auf diesem Gerät speichern</label>
+        <p id="proDataHint" class="hint">Ohne Auswahl bleiben die Einträge nur bis zum Schließen geöffnet. Auf gemeinsam genutzten Geräten können gespeicherte Kunden- und Rechnungsdaten sichtbar bleiben. Sichere wichtige Daten zusätzlich als Datei.</p>
+        <h2>Kundenstamm</h2>
+        <button class="ghost" id="proSaveCustomer" type="button">Kunden aus der Rechnung übernehmen</button>
+        <label for="proCustomers">Gespeicherter Kunde</label><select id="proCustomers"><option value="">Bitte auswählen</option></select>
+        <div class="actions"><button class="ghost" id="proUseCustomer" type="button">Kunden einsetzen</button><button class="ghost" id="proDeleteCustomer" type="button">Kunden löschen</button></div>
+        <h2>Artikelstamm</h2>
+        <label for="proItemNumber">Positionsnummer aus der geöffneten Rechnung</label><input id="proItemNumber" type="number" min="1" step="1" value="1">
+        <button class="ghost" id="proSaveArticle" type="button">Position als Artikel übernehmen</button>
+        <label for="proArticles">Gespeicherter Artikel</label><select id="proArticles"><option value="">Bitte auswählen</option></select>
+        <div class="actions"><button class="ghost" id="proUseArticle" type="button">Artikel hinzufügen</button><button class="ghost" id="proDeleteArticle" type="button">Artikel löschen</button></div>
+        <h2>Lokales Rechnungsarchiv</h2>
+        <p class="hint">Bearbeitbare Rechnungskopien. Dies ist kein unveränderbares oder revisionssicheres Archiv. Bewahre exportierte Originaldateien separat auf.</p>
+        <button class="ghost" id="proSaveInvoice" type="button">Geöffnete Rechnung archivieren</button>
+        <label for="proArchive">Archivierte Rechnung</label><select id="proArchive"><option value="">Bitte auswählen</option></select>
+        <div class="actions"><button class="ghost" id="proUseInvoice" type="button">Rechnung laden</button><button class="ghost" id="proDeleteInvoice" type="button">Archivkopie löschen</button></div>
+        <h2>Pro-Daten sichern</h2>
+        <label for="proRestore">Pro-Sicherung ergänzend laden</label><input id="proRestore" type="file" accept=".json,application/json">
+      </div>
+      <button class="ghost" id="proBackup" type="button">Alle Pro-Daten als JSON sichern</button>
+      <p class="hint">Deine Pro-Daten kannst du auch nach Ablauf oder Deaktivierung der Lizenz sichern.</p>
+      <p id="proStatus" class="hint" role="status" aria-live="polite"></p>
+    </details>
+
     <h2>Absender (du)</h2>
+    <div><label for="from">Name / Firma *</label><input id="from" placeholder="Name / Firma *" autocomplete="section-seller organization"></div>
+    <div><label for="fromStreet">Straße und Hausnummer *</label><input id="fromStreet" class="mt" placeholder="Straße und Hausnummer *" autocomplete="section-seller street-address"></div>
+    <div class="row3">
+      <div><label for="fromZip">PLZ *</label><input id="fromZip" class="mt" placeholder="PLZ *" autocomplete="section-seller postal-code"></div>
+      <div><label for="fromCity">Ort *</label><input id="fromCity" class="mt" placeholder="Ort *" autocomplete="section-seller address-level2"></div>
+      <div><label for="fromCountry">Land *</label><input id="fromCountry" class="mt" placeholder="Land" value="DE" maxlength="2" title="Ländercode, z. B. DE, AT, CH, GB" autocomplete="section-seller country"></div>
+    </div>
+    <div class="row">
+      <div><label for="fromMail">E-Mail *</label><input id="fromMail" class="mt" type="email" placeholder="E-Mail *" autocomplete="section-seller email"></div>
+      <div><label for="fromPhone">Telefon *</label><input id="fromPhone" class="mt" placeholder="Telefon *" autocomplete="section-seller tel"></div>
+    </div>
+    <div class="row">
+      <div><label for="vatId">USt-IdNr. / UID / VAT No.</label><input id="vatId" placeholder="DE123456789"></div>
+      <div><label for="taxNo">Steuernummer</label><input id="taxNo" placeholder="12/345/67890"></div>
+    </div>
+    <p class="hint">Bitte mindestens eine der beiden Angaben ausfüllen. USt-IdNrn. werden nur auf ihr Grundformat geprüft, ohne Online-Abfrage oder Bestätigung der Registrierung.</p>
+    <div class="row">
+      <div><label for="iban">IBAN (bei Überweisung erforderlich)</label><input id="iban"></div>
+      <div><label for="bic">BIC (optional)</label><input id="bic"></div>
+    </div>
+    <details id="companyBox">
+      <summary>Firmenangaben (Pflicht für GmbH, UG, AG, e.K., OHG, KG)</summary>
+      <div class="row">
+        <div><label for="register">Handelsregister</label><input id="register" placeholder="Amtsgericht Berlin HRB 12345"></div>
+        <div><label for="managers">Geschäftsführung / Inhaber</label><input id="managers" placeholder="Max Müller"></div>
+      </div>
+      <p class="hint">Nach § 35a GmbHG, § 80 AktG, § 37a HGB gehören Rechtsform, Sitz, Registergericht, Registernummer und Geschäftsführer auf Geschäftsbriefe. Rechtsform und Sitz stehen im Namen bzw. in der Anschrift.</p>
+    </details>
+
     <h2>Empfänger (Kunde)</h2>
+    <div><label for="to">Firma / Name *</label><input id="to" placeholder="Firma / Name *" autocomplete="section-buyer organization"></div>
+    <div><label for="toStreet">Straße und Hausnummer *</label><input id="toStreet" class="mt" placeholder="Straße und Hausnummer" autocomplete="section-buyer street-address"></div>
+    <div class="row3">
+      <div><label for="toZip">PLZ *</label><input id="toZip" class="mt" placeholder="PLZ *" autocomplete="section-buyer postal-code"></div>
+      <div><label for="toCity">Ort *</label><input id="toCity" class="mt" placeholder="Ort *" autocomplete="section-buyer address-level2"></div>
+      <div><label for="toCountry">Land *</label><input id="toCountry" class="mt" placeholder="Land" value="DE" maxlength="2" autocomplete="section-buyer country"></div>
+    </div>
+    <div class="row">
+      <div><label for="toMail">E-Mail des Kunden (für E-Rechnung) *</label><input id="toMail" autocomplete="section-buyer email" type="email"></div>
+      <div><label for="toVatId">USt-IdNr. des Kunden</label><input id="toVatId" placeholder="z. B. ATU12345678"></div>
+    </div>
+    <label for="buyerRef">Leitweg-ID / Käuferreferenz</label><input id="buyerRef" placeholder="nur falls vorhanden (Pflicht bei Behörden)">
+
     <h2>Rechnung</h2>
+    <div class="row">
+      <div><label for="docType">Art</label><select id="docType"><option value="380">Rechnung</option><option value="384">Rechnungskorrektur / Storno</option></select></div>
+      <div><label for="lang">Sprache der Rechnung</label><select id="lang"><option value="de">Deutsch</option><option value="en">English</option><option value="fr">Français</option><option value="it">Italiano</option><option value="es">Español</option><option value="nl">Nederlands</option><option value="pl">Polski</option></select></div>
+    </div>
+    <div class="row" id="refBox">
+      <div><label for="refNum">Korrigiert Rechnung Nr. *</label><input id="refNum"></div>
+      <div><label for="refDate">vom *</label><input id="refDate" type="date"></div>
+    </div>
+    <div class="row">
+      <div><label for="num">Rechnungsnummer *</label><input id="num"></div>
+      <div><label for="date">Rechnungsdatum *</label><input id="date" type="date"></div>
+    </div>
+    <div class="row">
+      <div><label for="serviceDate">Leistungsdatum bzw. Beginn *</label><input id="serviceDate" type="date"></div>
+      <div><label for="serviceEnd">Leistungszeitraum bis (optional)</label><input id="serviceEnd" type="date"></div>
+    </div>
+
+    <h2>Umsatzsteuer</h2>
+    <label for="taxCase">Steuerfall</label>
+    <select id="taxCase">
+      <option value="S">Normal: Umsatzsteuer wird berechnet</option>
+      <option value="KU">Kleinunternehmer (§ 19 UStG)</option>
+      <option value="EX">Steuerfreie Leistung (z. B. § 4 UStG)</option>
+      <option value="AE">Reverse Charge: Leistung an Unternehmen im EU-Ausland / § 13b</option>
+      <option value="K">Innergemeinschaftliche Lieferung von Waren (EU)</option>
+      <option value="G">Ausfuhrlieferung von Waren (außerhalb der EU)</option>
+      <option value="O">Nicht im Inland steuerbar (z. B. Leistung an Unternehmen außerhalb der EU)</option>
+    </select>
+    <p class="hint" id="taxHint"></p>
+    <div id="exBox"><label for="exReason">Befreiungsgrund *</label><input id="exReason" placeholder="Steuerfrei gemäß § 4 Nr. 21 UStG"></div>
+    <div class="row">
+      <div><label for="cur">Währung</label><input id="cur" value="EUR" maxlength="3" list="curList"><datalist id="curList"><option>EUR</option><option>CHF</option><option>GBP</option><option>USD</option><option>PLN</option><option>SEK</option><option>DKK</option><option>CZK</option></datalist></div>
+      <div id="fxBox"><label id="fxLabel" for="fx">Umrechnungskurs *</label><input id="fx" type="number" step="any" placeholder="z. B. 0.92"></div>
+    </div>
+
     <h2>Positionen</h2>
+    <div class="table-scroll"><table class="items"><thead><tr><th>Leistung</th><th>Menge</th><th>Einheit</th><th>Einzelpreis netto</th><th class="rateCol">USt. %</th><th></th></tr></thead><tbody id="items"></tbody></table></div>
+    <datalist id="rateList"></datalist>
+    <button class="ghost" id="add">+ Position</button>
+
     <h2>Zahlung</h2>
+    <label for="free">Berechnung</label><select id="free" aria-describedby="freeHint"><option value="">Normal berechnen</option><option value="gift">Unentgeltlich: Geschenk (Nachlass 100 %)</option><option value="promo">Unentgeltlich: Werbezweck (Nachlass 100 %)</option></select>
+    <p id="freeHint" class="hint">Bei unentgeltlicher Leistung bleiben die Preise als Warenwert sichtbar. Die Rechnung zieht sie vollständig als Nachlass ab und weist 0,00 zur Zahlung aus. Zahlungsart, Zahlungsziel und GiroCode entfallen.</p>
+    <div id="payBox">
+    <label for="paymentMeans">Zahlungsart</label><select id="paymentMeans"><option value="58">SEPA-Überweisung (EUR)</option><option value="30">Überweisung (IBAN, auch Fremdwährung)</option><option value="48">Kartenzahlung</option><option value="10">Barzahlung</option></select>
+    <div id="cardBox" class="hide"><label for="cardLast4">Letzte vier Kartenziffern *</label><input id="cardLast4" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" autocomplete="off" aria-describedby="cardHint"><p id="cardHint" class="hint">Nur die letzten vier Ziffern, niemals die vollständige Kartennummer.</p></div>
+    <div class="row">
+      <div><label for="due">Zahlungsziel (Tage)</label><input id="due" type="number" value="14" min="0"></div>
+      <div></div>
+    </div>
+    <div class="row">
+      <div><label for="skonto">Skonto % (optional)</label><input id="skonto" type="number" step="any" min="0" max="100" placeholder="2"></div>
+      <div><label for="skontoDays">Skonto bei Zahlung innerhalb (Tage)</label><input id="skontoDays" type="number" min="0" placeholder="7"></div>
+    </div>
+    <p class="hint">Ein vereinbarter Skonto ist Pflichtangabe (§ 14 Abs. 4 Nr. 7 UStG).</p>
+    <label class="check" for="qrCode"><input type="checkbox" id="qrCode" checked> Zahlungs-QR-Code (GiroCode) aufdrucken: Kunde scannt und überweist ohne Tippfehler (nur EUR)</label>
+    </div>
+
+    <h2>Hinweise</h2>
+    <label class="check" for="keepNote"><input type="checkbox" id="keepNote"> Leistung an einem Grundstück für eine Privatperson (Hinweis auf 2 Jahre Aufbewahrungspflicht, § 14 Abs. 4 Nr. 9 UStG)</label>
+    <label for="note">Notiz</label>
+    <textarea id="note" placeholder="Vielen Dank für Ihren Auftrag!"></textarea>
+
+    <div class="actions">
+      <button class="primary" id="zugferd">E-Rechnung als PDF (ZUGFeRD)</button>
+      <button class="primary" id="xml">E-Rechnung als XML (XRechnung)</button>
+      <button class="ghost" id="print">Drucken</button>
+      <button class="ghost" id="export">Sichern (JSON)</button>
+      <button class="ghost" id="importBtn">Laden (JSON)</button>
+      <label for="importFile" class="sr-only">Rechnungsentwurf als JSON laden</label><input type="file" id="importFile" accept=".json" hidden>
+      <button class="ghost" id="reset">Nächste Rechnung</button>
+    </div>
+    <div id="warn" role="status"></div>
+    <div id="msg" role="status" aria-live="polite"></div>
   </section>
+  <section id="preview" aria-label="Vorschau"></section>
 </main>
+
+<section class="info" aria-label="Häufige Fragen">
+  <div class="card">
+    <div><h3>Ist das eine gültige E-Rechnung?</h3><p>Das Tool erzeugt CII-XML für XRechnung und ZUGFeRD-/Factur-X-PDFs mit eingebetteter XML. Die Exporte werden in allen Steuerfällen und Zahlungsarten mit den offiziellen Validatoren KoSIT, Mustang und veraPDF geprüft und angenommen. Die sachliche Richtigkeit deiner Angaben und den passenden Steuerfall prüft das Tool nicht.</p></div>
+    <div><h3>Sind alle Pflichtangaben drauf?</h3><p>Das Formular prüft ausgewählte Pflichtfelder und Zahlen. Den passenden Steuerfall musst du selbst bestimmen. Sonderfälle wie Differenzbesteuerung, Reiseleistungen und Gutschriftverfahren sind nicht abgedeckt.</p></div>
+    <div><h3>Wo landen meine Daten?</h3><p>Rechnungsdaten werden lokal im Browser verarbeitet. Du entscheidest, ob ein Entwurf auf diesem Gerät gespeichert wird. Über „Zum Startbildschirm hinzufügen“ wird es zur App, die auch offline funktioniert.</p></div>
+    <div><h3>Was kostet es?</h3><p>Nichts, unbegrenzt viele Rechnungen. Pro ergänzt einen lokalen Kunden- und Artikelstamm sowie bearbeitbare Rechnungskopien. Du kannst Pro mit einer Admin- oder Geschenk-Lizenz aktivieren.</p></div>
+  </div>
+</section>
 
 <footer>Invoice Kit · Open Source (MIT) · Keine Steuerberatung, ohne Gewähr: im Zweifel Steuerberater fragen.</footer>
 
@@ -448,7 +692,8 @@ export const FIXTURE_REPOS: FixtureRepo[] = [
     releases: [],
     tags: [],
     site: {
-      "https://repolaunch-fixtures.github.io/invoice-kit/": { status: 200, contentType: "text/html; charset=utf-8", html: INVOICE_KIT_SITE },
+      // Unveränderte Startseite (23807 B); GitHub Pages überträgt sie gzip-komprimiert mit 7643 B (gemessen am 08.10.2026).
+      "https://repolaunch-fixtures.github.io/invoice-kit/": { status: 200, contentType: "text/html; charset=utf-8", html: INVOICE_KIT_SITE, contentEncoding: "gzip", transferBytes: 7643 },
     },
   },
   {

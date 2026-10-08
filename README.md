@@ -80,7 +80,7 @@ REPOLAUNCH_DEMO=1 AI_PROVIDER=fake npm start
 ```sh
 npm run typecheck
 npm run lint
-npm test                    # 258 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, Website-Prüfung mit SSRF-Schutz, LLM-Fehler, Exporte, Ende-zu-Ende
+npm test                    # 274 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, Website-Prüfung mit SSRF-Schutz, LLM-Fehler, Exporte, Ende-zu-Ende
 npm run build
 npm run smoke:browser       # gegen laufenden Server mit REPOLAUNCH_DEMO=1 AI_PROVIDER=fake (axe-core, WCAG 2.2 A/AA)
 npm run smoke:live          # Live-Audit eines öffentlichen Repositorys, Standard: ghostfanman/invoice-kit (nur lesend)

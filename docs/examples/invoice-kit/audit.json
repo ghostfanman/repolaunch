@@ -112,7 +112,37 @@
       "requests": 9,
       "notModified": 0,
       "bytes": 16829,
-      "durationMs": 5
+      "durationMs": 4
+    },
+    "site": {
+      "state": "fetched",
+      "url": "https://repolaunch-fixtures.github.io/invoice-kit/",
+      "finalUrl": "https://repolaunch-fixtures.github.io/invoice-kit/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "contentEncoding": "gzip",
+      "documentBytes": 23807,
+      "transferBytes": 7643,
+      "truncated": false,
+      "redirects": [],
+      "requests": 1,
+      "html": true,
+      "facts": {
+        "title": {
+          "text": "Invoice Kit: E-Rechnung (XRechnung) & PDF-Rechnung kostenlos erstellen",
+          "line": 6
+        },
+        "description": {
+          "text": "E-Rechnung kostenlos erstellen: ZUGFeRD-PDF und XRechnung 3.0 mit Eingabeprüfung, GiroCode, Reverse Charge, 7 Sprachen. Ohne Anmeldung, ohne Abo, Daten bleiben im Browser.",
+          "line": 7
+        },
+        "ogImage": null,
+        "imprint": null,
+        "privacy": null,
+        "linkCount": 5,
+        "scriptCount": 4,
+        "headComplete": true
+      }
     },
     "notes": []
   },
@@ -122,7 +152,7 @@
   },
   "audit": {
     "schemaVersion": 1,
-    "rulesetVersion": "2026.10.1",
+    "rulesetVersion": "2026.10.2",
     "generatedAt": "2026-10-07T12:00:00.000Z",
     "classification": {
       "detected": "webapp",
@@ -885,6 +915,7 @@
         "category": "usability",
         "title": "Website: erreichbar",
         "rationale": "Bei einem Webprodukt ist die Website der eigentliche Einstieg. Ist sie nicht erreichbar, endet der Besuch dort.",
+        "scope": "website",
         "status": "present",
         "severity": "none",
         "weight": 3,
@@ -893,7 +924,7 @@
             "kind": "field",
             "label": "Abruf der Website https://repolaunch-fixtures.github.io/invoice-kit/: Status 200",
             "url": "https://repolaunch-fixtures.github.io/invoice-kit/",
-            "snippet": "GET https://repolaunch-fixtures.github.io/invoice-kit/\nHTTP 200, text/html; charset=utf-8, 2829 B"
+            "snippet": "GET https://repolaunch-fixtures.github.io/invoice-kit/\nHTTP 200, text/html; charset=utf-8\nDokument (entpackt): 23807 B\nÜbertragen (gzip-komprimiert): 7643 B"
           }
         ],
         "task": null,
@@ -902,12 +933,13 @@
         "impactHypothesis": null
       },
       {
-        "id": "distribution.site_title@1",
+        "id": "distribution.site_title@2",
         "ruleId": "distribution.site_title",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "distribution",
         "title": "Website: Seitentitel",
         "rationale": "Der Seitentitel (title-Element) erscheint in Suchergebnissen, Lesezeichen und Browser-Tabs.",
+        "scope": "website",
         "status": "present",
         "severity": "none",
         "weight": 2,
@@ -929,12 +961,13 @@
         "impactHypothesis": null
       },
       {
-        "id": "distribution.site_description@1",
+        "id": "distribution.site_description@2",
         "ruleId": "distribution.site_description",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "distribution",
         "title": "Website: Meta-Beschreibung",
         "rationale": "Suchmaschinen und Link-Vorschauen zeigen die Meta-Beschreibung oft als Kurztext unter dem Titel.",
+        "scope": "website",
         "status": "present",
         "severity": "none",
         "weight": 2,
@@ -956,12 +989,13 @@
         "impactHypothesis": null
       },
       {
-        "id": "distribution.site_og_image@1",
+        "id": "distribution.site_og_image@2",
         "ruleId": "distribution.site_og_image",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "distribution",
         "title": "Website: Vorschaubild für geteilte Links",
         "rationale": "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens.",
+        "scope": "website",
         "status": "missing",
         "severity": "low",
         "weight": 1,
@@ -1010,12 +1044,13 @@
         }
       },
       {
-        "id": "trust.site_imprint@1",
+        "id": "trust.site_imprint@2",
         "ruleId": "trust.site_imprint",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "trust",
         "title": "Website: Impressum verlinkt",
         "rationale": "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung.",
+        "scope": "website",
         "status": "missing",
         "severity": "low",
         "weight": 1,
@@ -1064,12 +1099,13 @@
         }
       },
       {
-        "id": "trust.site_privacy@1",
+        "id": "trust.site_privacy@2",
         "ruleId": "trust.site_privacy",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "trust",
         "title": "Website: Datenschutzerklärung verlinkt",
         "rationale": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
+        "scope": "website",
         "status": "missing",
         "severity": "medium",
         "weight": 2,
@@ -1121,6 +1157,45 @@
     "tasks": [
       {
         "rank": 1,
+        "findingId": "trust.site_privacy@2",
+        "title": "Website: Datenschutzerklärung verlinkt",
+        "task": "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
+        "severity": "medium",
+        "effort": "30 bis 120 Min.",
+        "impactHypothesis": "Besucher können nachvollziehen, was mit ihren Daten geschieht.",
+        "why": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
+        "guide": {
+          "action": "Datenschutzerklärung prüfen und verlinken",
+          "steps": [
+            {
+              "text": "Prüfe, welche Daten deine Website verarbeitet (z. B. Server-Logs, Formulare, Analyse, eingebettete Inhalte) und welche Angaben dafür nötig sind. Im Zweifel rechtlich beraten lassen."
+            },
+            {
+              "text": "Lege die Seite an, zum Beispiel datenschutz.html neben der Startdatei."
+            },
+            {
+              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
+              "link": {
+                "label": "index.html bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
+              }
+            },
+            {
+              "text": "Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage für den Link",
+            "content": "<a href=\"[datenschutz.html]\">Datenschutz</a>"
+          },
+          "note": "RepoLaunch erstellt keine Inhalte für Impressum oder Datenschutzerklärung und prüft sie nicht. Das ist ein Hinweis, keine Rechtsberatung; im Zweifel rechtlich beraten lassen."
+        }
+      },
+      {
+        "rank": 2,
         "findingId": "trust.security_policy@1",
         "title": "Sicherheitsrichtlinie",
         "task": "Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.",
@@ -1161,81 +1236,8 @@
         }
       },
       {
-        "rank": 2,
-        "findingId": "trust.site_privacy@1",
-        "title": "Website: Datenschutzerklärung verlinkt",
-        "task": "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
-        "severity": "medium",
-        "effort": "30 bis 120 Min.",
-        "impactHypothesis": "Besucher können nachvollziehen, was mit ihren Daten geschieht.",
-        "why": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
-        "guide": {
-          "action": "Datenschutzerklärung prüfen und verlinken",
-          "steps": [
-            {
-              "text": "Prüfe, welche Daten deine Website verarbeitet (z. B. Server-Logs, Formulare, Analyse, eingebettete Inhalte) und welche Angaben dafür nötig sind. Im Zweifel rechtlich beraten lassen."
-            },
-            {
-              "text": "Lege die Seite an, zum Beispiel datenschutz.html neben der Startdatei."
-            },
-            {
-              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
-              "link": {
-                "label": "index.html bearbeiten",
-                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
-              }
-            },
-            {
-              "text": "Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter."
-            },
-            {
-              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
-            }
-          ],
-          "template": {
-            "label": "Vorlage für den Link",
-            "content": "<a href=\"[datenschutz.html]\">Datenschutz</a>"
-          },
-          "note": "RepoLaunch erstellt keine Inhalte für Impressum oder Datenschutzerklärung und prüft sie nicht. Das ist ein Hinweis, keine Rechtsberatung; im Zweifel rechtlich beraten lassen."
-        }
-      },
-      {
         "rank": 3,
-        "findingId": "usability.visual_demo@2",
-        "title": "Screenshot, Animation oder Demo",
-        "task": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
-        "severity": "low",
-        "effort": "10 bis 20 Min.",
-        "impactHypothesis": "Besucher sehen schon auf der Repository-Seite, was sie erwartet, bevor sie die Demo öffnen.",
-        "why": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss. Ein Demo-Link ist vorhanden, es fehlt nur ein Bild der Anwendung.",
-        "guide": {
-          "action": "Screenshot in die README einfügen",
-          "steps": [
-            {
-              "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
-            },
-            {
-              "text": "Öffne die README im Bearbeitungsmodus:",
-              "link": {
-                "label": "README bearbeiten",
-                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/README.md"
-              }
-            },
-            {
-              "text": "Klicke in die Zeile unter dem vorhandenen Demo-Link und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein."
-            },
-            {
-              "text": "Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“."
-            },
-            {
-              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
-            }
-          ]
-        }
-      },
-      {
-        "rank": 4,
-        "findingId": "trust.site_imprint@1",
+        "findingId": "trust.site_imprint@2",
         "title": "Website: Impressum verlinkt",
         "task": "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.",
         "severity": "low",
@@ -1273,8 +1275,8 @@
         }
       },
       {
-        "rank": 5,
-        "findingId": "distribution.site_og_image@1",
+        "rank": 4,
+        "findingId": "distribution.site_og_image@2",
         "title": "Website: Vorschaubild für geteilte Links",
         "task": "Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property=\"og:image\" und absoluter Adresse darauf.",
         "severity": "low",
@@ -1309,6 +1311,40 @@
             "content": "<meta property=\"og:image\" content=\"https://[Adresse deiner Website]/[Bildname].png\">"
           },
           "note": "Die Adresse muss vollständig sein (mit https://), sonst zeigen viele Dienste das Bild nicht."
+        }
+      },
+      {
+        "rank": 5,
+        "findingId": "usability.visual_demo@2",
+        "title": "Screenshot, Animation oder Demo",
+        "task": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
+        "severity": "low",
+        "effort": "10 bis 20 Min.",
+        "impactHypothesis": "Besucher sehen schon auf der Repository-Seite, was sie erwartet, bevor sie die Demo öffnen.",
+        "why": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss. Ein Demo-Link ist vorhanden, es fehlt nur ein Bild der Anwendung.",
+        "guide": {
+          "action": "Screenshot in die README einfügen",
+          "steps": [
+            {
+              "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
+            },
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Klicke in die Zeile unter dem vorhandenen Demo-Link und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein."
+            },
+            {
+              "text": "Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ]
         }
       }
     ],
@@ -1527,6 +1563,16 @@
       "tasks": [
         {
           "week": 1,
+          "title": "Website: Datenschutzerklärung verlinkt",
+          "why": "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
+          "effort": "30 bis 120 Min.",
+          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
+          "findingIds": [
+            "trust.site_privacy@2"
+          ]
+        },
+        {
+          "week": 1,
           "title": "Sicherheitsrichtlinie",
           "why": "Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.",
           "effort": "15 bis 30 Min.",
@@ -1537,32 +1583,12 @@
         },
         {
           "week": 1,
-          "title": "Website: Datenschutzerklärung verlinkt",
-          "why": "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
-          "effort": "30 bis 120 Min.",
-          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
-          "findingIds": [
-            "trust.site_privacy@1"
-          ]
-        },
-        {
-          "week": 1,
-          "title": "Screenshot, Animation oder Demo",
-          "why": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
-          "effort": "10 bis 20 Min.",
-          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
-          "findingIds": [
-            "usability.visual_demo@2"
-          ]
-        },
-        {
-          "week": 2,
           "title": "Website: Impressum verlinkt",
           "why": "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.",
           "effort": "15 bis 60 Min.",
           "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
           "findingIds": [
-            "trust.site_imprint@1"
+            "trust.site_imprint@2"
           ]
         },
         {
@@ -1572,7 +1598,17 @@
           "effort": "15 bis 45 Min.",
           "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
           "findingIds": [
-            "distribution.site_og_image@1"
+            "distribution.site_og_image@2"
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Screenshot, Animation oder Demo",
+          "why": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
+          "effort": "10 bis 20 Min.",
+          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
+          "findingIds": [
+            "usability.visual_demo@2"
           ]
         },
         {
@@ -1617,7 +1653,14 @@
         }
       ]
     },
-    "injectionFlags": []
+    "injectionFlags": [],
+    "siteScope": {
+      "url": "https://repolaunch-fixtures.github.io/invoice-kit/",
+      "finalUrl": "https://repolaunch-fixtures.github.io/invoice-kit/",
+      "uncheckedReadmeLinks": [
+        "https://repolaunch-fixtures.github.io/invoice-kit/anzeigen.html"
+      ]
+    }
   },
   "ai": null,
   "export": {

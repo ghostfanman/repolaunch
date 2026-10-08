@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { GOALS, PROJECT_TYPES, type Goal, type ProjectType } from "../types";
 
-export const RULESET_VERSION = "2026.10.1";
+export const RULESET_VERSION = "2026.10.2";
 
 export interface RuleWeightConfig {
   enabled: boolean;

@@ -12,23 +12,23 @@ Abgeleitet aus den Befunden. Erwartete Wirkungen sind Hypothesen, keine Zusagen.
 
 ### Woche 1
 
+- [ ] **Website: Datenschutzerklärung verlinkt** (30 bis 120 Min.) `trust.site_privacy@2`
+  Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.
+  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
 - [ ] **Sicherheitsrichtlinie** (15 bis 30 Min.) `trust.security_policy@1`
   Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Website: Datenschutzerklärung verlinkt** (30 bis 120 Min.) `trust.site_privacy@1`
-  Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.
-  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Screenshot, Animation oder Demo** (10 bis 20 Min.) `usability.visual_demo@2`
-  Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.
+- [ ] **Website: Impressum verlinkt** (15 bis 60 Min.) `trust.site_imprint@2`
+  Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
 
 ### Woche 2
 
-- [ ] **Website: Impressum verlinkt** (15 bis 60 Min.) `trust.site_imprint@1`
-  Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.
-  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Website: Vorschaubild für geteilte Links** (15 bis 45 Min.) `distribution.site_og_image@1`
+- [ ] **Website: Vorschaubild für geteilte Links** (15 bis 45 Min.) `distribution.site_og_image@2`
   Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property="og:image" und absoluter Adresse darauf.
+  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
+- [ ] **Screenshot, Animation oder Demo** (10 bis 20 Min.) `usability.visual_demo@2`
+  Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
 - [ ] **Erstes Release vorbereiten** (30 bis 90 Min.)
   Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung.
