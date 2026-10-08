@@ -20,7 +20,21 @@ export function fixtureSiteFetcher(fixtures: FixtureRepo[], maxRedirects = 3): S
       }
       const contentType = page.contentType ?? "text/html; charset=utf-8";
       const body = page.status >= 200 && page.status < 300 && isHtmlContentType(contentType) ? (page.html ?? "") : "";
-      return { ok: true, requestedUrl: startUrl, finalUrl: current, status: page.status, contentType, body, bytes: Buffer.byteLength(body), redirects };
+      const documentBytes = Buffer.byteLength(body);
+      return {
+        ok: true,
+        requestedUrl: startUrl,
+        finalUrl: current,
+        status: page.status,
+        contentType,
+        contentEncoding: body ? (page.contentEncoding ?? "identity") : "identity",
+        body,
+        documentBytes,
+        // Übertragungsgröße wie gemessen, falls angegeben; sonst unkomprimiert
+        transferBytes: body ? (page.transferBytes ?? documentBytes) : 0,
+        truncated: false,
+        redirects,
+      };
     }
   };
 }

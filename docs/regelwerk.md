@@ -22,6 +22,8 @@ Eine Regelversion steigt, wenn sich ihre Auswertung ändert. Reine Gewichtsände
 | `trust.site_imprint` | 1 | Link mit Text oder Ziel Impressum, Imprint oder Legal Notice; Hinweis, keine Rechtsberatung |
 | `trust.site_privacy` | 2 | Link mit Text oder Ziel Datenschutz oder Privacy; Hinweis, keine Rechtsberatung |
 
+Größenlimit: Gelesen werden höchstens 1 MB entpacktes HTML; die Antwort wird dabei gestreamt entpackt. Ist das Dokument größer, wird es abgeschnitten und der Beleg sagt das. Fehlt eine Angabe im gelesenen Teil, ist der Befund dann "unbekannt" statt "fehlt": für Titel, Beschreibung und Vorschaubild nur, solange der Kopfbereich unvollständig ist, für Impressum und Datenschutz immer. Der Beleg der Erreichbarkeit nennt die entpackte Dokumentgröße und, bei komprimierter Übertragung, zusätzlich die übertragenen Bytes.
+
 Ohne Website-Feld oder mit einer Adresse auf github.com sind die Regeln nicht relevant (das Feld selbst bewertet `distribution.homepage`). Ist der Abruf abgeschaltet (`REPOLAUNCH_SITE_CHECK=0`) oder fehlgeschlagen, gelten sie als unbekannt und senken nur die Abdeckung. Enthält das HTML keine Links, aber Skripte, bleiben Impressum und Datenschutz unbekannt, weil RepoLaunch kein JavaScript ausführt.
 
 ## Vergleichbarkeit von Scores

@@ -10,7 +10,8 @@ import { lookup as dnsLookup } from "node:dns/promises";
 import http, { type IncomingMessage } from "node:http";
 import https from "node:https";
 import { isIP, type LookupFunction } from "node:net";
-import { brotliDecompressSync, gunzipSync, inflateSync } from "node:zlib";
+import type { Transform } from "node:stream";
+import { createBrotliDecompress, createGunzip, createInflate } from "node:zlib";
 import { isPublicAddress } from "./address";
 import { isHtmlContentType, type SiteFetcher, type SiteFetchFailure, type SiteFetchResult } from "./types";
 
@@ -19,7 +20,10 @@ export const SITE_USER_AGENT = "RepoLaunch-Website-Check/1 (+https://github.com/
 export interface SiteFetchOptions {
   /** Gesamtzeit für Auflösung, Verbindung, Weiterleitungen und Lesen. */
   timeoutMs?: number;
-  /** Höchstmenge der Antwort in Bytes, vor und nach dem Entpacken. */
+  /**
+   * Größenlimit in Bytes. Es gilt für das entpackte Dokument; darüber wird abgeschnitten und das Ergebnis als
+   * unvollständig markiert. Zusätzlich ist die übertragene Menge auf denselben Wert begrenzt.
+   */
   maxBytes?: number;
   maxRedirects?: number;
   /** Erlaubte Zieladressen. Standard: nur öffentliche Unicast-Adressen. */
@@ -88,38 +92,89 @@ function sendRequest(url: URL, address: { address: string; family: number }, sig
   });
 }
 
-async function readCappedBody(res: IncomingMessage, maxBytes: number): Promise<Buffer> {
-  const declared = Number(res.headers["content-length"] ?? "NaN");
-  if (Number.isFinite(declared) && declared > maxBytes) {
-    res.destroy();
-    throw new FetchFailure("too_large");
-  }
-  const chunks: Buffer[] = [];
-  let total = 0;
-  for await (const chunk of res) {
-    const buf = chunk as Buffer;
-    total += buf.byteLength;
-    if (total > maxBytes) {
-      res.destroy();
-      throw new FetchFailure("too_large");
-    }
-    chunks.push(buf);
-  }
-  return Buffer.concat(chunks, total);
+interface BodyRead {
+  body: Buffer;
+  transferBytes: number;
+  truncated: boolean;
 }
 
-function decompress(raw: Buffer, encoding: string, maxBytes: number): Buffer {
-  const enc = encoding.trim().toLowerCase();
-  try {
-    if (enc === "" || enc === "identity") return raw;
-    if (enc === "gzip" || enc === "x-gzip") return gunzipSync(raw, { maxOutputLength: maxBytes });
-    if (enc === "deflate") return inflateSync(raw, { maxOutputLength: maxBytes });
-    if (enc === "br") return brotliDecompressSync(raw, { maxOutputLength: maxBytes });
-  } catch (err) {
-    if (err instanceof RangeError || (err as { code?: string }).code === "ERR_BUFFER_TOO_LARGE") throw new FetchFailure("too_large");
-    throw new FetchFailure("network_error");
+/**
+ * Liest den Body gestreamt und entpackt ihn dabei. Das Limit gilt für die entpackten Bytes: Ist es erreicht,
+ * wird abgeschnitten (truncated), Verbindung und Entpacker werden sofort beendet. Das schützt auch gegen stark
+ * komprimierte Antworten. Die übertragene Menge ist zusätzlich auf maxBytes begrenzt.
+ */
+function readBody(res: IncomingMessage, encoding: string, maxBytes: number, signal: AbortSignal): Promise<BodyRead> {
+  let decoder: Transform | null;
+  if (encoding === "identity") decoder = null;
+  else if (encoding === "gzip" || encoding === "x-gzip") decoder = createGunzip();
+  else if (encoding === "deflate") decoder = createInflate();
+  else if (encoding === "br") decoder = createBrotliDecompress();
+  else {
+    res.destroy();
+    return Promise.reject(new FetchFailure("unsupported_encoding"));
   }
-  throw new FetchFailure("unsupported_encoding");
+  return new Promise<BodyRead>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    let size = 0;
+    let transferBytes = 0;
+    let truncated = false;
+    let settled = false;
+    let resEnded = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      resolve({ body: Buffer.concat(chunks, size), transferBytes, truncated });
+    };
+    const fail = (failure: SiteFetchFailure) => {
+      if (settled) return;
+      settled = true;
+      res.destroy();
+      decoder?.destroy();
+      reject(new FetchFailure(failure));
+    };
+    const cut = () => {
+      truncated = true;
+      done();
+      res.destroy();
+      decoder?.destroy();
+    };
+    const take = (chunk: Buffer) => {
+      if (settled) return;
+      const room = maxBytes - size;
+      if (chunk.byteLength > room) {
+        if (room > 0) {
+          chunks.push(chunk.subarray(0, room));
+          size += room;
+        }
+        cut();
+        return;
+      }
+      chunks.push(chunk);
+      size += chunk.byteLength;
+    };
+    res.on("data", (chunk: Buffer) => {
+      if (settled) return;
+      transferBytes += chunk.byteLength;
+      if (decoder) decoder.write(chunk);
+      else take(chunk);
+      if (!settled && transferBytes > maxBytes) cut();
+    });
+    res.on("end", () => {
+      resEnded = true;
+      if (decoder) decoder.end();
+      else done();
+    });
+    res.on("error", () => fail(signal.aborted ? "timeout" : "network_error"));
+    res.on("close", () => {
+      if (!resEnded) fail(signal.aborted ? "timeout" : "network_error");
+    });
+    if (decoder) {
+      decoder.on("data", take);
+      decoder.on("end", done);
+      // Beschädigte komprimierte Daten
+      decoder.on("error", () => fail("network_error"));
+    }
+  });
 }
 
 function decodeText(body: Buffer, contentType: string): string {
@@ -199,20 +254,32 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
         }
 
         const contentType = String(res.headers["content-type"] ?? "");
+        const contentEncoding = String(res.headers["content-encoding"] ?? "").trim().toLowerCase() || "identity";
         // Inhalt nur bei Erfolg und HTML lesen; sonst genügt der Statuscode.
         if (status < 200 || status >= 300 || !isHtmlContentType(contentType)) {
           res.destroy();
-          return { ok: true, requestedUrl: startUrl, finalUrl: url.toString(), status, contentType, body: "", bytes: 0, redirects };
+          return { ok: true, requestedUrl: startUrl, finalUrl: url.toString(), status, contentType, contentEncoding, body: "", documentBytes: 0, transferBytes: 0, truncated: false, redirects };
         }
-        let raw: Buffer;
+        let read: BodyRead;
         try {
-          raw = await readCappedBody(res, maxBytes);
+          read = await readBody(res, contentEncoding, maxBytes, signal);
         } catch (err) {
           if (err instanceof FetchFailure) return fail(err.failure);
           return fail(signal.aborted ? "timeout" : "network_error");
         }
-        const body = decompress(raw, String(res.headers["content-encoding"] ?? ""), maxBytes);
-        return { ok: true, requestedUrl: startUrl, finalUrl: url.toString(), status, contentType, body: decodeText(body, contentType), bytes: raw.byteLength, redirects };
+        return {
+          ok: true,
+          requestedUrl: startUrl,
+          finalUrl: url.toString(),
+          status,
+          contentType,
+          contentEncoding,
+          body: decodeText(read.body, contentType),
+          documentBytes: read.body.byteLength,
+          transferBytes: read.transferBytes,
+          truncated: read.truncated,
+          redirects,
+        };
       }
     } catch (err) {
       if (err instanceof FetchFailure) return fail(err.failure);

@@ -23,7 +23,7 @@ export interface FixtureRepo {
   tags?: unknown[];
   goodFirstIssues?: unknown[];
   /** Antworten der Website je Adresse (für die Website-Prüfung, siehe src/core/site/fixture.ts). */
-  site?: Record<string, { status: number; contentType?: string; html?: string; location?: string }>;
+  site?: Record<string, { status: number; contentType?: string; html?: string; location?: string; contentEncoding?: string; transferBytes?: number }>;
 }
 
 export const FIXTURE_OWNER = "repolaunch-fixtures";

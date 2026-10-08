@@ -28,6 +28,9 @@ const PAGE = `<!DOCTYPE html>
 </body>
 </html>`;
 
+// Kopfbereich vollständig, Rechtslinks erst nach viel Inhalt im Fußbereich
+const LONG_PAGE = `<!DOCTYPE html>\n<html><head>\n<title>Lange Seite</title>\n</head>\n<body>\n${"<p>Inhalt</p>\n".repeat(2000)}<footer><a href="/impressum">Impressum</a> <a href="/datenschutz">Datenschutz</a></footer>\n</body></html>\n`;
+
 let server: Server;
 let base = "";
 let hits: string[] = [];
@@ -60,6 +63,7 @@ beforeAll(async () => {
       return void res.end();
     }
     if (url === "/gzip-bomb") return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "gzip" }).end(gzipSync(Buffer.alloc(5_000_000, 0x61)));
+    if (url === "/long") return void res.writeHead(200, { "content-type": "text/html; charset=utf-8", "content-encoding": "gzip" }).end(gzipSync(LONG_PAGE));
     res.writeHead(500).end();
   });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -154,8 +158,22 @@ describe("Abruf der Website", () => {
     expect(Date.now() - started).toBeLessThan(2_000);
   });
 
-  it.each(["/big", "/big-chunked", "/gzip-bomb"])("zu große Antwort wird abgebrochen: %s", async (path) => {
-    expect(await fetcher({ maxBytes: 1_000_000 })(`${base}${path}`)).toMatchObject({ ok: false, failure: "too_large" });
+  it.each(["/big", "/big-chunked"])("Antwort über dem Limit wird abgeschnitten und markiert: %s", async (path) => {
+    const r = await fetcher({ maxBytes: 1_000_000 })(`${base}${path}`);
+    expect(r).toMatchObject({ ok: true, status: 200, truncated: true, documentBytes: 1_000_000, contentEncoding: "identity" });
+    if (r.ok) expect(r.transferBytes).toBeLessThanOrEqual(1_100_000);
+  });
+
+  it("gzip-Bombe: das Limit gilt für die entpackten Bytes, übertragen wird wenig", async () => {
+    const r = await fetcher({ maxBytes: 1_000_000 })(`${base}/gzip-bomb`);
+    expect(r).toMatchObject({ ok: true, truncated: true, documentBytes: 1_000_000, contentEncoding: "gzip" });
+    if (r.ok) expect(r.transferBytes).toBeLessThan(50_000);
+  });
+
+  it("komprimierte Antwort: entpackte Größe und Übertragungsgröße getrennt", async () => {
+    const r = await fetcher()(`${base}/gzip`);
+    expect(r).toMatchObject({ ok: true, contentEncoding: "gzip", truncated: false, documentBytes: Buffer.byteLength(PAGE), transferBytes: gzipSync(PAGE).byteLength });
+    if (r.ok) expect(r.transferBytes).toBeLessThan(r.documentBytes);
   });
 
   it("nicht auflösbarer Name", async () => {
@@ -269,6 +287,37 @@ describe("Website-Regeln", () => {
     const s = await fixtureSnapshot("web-app", "users", withSite({ status: 200, html: PAGE }));
     expect((await checkHomepage(s, undefined, null)).skip).toBe("disabled");
     expect(f(runAudit({ ...s, site: await checkHomepage(s, undefined, null) }, user(), { now: NOW }), "distribution.site_title").status).toBe("unknown");
+  });
+
+  it("abgeschnittenes HTML: Kopfangaben sicher, Links im fehlenden Teil unbekannt, Beleg nennt das Abschneiden", async () => {
+    const homepage = `${base}/long`;
+    const s = await fixtureSnapshot("web-app", "users", cloneFixture("web-app", (x) => (x.repo.homepage = homepage)));
+    s.site = await checkHomepage(s, undefined, fetcher({ maxBytes: 2_000 }));
+    expect(s.site).toMatchObject({ state: "fetched", truncated: true, documentBytes: 2_000, contentEncoding: "gzip" });
+    const a = runAudit(s, user("users"), { now: NOW });
+    expect(f(a, "distribution.site_title").status).toBe("present");
+    expect(f(a, "distribution.site_og_image").status).toBe("missing");
+    for (const id of ["trust.site_imprint", "trust.site_privacy"]) {
+      expect(f(a, id).status, id).toBe("unknown");
+      expect(f(a, id).rationale, id).toContain("nach 2000 B abgeschnitten");
+    }
+    const ev = f(a, "usability.site_reachable").evidence[0]!;
+    expect(ev.label).toContain("HTML abgeschnitten");
+    expect(ev.snippet).toContain("Dokument (entpackt): 2000 B");
+    expect(ev.snippet).toContain("Abgeschnitten: nur die ersten 2000 B gelesen");
+    // Ohne Limit wird alles gelesen und die Links werden gefunden
+    s.site = await checkHomepage(s, undefined, fetcher());
+    const full = runAudit(s, user("users"), { now: NOW });
+    expect(f(full, "trust.site_imprint").status).toBe("present");
+    expect(full.findings.find((x) => x.ruleId === "usability.site_reachable")!.evidence[0]!.snippet).toMatch(/Dokument \(entpackt\): \d+ B\nÜbertragen \(gzip-komprimiert\): \d+ B/);
+  });
+
+  it("abgeschnitten im Kopfbereich: auch Titel und Beschreibung bleiben unbekannt", async () => {
+    const s = await fixtureSnapshot("web-app", "users", cloneFixture("web-app", (x) => (x.repo.homepage = `${base}/long`)));
+    s.site = await checkHomepage(s, undefined, fetcher({ maxBytes: 30 }));
+    const a = runAudit(s, user("users"), { now: NOW });
+    expect(f(a, "distribution.site_title").status).toBe("unknown");
+    expect(f(a, "distribution.site_description").status).toBe("unknown");
   });
 
   it("nur Webprodukte: andere Projekttypen rufen keine Website ab und bewerten die Regeln nicht", async () => {

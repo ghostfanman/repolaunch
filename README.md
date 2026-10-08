@@ -93,7 +93,7 @@ Für den Browser-Smoke-Test die Limits anheben, sonst greift die Ratenbegrenzung
 
 1. Repository als `owner/repo` oder `https://github.com/owner/repo` eingeben, Ziel wählen (mehr Nutzer, Mitwirkende, Sponsoren, Supportkunden, SaaS-Kunden), optional Zielgruppe, bekannte Merkmale und Projekttyp.
 2. Der Server legt einen Auftrag an und gibt einen geheimen Link zurück (`/report/<id>#k=<schlüssel>`). Der Schlüssel steht im URL-Fragment und wird nie an Server-Logs übertragen; Anfragen senden ihn als `Authorization: Bearer`.
-3. Ein einzelner Worker erfasst seriell höchstens 24 Anfragen, 1,5 MB und 30 Sekunden gegen `api.github.com`. Bei Webprodukten folgt ein einzelner lesender Abruf der Website aus dem Website-Feld (8 Sekunden, 1 MB, höchstens drei Weiterleitungen, nur öffentliche Adressen). Danach bewertet er 33 Regeln und speichert das Ergebnis mit Commit-SHA, Analysezeit und Regelwerksversion.
+3. Ein einzelner Worker erfasst seriell höchstens 24 Anfragen, 1,5 MB und 30 Sekunden gegen `api.github.com`. Bei Webprodukten folgt ein einzelner lesender Abruf der Website aus dem Website-Feld (8 Sekunden, höchstens 1 MB entpacktes HTML, höchstens drei Weiterleitungen, nur öffentliche Adressen). Danach bewertet er 33 Regeln und speichert das Ergebnis mit Commit-SHA, Analysezeit und Regelwerksversion.
 4. Optional: KI-Paket. Vorher zeigt die Seite Anbieter, Modell, Empfänger-Host, jede übermittelte Inhaltsgruppe mit Zeichenzahl, entfernte Injection-Zeilen, Grenzen und Kostenbudget. Erst nach Zustimmung startet der Auftrag.
 5. Export als ZIP, Löschen jederzeit über den Link. Nach `JOB_TTL_HOURS` (Standard 72) wird automatisch gelöscht.
 

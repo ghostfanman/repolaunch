@@ -50,10 +50,10 @@ describe("Fall invoice-kit (Issue #2)", () => {
     const { audit } = await auditInvoiceKit();
     // Webprodukt: bei gleicher Schwere zuerst die Website (Regelwerk 2026.10.2)
     expect(audit.tasks.map((t) => t.findingId)).toEqual([
-      "trust.site_privacy@1",
+      "trust.site_privacy@2",
       "trust.security_policy@1",
-      "trust.site_imprint@1",
-      "distribution.site_og_image@1",
+      "trust.site_imprint@2",
+      "distribution.site_og_image@2",
       "usability.visual_demo@2",
     ]);
     for (const id of CONTRIBUTOR_ONLY) {

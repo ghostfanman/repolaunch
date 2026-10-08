@@ -192,14 +192,54 @@ function daysSince(iso: string | null, now: Date): number | null {
 
 // ---------- Website (nur Webprodukte) ----------
 
+/** Beschriftete Größenangaben: entpacktes Dokument und, falls abweichend, die Übertragungsgröße. */
+export function siteSizeLines(site: SiteCheck, lang: Language): string[] {
+  const de = lang === "de";
+  if (!site.documentBytes) return [de ? "Inhalt nicht gelesen (kein Status 2xx oder keine HTML-Seite)" : "Content not read (no 2xx status or not an HTML page)"];
+  const lines: string[] = [];
+  const compressed = site.contentEncoding && site.contentEncoding !== "identity";
+  if (compressed && site.transferBytes !== site.documentBytes) {
+    lines.push(de ? `Dokument (entpackt): ${site.documentBytes} B` : `Document (decompressed): ${site.documentBytes} B`);
+    lines.push(de ? `Übertragen (${site.contentEncoding}-komprimiert): ${site.transferBytes} B` : `Transferred (${site.contentEncoding} compressed): ${site.transferBytes} B`);
+  } else {
+    lines.push(de ? `Dokument: ${site.documentBytes} B, unkomprimiert übertragen` : `Document: ${site.documentBytes} B, transferred uncompressed`);
+  }
+  if (site.truncated) {
+    lines.push(
+      de
+        ? `Abgeschnitten: nur die ersten ${site.documentBytes} B gelesen (Größenlimit); Angaben im fehlenden Teil sind unbekannt`
+        : `Truncated: only the first ${site.documentBytes} B were read (size limit); anything in the missing part is unknown`,
+    );
+  }
+  return lines;
+}
+
 function siteStatusEvidence(ctx: RuleContext, site: SiteCheck): Evidence {
   const hops = site.redirects?.length ?? 0;
   const via = hops > 0 ? tr(ctx, `, nach ${hops} Weiterleitung(en) auf ${site.finalUrl}`, `, after ${hops} redirect(s) to ${site.finalUrl}`) : "";
+  const cut = site.truncated ? tr(ctx, ", HTML abgeschnitten", ", HTML truncated") : "";
   return {
     kind: "field",
-    label: tr(ctx, `Abruf der Website ${site.url}: Status ${site.status}${via}`, `Fetch of the website ${site.url}: status ${site.status}${via}`),
+    label: tr(ctx, `Abruf der Website ${site.url}: Status ${site.status}${via}${cut}`, `Fetch of the website ${site.url}: status ${site.status}${via}${cut}`),
     url: site.finalUrl ?? site.url ?? undefined,
-    snippet: `GET ${site.url}\nHTTP ${site.status}${site.contentType ? `, ${site.contentType}` : ""}${site.bytes ? `, ${site.bytes} B` : ""}`,
+    snippet: [`GET ${site.url}`, `HTTP ${site.status}${site.contentType ? `, ${site.contentType}` : ""}`, ...siteSizeLines(site, ctx.lang)].join("\n"),
+  };
+}
+
+/**
+ * Nicht gefunden im abgeschnittenen HTML: "unbekannt" statt "fehlt", wenn der fehlende Teil die Angabe enthalten
+ * könnte. Angaben im Kopfbereich sind sicher, sobald dessen Ende gelesen wurde; Links können überall stehen.
+ */
+function truncatedUnknown(ctx: RuleContext, inHead: boolean): RuleOutcome | null {
+  const { site, facts } = siteContent(ctx);
+  if (!site.truncated || (inHead && facts.headComplete)) return null;
+  return {
+    status: "unknown",
+    evidence: [siteStatusEvidence(ctx, site)],
+    note: {
+      de: `Das HTML wurde nach ${site.documentBytes} B abgeschnitten (Größenlimit); ${inHead ? "der Kopfbereich ist unvollständig" : "der fehlende Teil kann den Link enthalten"}.`,
+      en: `The HTML was truncated after ${site.documentBytes} B (size limit); ${inHead ? "the head section is incomplete" : "the missing part may contain the link"}.`,
+    },
   };
 }
 
@@ -267,6 +307,8 @@ function legalLinkOutcome(ctx: RuleContext, kind: "imprint" | "privacy"): RuleOu
       note: LEGAL_NOTE,
     };
   }
+  const cut = truncatedUnknown(ctx, false);
+  if (cut) return cut;
   if (facts.linkCount === 0 && facts.scriptCount > 0) {
     return {
       status: "unknown",
@@ -1175,7 +1217,7 @@ export const RULES: RuleDefinition[] = [
   },
   {
     id: "distribution.site_title",
-    version: 1,
+    version: 2,
     category: "distribution",
     readmeContent: false,
     scope: "website",
@@ -1198,12 +1240,14 @@ export const RULES: RuleDefinition[] = [
       if (u) return u;
       const { facts, url } = siteContent(ctx);
       if (facts.title) return { status: "present", evidence: [{ kind: "field", label: tr(ctx, "Website: title-Element im HTML", "Website: title element in the HTML"), url, lines: [facts.title.line, facts.title.line], snippet: facts.title.text }] };
+      const cut = truncatedUnknown(ctx, true);
+      if (cut) return cut;
       return { status: "missing", evidence: [{ kind: "absence", label: tr(ctx, `Kein nicht leeres title-Element im ausgelieferten HTML von ${url}`, `No non-empty title element in the delivered HTML of ${url}`), url }] };
     },
   },
   {
     id: "distribution.site_description",
-    version: 1,
+    version: 2,
     category: "distribution",
     readmeContent: false,
     scope: "website",
@@ -1226,12 +1270,14 @@ export const RULES: RuleDefinition[] = [
       if (u) return u;
       const { facts, url } = siteContent(ctx);
       if (facts.description) return { status: "present", evidence: [{ kind: "field", label: tr(ctx, "Website: meta description im HTML", "Website: meta description in the HTML"), url, lines: [facts.description.line, facts.description.line], snippet: facts.description.text }] };
+      const cut = truncatedUnknown(ctx, true);
+      if (cut) return cut;
       return { status: "missing", evidence: [{ kind: "absence", label: tr(ctx, `Kein meta-Element name="description" mit Inhalt im ausgelieferten HTML von ${url}`, `No meta element name="description" with content in the delivered HTML of ${url}`), url }] };
     },
   },
   {
     id: "distribution.site_og_image",
-    version: 1,
+    version: 2,
     category: "distribution",
     readmeContent: false,
     scope: "website",
@@ -1260,12 +1306,14 @@ export const RULES: RuleDefinition[] = [
           note: { de: "Das Bild selbst wurde nicht abgerufen.", en: "The image itself was not fetched." },
         };
       }
+      const cut = truncatedUnknown(ctx, true);
+      if (cut) return cut;
       return { status: "missing", evidence: [{ kind: "absence", label: tr(ctx, `Kein meta-Element property="og:image" mit Inhalt im ausgelieferten HTML von ${url}`, `No meta element property="og:image" with content in the delivered HTML of ${url}`), url }] };
     },
   },
   {
     id: "trust.site_imprint",
-    version: 1,
+    version: 2,
     category: "trust",
     readmeContent: false,
     scope: "website",
@@ -1289,7 +1337,7 @@ export const RULES: RuleDefinition[] = [
   },
   {
     id: "trust.site_privacy",
-    version: 1,
+    version: 2,
     category: "trust",
     readmeContent: false,
     scope: "website",

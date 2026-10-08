@@ -118,6 +118,8 @@ export interface SiteFacts {
   /** Anzahl der Links mit href und der script-Elemente; ohne Links deutet ein Skript auf Inhalte per JavaScript hin. */
   linkCount: number;
   scriptCount: number;
+  /** Der gelesene Teil enthält das Ende des Kopfbereichs (</head> oder <body>). */
+  headComplete: boolean;
 }
 
 export type SiteSkipReason = "not_webapp" | "no_homepage" | "invalid_homepage" | "github_homepage" | "disabled";
@@ -132,7 +134,14 @@ export interface SiteCheck {
   finalUrl?: string;
   status?: number;
   contentType?: string;
-  bytes?: number;
+  /** Content-Encoding der Antwort, z. B. "gzip" oder "identity". */
+  contentEncoding?: string;
+  /** Größe des gelesenen Dokuments nach dem Entpacken. */
+  documentBytes?: number;
+  /** Übertragene Bytes des Bodys vor dem Entpacken. */
+  transferBytes?: number;
+  /** Dokument wegen des Größenlimits nur teilweise gelesen. */
+  truncated?: boolean;
   redirects?: string[];
   /** Antwort ist HTML (text/html oder application/xhtml+xml). */
   html?: boolean;

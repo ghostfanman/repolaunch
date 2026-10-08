@@ -114,5 +114,6 @@ export function parseSiteHtml(raw: string): SiteFacts {
     if (!privacy && PRIVACY_RE.test(hay)) privacy = found;
   }
 
-  return { title, description, ogImage, imprint, privacy, linkCount, scriptCount };
+  const headComplete = /<\/head\s*>|<body\b/i.test(text);
+  return { title, description, ogImage, imprint, privacy, linkCount, scriptCount, headComplete };
 }

@@ -8,7 +8,6 @@ export type SiteFetchFailure =
   | "timeout"
   | "too_many_redirects"
   | "bad_redirect"
-  | "too_large"
   | "unsupported_encoding"
   | "network_error";
 
@@ -19,10 +18,16 @@ export type SiteFetchResult =
       finalUrl: string;
       status: number;
       contentType: string;
+      /** Content-Encoding der Antwort ("identity", "gzip", "deflate" oder "br"). */
+      contentEncoding: string;
       /** Dekodierter Text, nur bei Status 2xx und HTML; sonst leer. */
       body: string;
-      /** Gelesene Bytes (vor dem Entpacken). */
-      bytes: number;
+      /** Größe des gelesenen Dokuments nach dem Entpacken, in Bytes. */
+      documentBytes: number;
+      /** Übertragene Bytes des Bodys (nach HTTP-Transferkodierung, vor dem Entpacken). */
+      transferBytes: number;
+      /** true, wenn das Dokument wegen des Größenlimits nur teilweise gelesen wurde. */
+      truncated: boolean;
       redirects: string[];
     }
   | { ok: false; requestedUrl: string; failure: SiteFetchFailure; redirects: string[] };
