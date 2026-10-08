@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | Auftrag: Eingabe (Repository, Ziel, Sprache, optionale Zielgruppe und Merkmale), Status, Ereignisse | SQLite `jobs`, `job_events` | bis Ablauf (`JOB_TTL_HOURS`, Standard 72 Stunden) oder Löschung |
 | Schnappschuss: öffentliche Metadaten, Dateiliste, README und ausgewählte Textdateien (begrenzt) | SQLite `jobs.snapshot_json` | wie oben |
+| Website-Prüfung (nur Webprodukte): Adresse, Status, Weiterleitungen, Größe sowie aus dem HTML Titel, Meta-Beschreibung, og:image-Adresse und gefundene Links zu Impressum und Datenschutz mit Zeilennummer; nicht das HTML selbst | SQLite `jobs.snapshot_json` | wie oben |
 | Audit-Ergebnis und KI-Ergebnis | SQLite `jobs.audit_json`, `jobs.ai_result_json` | wie oben |
 | Zugriffsschlüssel | nur als SHA-256-Hash | wie oben |
 | ETag-Cache öffentlicher GitHub-Antworten | SQLite `http_cache` | höchstens 24 Stunden |

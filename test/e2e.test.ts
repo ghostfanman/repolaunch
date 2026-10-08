@@ -5,6 +5,7 @@ import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, it } from "vitest";
 import { FakeProvider } from "@/core/ai/fake";
 import { fixtureTransport } from "@/core/github/fixture-transport";
+import { fixtureSiteFetcher } from "@/core/site/fixture";
 import { DEFAULT_RULE_CONFIG } from "@/core/rules/config";
 import { DEFAULT_AI_LIMITS } from "@/core/ai/types";
 import { FIXTURE_REPOS } from "@/fixtures/repos";
@@ -18,6 +19,7 @@ function config(over: Partial<ServerConfig> = {}): ServerConfig {
     dataDir: ":memory:",
     dbFile: ":memory:",
     demoMode: false,
+    siteCheck: true,
     jobTtlHours: 72,
     maxActiveJobs: 20,
     maxJobAttempts: 3,
@@ -32,7 +34,8 @@ function config(over: Partial<ServerConfig> = {}): ServerConfig {
 }
 
 function app(over: Partial<ServerConfig> = {}, provider: FakeProvider | null = new FakeProvider("ok")): App {
-  return createApp(config(over), { db: openDb(":memory:"), provider, transport: fixtureTransport(FIXTURE_REPOS) });
+  // Live-Aufträge laufen über Fixtures, auch für die Website: kein Netzwerkzugriff im Test.
+  return createApp(config(over), { db: openDb(":memory:"), provider, transport: fixtureTransport(FIXTURE_REPOS), siteFetcher: fixtureSiteFetcher(FIXTURE_REPOS) });
 }
 
 const auth = (key: string) => new Headers({ authorization: `Bearer ${key}` });

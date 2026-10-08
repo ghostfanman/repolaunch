@@ -18,7 +18,7 @@
 
 [Beispielbericht ansehen](docs/examples/web-app/audit.md)
 
-**Gut zu wissen:** Es funktioniert nur mit öffentlichen Repositories. RepoLaunch liest nur und führt keinen Code aus. Anfrage und Bericht sind öffentlich sichtbar. Pro Person sind 3 Analysen pro Stunde möglich. Diese Variante nutzt keine KI.
+**Gut zu wissen:** Es funktioniert nur mit öffentlichen Repositories. RepoLaunch liest nur und führt keinen Code aus: Gelesen wird über die GitHub-API, bei Webprodukten zusätzlich einmal die im Repository angegebene Website (ein Abruf, ohne JavaScript, ohne Unterseiten). Anfrage und Bericht sind öffentlich sichtbar. Pro Person sind 3 Analysen pro Stunde möglich. Diese Variante nutzt keine KI.
 
 **English:** [Analyse a repository now](https://github.com/ghostfanman/repolaunch/issues/new?template=repolaunch-audit.yml). Paste your repository address, choose “en – English” as report language and click **Create**. The report arrives as a comment within about two minutes.
 
@@ -93,7 +93,7 @@ Für den Browser-Smoke-Test die Limits anheben, sonst greift die Ratenbegrenzung
 
 1. Repository als `owner/repo` oder `https://github.com/owner/repo` eingeben, Ziel wählen (mehr Nutzer, Mitwirkende, Sponsoren, Supportkunden, SaaS-Kunden), optional Zielgruppe, bekannte Merkmale und Projekttyp.
 2. Der Server legt einen Auftrag an und gibt einen geheimen Link zurück (`/report/<id>#k=<schlüssel>`). Der Schlüssel steht im URL-Fragment und wird nie an Server-Logs übertragen; Anfragen senden ihn als `Authorization: Bearer`.
-3. Ein einzelner Worker erfasst seriell höchstens 24 Anfragen, 1,5 MB und 30 Sekunden gegen `api.github.com`, bewertet 27 Regeln und speichert das Ergebnis mit Commit-SHA, Analysezeit und Regelwerksversion.
+3. Ein einzelner Worker erfasst seriell höchstens 24 Anfragen, 1,5 MB und 30 Sekunden gegen `api.github.com`. Bei Webprodukten folgt ein einzelner lesender Abruf der Website aus dem Website-Feld (8 Sekunden, 1 MB, höchstens drei Weiterleitungen, nur öffentliche Adressen). Danach bewertet er 33 Regeln und speichert das Ergebnis mit Commit-SHA, Analysezeit und Regelwerksversion.
 4. Optional: KI-Paket. Vorher zeigt die Seite Anbieter, Modell, Empfänger-Host, jede übermittelte Inhaltsgruppe mit Zeichenzahl, entfernte Injection-Zeilen, Grenzen und Kostenbudget. Erst nach Zustimmung startet der Auftrag.
 5. Export als ZIP, Löschen jederzeit über den Link. Nach `JOB_TTL_HOURS` (Standard 72) wird automatisch gelöscht.
 
@@ -110,7 +110,8 @@ Alle Einstellungen über Umgebungsvariablen, siehe [.env.example](.env.example).
 | `AI_MAX_COST_USD`, `AI_MAX_OUTPUT_TOKENS`, `AI_TIMEOUT_MS`, `AI_MAX_INPUT_CHARS` | Budget und Grenzen je Auftrag |
 | `TRUST_PROXY_HOPS` | Anzahl vertrauenswürdiger Reverse Proxys für die Ratenbegrenzung pro Client |
 | `REPOLAUNCH_RULES_CONFIG` | JSON mit Regel-Überschreibungen, Beispiel in [rules.example.json](rules.example.json) |
-| `NODE_USE_ENV_PROXY=1` | ausgehende Anfragen über `HTTPS_PROXY` (Node ab 22.21 bzw. 24.5) |
+| `NODE_USE_ENV_PROXY=1` | ausgehende Anfragen an die GitHub-API über `HTTPS_PROXY` (Node ab 22.21 bzw. 24.5); der Website-Abruf nutzt keinen Proxy |
+| `REPOLAUNCH_SITE_CHECK` | `0` schaltet den lesenden Abruf der Website ab; die Website-Regeln gelten dann als unbekannt (Standard an) |
 
 ## Grenzen des MVP
 
@@ -118,6 +119,7 @@ Alle Einstellungen über Umgebungsvariablen, siehe [.env.example](.env.example).
 - Kein rekursiver Scan: Wurzelverzeichnis plus höchstens zwei Unterverzeichnisse (`.github`, `docs`), höchstens acht kleine Textdateien. Was nicht gelesen wurde, gilt als "unbekannt", nicht als "fehlt".
 - GitHub beantwortet private und nicht existierende Repositories öffentlich gleich (404). RepoLaunch sagt das so.
 - Ob ein Paket tatsächlich in einem Register veröffentlicht ist, wird nicht extern geprüft (nur Links in der README).
+- Die Website wird nur als ausgeliefertes HTML gelesen. Inhalte, die erst per JavaScript entstehen, sieht RepoLaunch nicht; ohne Links im HTML gelten Impressum und Datenschutz deshalb als unbekannt. Impressum und Datenschutz sind Hinweise, keine Rechtsberatung.
 - Ein einzelner Prozess mit In-Memory-Ratenbegrenzung. Nicht für serverlose Plattformen oder mehrere Instanzen gedacht.
 - Ohne `GITHUB_TOKEN` gilt GitHubs Limit von 60 Anfragen pro Stunde und IP (etwa fünf bis acht Audits).
 - Keine Abrechnung, kein Konto, kein Verlauf über die Aufbewahrungsfrist hinaus.

@@ -7,12 +7,12 @@ body:
       value: |
         **So funktioniert es:** Formular ausfüllen, Issue erstellen, nach etwa 1–2 Minuten steht der Bericht als Kommentar hier. Das Issue wird danach automatisch geschlossen.
 
-        - Nur **öffentliche** Repositories. RepoLaunch liest Metadaten, README und einige Dateien über die GitHub-API, nur lesend. Code des Repositories wird nie ausgeführt.
+        - Nur **öffentliche** Repositories. RepoLaunch liest Metadaten, README und einige Dateien über die GitHub-API, nur lesend. Bei Webprodukten ruft RepoLaunch zusätzlich einmal lesend die im Repository angegebene Website ab, ohne JavaScript und ohne Unterseiten. Code des Repositories wird nie ausgeführt.
         - Regelbasierter Audit ohne KI: fünf priorisierte Aufgaben, Belege, Launch- und Monetarisierungsplan. Sterne zählen nicht zur Bewertung.
         - **Anfrage und Bericht sind öffentlich sichtbar.** Bitte keine vertraulichen Angaben eintragen.
         - Höchstens 3 Anfragen pro Person und Stunde.
 
-        **How it works:** fill in the form, create the issue, and the report arrives as a comment after about 1–2 minutes. Public repositories only, read-only, no code is executed. Request and report are public.
+        **How it works:** fill in the form, create the issue, and the report arrives as a comment after about 1–2 minutes. Public repositories only, read-only via the GitHub API; for web products also one read-only request to the website given in the repository. No code is executed. Request and report are public.
   - type: input
     id: repo
     attributes:

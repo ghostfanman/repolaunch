@@ -94,9 +94,40 @@ function newFileGuide(L: (de: string, en: string) => string, u: ReturnType<typeo
   };
 }
 
+/** Startdatei der Website im Repository, wenn die Website über GitHub Pages des Besitzers aus diesem Repository kommt. */
+function siteEntryFile(ctx: GuideContext): string | null {
+  const site = ctx.snapshot.site;
+  const target = site?.finalUrl ?? site?.url;
+  if (!target) return null;
+  try {
+    if (new URL(target).hostname.toLowerCase() !== `${ctx.snapshot.owner}.github.io`.toLowerCase()) return null;
+  } catch {
+    return null;
+  }
+  const files = new Set(ctx.snapshot.tree.entries.filter((e) => e.type === "blob").map((e) => e.path));
+  return ["index.html", "docs/index.html"].find((f) => files.has(f)) ?? null;
+}
+
+/** Erster Schritt der Website-Anleitungen: Startdatei öffnen, direkt im Editor, wenn sie im Repository liegt. */
+function siteEditStep(ctx: GuideContext, L: (de: string, en: string) => string, u: ReturnType<typeof urls>): GuideStep {
+  const file = siteEntryFile(ctx);
+  if (file) return { text: L(`Die Website kommt aus diesem Repository. Öffne die Startdatei ${file} im Bearbeitungsmodus:`, `The website is served from this repository. Open the start file ${file} in edit mode:`), link: { label: L(`${file} bearbeiten`, `Edit ${file}`), url: u.edit(file) } };
+  return { text: L("Öffne die Startdatei deiner Website, meist index.html, oder bei Frameworks die Stelle für Seitentitel und Metadaten.", "Open the start file of your website, usually index.html, or with frameworks the place for page title and metadata.") };
+}
+
+const LEGAL_GUIDE_NOTE = {
+  de: "RepoLaunch erstellt keine Inhalte für Impressum oder Datenschutzerklärung und prüft sie nicht. Das ist ein Hinweis, keine Rechtsberatung; im Zweifel rechtlich beraten lassen.",
+  en: "RepoLaunch does not create or review content for a legal notice or privacy policy. This is a hint, not legal advice; seek legal advice if in doubt.",
+};
+
 const NO_TERMINAL_NOTE = {
   de: "Trage nur Befehle ein, die du selbst ausprobiert hast. RepoLaunch erfindet keine Befehle.",
   en: "Only enter commands you have tried yourself. RepoLaunch does not invent commands.",
+};
+
+const HEAD_STEP = {
+  de: "Füge die Vorlage im Bereich zwischen <head> und </head> ein und ersetze alles in eckigen Klammern [ ].",
+  en: "Insert the template between <head> and </head> and replace everything in square brackets [ ].",
 };
 
 const GUIDES: Record<string, Builder> = {
@@ -468,6 +499,74 @@ const GUIDES: Record<string, Builder> = {
       { text: L("Wiederhole das für zwei bis fünf Issues.", "Repeat this for two to five issues.") },
     ],
     note: L("Fehlt das Label, lege es unter Issues → „Labels“ → „New label“ mit dem Namen good first issue an.", "If the label is missing, create it under Issues → “Labels” → “New label” with the name good first issue."),
+  }),
+
+  "usability.site_reachable": (ctx, L, u) => ({
+    action: L("Website wieder erreichbar machen", "Make the website reachable again"),
+    steps: [
+      { text: L("Öffne die Adresse aus dem Website-Feld im Browser und prüfe, ob die Seite lädt.", "Open the address from the website field in your browser and check whether the page loads.") },
+      { text: L("Nutzt du GitHub Pages, prüfe unter Einstellungen → „Pages“, ob die Veröffentlichung aktiv ist und welche Adresse GitHub anzeigt.", "If you use GitHub Pages, check under Settings → “Pages” whether publishing is active and which address GitHub shows."), link: { label: L("Pages-Einstellungen", "Pages settings"), url: `${u.settings}/pages` } },
+      ...aboutSteps(L, u, "Website", L("die richtige Adresse", "the correct address")),
+    ],
+    note: ctx.snapshot.site?.status ? L(`Zuletzt gemessen: Status ${ctx.snapshot.site.status}.`, `Last measured: status ${ctx.snapshot.site.status}.`) : undefined,
+  }),
+
+  "distribution.site_title": (ctx, L, u) => ({
+    action: L("Seitentitel der Website setzen", "Set the website page title"),
+    steps: [siteEditStep(ctx, L, u), { text: L(HEAD_STEP.de, HEAD_STEP.en) }, commitStep(L)],
+    template: { label: L("Vorlage zum Kopieren", "Template to copy"), content: L("<title>[Name]: [Nutzen in wenigen Worten]</title>", "<title>[Name]: [benefit in a few words]</title>") },
+  }),
+
+  "distribution.site_description": (ctx, L, u) => ({
+    action: L("Meta-Beschreibung der Website ergänzen", "Add a meta description to the website"),
+    steps: [siteEditStep(ctx, L, u), { text: L(HEAD_STEP.de, HEAD_STEP.en) }, commitStep(L)],
+    template: {
+      label: L("Vorlage zum Kopieren", "Template to copy"),
+      content: L('<meta name="description" content="[Ein bis zwei Sätze: was die Anwendung für wen leistet]">', '<meta name="description" content="[One or two sentences: what the application does for whom]">'),
+    },
+    note: L("Gut sind etwa 120 bis 160 Zeichen.", "About 120 to 160 characters work well."),
+  }),
+
+  "distribution.site_og_image": (ctx, L, u) => ({
+    action: L("Vorschaubild für geteilte Links einrichten", "Set up a preview image for shared links"),
+    steps: [
+      { text: L("Erstelle ein Bild der Anwendung im Querformat, etwa 1200 × 630 Pixel, zum Beispiel aus einem Screenshot.", "Create a landscape image of the application, about 1200 × 630 pixels, for example from a screenshot.") },
+      { text: L("Lade das Bild dorthin hoch, wo die Dateien deiner Website liegen (auf GitHub: „Add file“ → „Upload files“).", "Upload the image to where your website files live (on GitHub: “Add file” → “Upload files”).") },
+      siteEditStep(ctx, L, u),
+      { text: L(HEAD_STEP.de, HEAD_STEP.en) },
+      commitStep(L),
+    ],
+    template: {
+      label: L("Vorlage zum Kopieren", "Template to copy"),
+      content: L('<meta property="og:image" content="https://[Adresse deiner Website]/[Bildname].png">', '<meta property="og:image" content="https://[address of your website]/[image name].png">'),
+    },
+    note: L("Die Adresse muss vollständig sein (mit https://), sonst zeigen viele Dienste das Bild nicht.", "The address must be complete (with https://), otherwise many services do not show the image."),
+  }),
+
+  "trust.site_imprint": (ctx, L, u) => ({
+    action: L("Impressum prüfen und verlinken", "Check and link a legal notice"),
+    steps: [
+      { text: L("Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist. Im Zweifel rechtlich beraten lassen.", "Check whether your website needs or benefits from a legal notice. Seek legal advice if in doubt.") },
+      { text: L("Lege die Seite an, zum Beispiel impressum.html neben der Startdatei.", "Create the page, for example impressum.html next to the start file.") },
+      siteEditStep(ctx, L, u),
+      { text: L("Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter.", "Insert the link visibly, for example in the footer before </body>, and replace the placeholders.") },
+      commitStep(L),
+    ],
+    template: { label: L("Vorlage für den Link", "Template for the link"), content: L('<a href="[impressum.html]">Impressum</a>', '<a href="[imprint.html]">Legal notice</a>') },
+    note: L(LEGAL_GUIDE_NOTE.de, LEGAL_GUIDE_NOTE.en),
+  }),
+
+  "trust.site_privacy": (ctx, L, u) => ({
+    action: L("Datenschutzerklärung prüfen und verlinken", "Check and link a privacy policy"),
+    steps: [
+      { text: L("Prüfe, welche Daten deine Website verarbeitet (z. B. Server-Logs, Formulare, Analyse, eingebettete Inhalte) und welche Angaben dafür nötig sind. Im Zweifel rechtlich beraten lassen.", "Check which data your website processes (e.g. server logs, forms, analytics, embedded content) and which information that requires. Seek legal advice if in doubt.") },
+      { text: L("Lege die Seite an, zum Beispiel datenschutz.html neben der Startdatei.", "Create the page, for example privacy.html next to the start file.") },
+      siteEditStep(ctx, L, u),
+      { text: L("Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter.", "Insert the link visibly, for example in the footer before </body>, and replace the placeholders.") },
+      commitStep(L),
+    ],
+    template: { label: L("Vorlage für den Link", "Template for the link"), content: L('<a href="[datenschutz.html]">Datenschutz</a>', '<a href="[privacy.html]">Privacy</a>') },
+    note: L(LEGAL_GUIDE_NOTE.de, LEGAL_GUIDE_NOTE.en),
   }),
 };
 

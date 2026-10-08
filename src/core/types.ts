@@ -90,6 +90,39 @@ export interface RepoSnapshot {
   goodFirstIssues: { state: "present" | "missing" | "unknown" | "not_checked"; count: number; reason?: Localized };
   stats: RequestStats;
   notes: Localized[];
+  /** Lesende Prüfung der Website aus dem Website-Feld, nur bei Webprodukten. Fehlt bei älteren Schnappschüssen. */
+  site?: SiteCheck;
+}
+
+/** Merkmale aus dem ausgelieferten HTML der Website, ohne JavaScript. Zeilen beziehen sich auf das HTML. */
+export interface SiteFacts {
+  title: { text: string; line: number } | null;
+  description: { text: string; line: number } | null;
+  ogImage: { url: string; line: number } | null;
+  imprint: { text: string; href: string; line: number } | null;
+  privacy: { text: string; href: string; line: number } | null;
+  /** Anzahl der Links mit href und der script-Elemente; ohne Links deutet ein Skript auf Inhalte per JavaScript hin. */
+  linkCount: number;
+  scriptCount: number;
+}
+
+export type SiteSkipReason = "not_webapp" | "no_homepage" | "invalid_homepage" | "github_homepage" | "disabled";
+
+export interface SiteCheck {
+  /** fetched: HTTP-Antwort erhalten (jeder Status); failed: Abruf fehlgeschlagen; not_checked: bewusst nicht abgerufen. */
+  state: "fetched" | "failed" | "not_checked";
+  /** Adresse aus dem Website-Feld, sofern gültig. */
+  url: string | null;
+  skip?: SiteSkipReason;
+  reason?: Localized;
+  finalUrl?: string;
+  status?: number;
+  contentType?: string;
+  bytes?: number;
+  redirects?: string[];
+  /** Antwort ist HTML (text/html oder application/xhtml+xml). */
+  html?: boolean;
+  facts?: SiteFacts;
 }
 
 export type FindingStatus = "present" | "missing" | "unknown" | "not_relevant";

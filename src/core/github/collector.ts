@@ -2,7 +2,9 @@
 // Kein rekursiver Scan, keine Ausführung von Code, nur ausgewählte Textdateien.
 
 import type { CollectLimits } from "../limits";
-import type { FileState, Goal, Localized, ReleaseInfo, RepoMeta, RepoSnapshot, TreeEntry } from "../types";
+import { checkHomepage } from "../site/check";
+import type { SiteFetcher } from "../site/types";
+import type { FileState, Goal, Localized, ProjectType, ReleaseInfo, RepoMeta, RepoSnapshot, TreeEntry } from "../types";
 import { CollectError, ResponseTooLargeError } from "./errors";
 import type { GitHubHttp } from "./http";
 
@@ -40,6 +42,13 @@ export interface CollectRequest {
   goal: Goal;
   source: "github" | "fixture";
   fixtureName?: string;
+  /** Projekttyp laut Nutzerangabe; entscheidet mit über die Website-Prüfung. */
+  projectTypeOverride?: ProjectType;
+}
+
+export interface CollectOptions {
+  /** Lesender Abruf der Website bei Webprodukten. Ohne Fetcher wird die Website nicht geprüft. */
+  siteFetcher?: SiteFetcher | null;
 }
 
 export async function collectSnapshot(
@@ -47,6 +56,7 @@ export async function collectSnapshot(
   req: CollectRequest,
   limits: CollectLimits,
   now: () => Date = () => new Date(),
+  options: CollectOptions = {},
 ): Promise<RepoSnapshot> {
   const notes: Localized[] = [];
   const base = `/repos/${enc(req.owner)}/${enc(req.repo)}`;
@@ -173,7 +183,7 @@ export async function collectSnapshot(
     }
 
     http.close();
-    return {
+    const snapshot: RepoSnapshot = {
       schemaVersion: 1,
       source: req.source,
       fixtureName: req.fixtureName,
@@ -194,6 +204,9 @@ export async function collectSnapshot(
       stats: { ...http.stats },
       notes,
     };
+    // 8. Website aus dem Website-Feld, nur bei Webprodukten: ein einzelner lesender Abruf außerhalb der GitHub-API
+    snapshot.site = await checkHomepage(snapshot, req.projectTypeOverride, options.siteFetcher);
+    return snapshot;
   } finally {
     http.close();
   }

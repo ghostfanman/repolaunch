@@ -11,6 +11,8 @@ import { fetchTransport, GitHubHttp, type Transport } from "@/core/github/http";
 import { DEFAULT_COLLECT_LIMITS } from "@/core/limits";
 import { parseRepoInput, suggestRepoInput } from "@/core/repo-input";
 import { buildExport } from "@/core/report/export";
+import { createSiteFetcher } from "@/core/site/fetch";
+import type { SiteFetcher } from "@/core/site/types";
 import { applyRuleOverrides, DEFAULT_RULE_CONFIG } from "@/core/rules/config";
 import { runAudit } from "@/core/rules/engine";
 import { GOALS, PROJECT_TYPES, type Goal, type Language, type ProjectType, type UserContext } from "@/core/types";
@@ -21,6 +23,11 @@ export const CLI_AI_SECTIONS: AiSection[] = ["readme", "descriptionTopics", "pla
 
 export interface CliDeps {
   transport?: Transport;
+  /**
+   * Website-Abruf bei Webprodukten. null schaltet ihn ab. Ohne Angabe wird er nur für echte GitHub-Abrufe
+   * erzeugt (kein eigener Transport); mit eingespeistem Transport (Tests) bleibt er aus, damit kein Netzwerkzugriff entsteht.
+   */
+  siteFetcher?: SiteFetcher | null;
   /** null erzwingt "kein Anbieter"; undefined erzeugt ihn aus der Umgebung. */
   provider?: LlmProvider | null;
   secrets?: string[];
@@ -93,7 +100,7 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
     projectTypeOverride: typeRaw === "auto" ? undefined : (typeRaw as ProjectType),
   };
 
-  // 1. Erfassung über die feste GitHub-API, nur lesend
+  // 1. Erfassung über die feste GitHub-API, nur lesend; bei Webprodukten zusätzlich ein lesender Abruf der Website
   const http = new GitHubHttp({
     limits: DEFAULT_COLLECT_LIMITS,
     transport: deps.transport ?? fetchTransport,
@@ -102,7 +109,14 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
   });
   let snapshot;
   try {
-    snapshot = await collectSnapshot(http, { owner: repoInput.owner, repo: repoInput.repo, goal, source: "github" }, DEFAULT_COLLECT_LIMITS, deps.now);
+    const siteFetcher = deps.siteFetcher !== undefined ? deps.siteFetcher : !deps.transport && env.REPOLAUNCH_SITE_CHECK !== "0" ? createSiteFetcher() : null;
+    snapshot = await collectSnapshot(
+      http,
+      { owner: repoInput.owner, repo: repoInput.repo, goal, source: "github", projectTypeOverride: user.projectTypeOverride },
+      DEFAULT_COLLECT_LIMITS,
+      deps.now,
+      { siteFetcher },
+    );
   } catch (err) {
     if (err instanceof CollectError) {
       const extra = err.resetAt ? ` (Reset ${err.resetAt})` : err.retryAfterSeconds ? ` (Retry-After ${err.retryAfterSeconds}s)` : "";

@@ -62,7 +62,9 @@ Caddy setzt `X-Forwarded-For`; dann `TRUST_PROXY_HOPS=1`.
 
 ## Ausgehender Proxy
 
-Hinter einem Unternehmensproxy: `HTTPS_PROXY` setzen und `NODE_USE_ENV_PROXY=1` (Node ab 22.21 bzw. 24.5). Erreichbar sein müssen nur `api.github.com` und, falls KI aktiv, `api.anthropic.com`.
+Hinter einem Unternehmensproxy: `HTTPS_PROXY` setzen und `NODE_USE_ENV_PROXY=1` (Node ab 22.21 bzw. 24.5). Erreichbar sein müssen `api.github.com` und, falls KI aktiv, `api.anthropic.com`.
+
+Die Website-Prüfung bei Webprodukten verbindet sich direkt mit der Website aus dem Website-Feld (beliebige öffentliche Hosts, in der Regel Port 443 oder 80) und nutzt keinen Proxy. Ist das nicht erlaubt oder nicht möglich, `REPOLAUNCH_SITE_CHECK=0` setzen: Die Website-Regeln gelten dann als unbekannt und senken nur die Abdeckung, nicht den Score.
 
 ## Backup und Wiederherstellung
 

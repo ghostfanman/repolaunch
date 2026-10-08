@@ -12,6 +12,8 @@ export interface ServerConfig {
   dbFile: string;
   githubToken?: string;
   demoMode: boolean;
+  /** Lesender Abruf der Website aus dem Website-Feld bei Webprodukten (REPOLAUNCH_SITE_CHECK, Standard an). */
+  siteCheck: boolean;
   jobTtlHours: number;
   maxActiveJobs: number;
   maxJobAttempts: number;
@@ -71,6 +73,7 @@ export function loadConfig(): ServerConfig {
     dbFile: process.env.REPOLAUNCH_DB_FILE ? path.resolve(/*turbopackIgnore: true*/ process.env.REPOLAUNCH_DB_FILE) : path.join(/*turbopackIgnore: true*/ dataDir, "repolaunch.sqlite"),
     githubToken: process.env.GITHUB_TOKEN?.trim() || undefined,
     demoMode: bool("REPOLAUNCH_DEMO", false),
+    siteCheck: bool("REPOLAUNCH_SITE_CHECK", true),
     jobTtlHours: int("JOB_TTL_HOURS", 72, 1, 24 * 30),
     maxActiveJobs: int("MAX_ACTIVE_JOBS", 20, 1, 1000),
     maxJobAttempts: int("MAX_JOB_ATTEMPTS", 3, 1, 10),

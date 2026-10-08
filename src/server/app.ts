@@ -8,6 +8,9 @@ import { CollectError } from "@/core/github/errors";
 import { FIXTURE_OWNER, fixtureTransport } from "@/core/github/fixture-transport";
 import { fetchTransport, GitHubHttp, type Transport } from "@/core/github/http";
 import { DEFAULT_COLLECT_LIMITS, type CollectLimits } from "@/core/limits";
+import { createSiteFetcher } from "@/core/site/fetch";
+import { fixtureSiteFetcher } from "@/core/site/fixture";
+import type { SiteFetcher } from "@/core/site/types";
 import { runAudit } from "@/core/rules/engine";
 import type { AuditResult, RepoSnapshot } from "@/core/types";
 import { FIXTURE_REPOS } from "@/fixtures/repos";
@@ -34,6 +37,8 @@ export interface AppOverrides {
   db?: Db;
   provider?: LlmProvider | null;
   transport?: Transport;
+  /** Website-Abruf für Live-Aufträge; null schaltet die Website-Prüfung ab. */
+  siteFetcher?: SiteFetcher | null;
   collectLimits?: CollectLimits;
   now?: () => Date;
 }
@@ -54,7 +59,8 @@ export function createApp(config: ServerConfig, overrides: AppOverrides = {}): A
     },
     worker: undefined as unknown as Worker,
   };
-  app.worker = new Worker(app, overrides.transport ?? fetchTransport, overrides.collectLimits ?? DEFAULT_COLLECT_LIMITS);
+  const siteFetcher = overrides.siteFetcher !== undefined ? overrides.siteFetcher : config.siteCheck ? createSiteFetcher() : null;
+  app.worker = new Worker(app, overrides.transport ?? fetchTransport, overrides.collectLimits ?? DEFAULT_COLLECT_LIMITS, siteFetcher);
   return app;
 }
 
@@ -68,6 +74,7 @@ export class Worker {
     private readonly app: App,
     private readonly liveTransport: Transport,
     private readonly collectLimits: CollectLimits,
+    private readonly liveSiteFetcher: SiteFetcher | null,
   ) {
     this.etagCache = new SqliteEtagCache(app.db);
   }
@@ -142,8 +149,17 @@ export class Worker {
       });
       const snapshot = await collectSnapshot(
         http,
-        { owner: fixture ? FIXTURE_OWNER : input.owner, repo: fixture ? input.fixtureName! : input.repo, goal: input.user.goal, source: input.source, fixtureName: input.fixtureName },
+        {
+          owner: fixture ? FIXTURE_OWNER : input.owner,
+          repo: fixture ? input.fixtureName! : input.repo,
+          goal: input.user.goal,
+          source: input.source,
+          fixtureName: input.fixtureName,
+          projectTypeOverride: input.user.projectTypeOverride,
+        },
         this.collectLimits,
+        undefined,
+        { siteFetcher: fixture ? fixtureSiteFetcher(FIXTURE_REPOS) : this.liveSiteFetcher },
       );
       const audit = runAudit(snapshot, input.user, { config: this.app.config.rules });
       this.app.store.completeAudit(row.id, snapshot, audit);

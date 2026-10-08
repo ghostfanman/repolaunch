@@ -4,7 +4,7 @@
 import type { MarkdownDoc } from "../analysis/markdown";
 import { findHeading, installCommands, introParagraph, sectionRange, snippet } from "../analysis/markdown";
 import type { ManifestInfo } from "../analysis/manifests";
-import type { Category, Evidence, Language, Localized, ProjectType, RepoSnapshot, UserContext } from "../types";
+import type { Category, Evidence, Language, Localized, ProjectType, RepoSnapshot, SiteCheck, UserContext } from "../types";
 
 export interface RuleContext {
   snapshot: RepoSnapshot;
@@ -186,6 +186,96 @@ function daysSince(iso: string | null, now: Date): number | null {
   if (!iso) return null;
   const t = Date.parse(iso);
   return Number.isNaN(t) ? null : Math.floor((now.getTime() - t) / 86_400_000);
+}
+
+// ---------- Website (nur Webprodukte) ----------
+
+function siteStatusEvidence(ctx: RuleContext, site: SiteCheck): Evidence {
+  const hops = site.redirects?.length ?? 0;
+  const via = hops > 0 ? tr(ctx, `, nach ${hops} Weiterleitung(en) auf ${site.finalUrl}`, `, after ${hops} redirect(s) to ${site.finalUrl}`) : "";
+  return {
+    kind: "field",
+    label: tr(ctx, `Abruf der Website ${site.url}: Status ${site.status}${via}`, `Fetch of the website ${site.url}: status ${site.status}${via}`),
+    url: site.finalUrl ?? site.url ?? undefined,
+    snippet: `GET ${site.url}\nHTTP ${site.status}${site.contentType ? `, ${site.contentType}` : ""}${site.bytes ? `, ${site.bytes} B` : ""}`,
+  };
+}
+
+/** Gemeinsame Vorprüfung: nicht geprüft, Abruf fehlgeschlagen oder keine auswertbare HTML-Seite. */
+function siteUnavailable(ctx: RuleContext, needsContent: boolean): RuleOutcome | null {
+  const site = ctx.snapshot.site;
+  if (!site) {
+    return {
+      status: "unknown",
+      evidence: [{ kind: "note", label: tr(ctx, "Website nicht geprüft (Schnappschuss ohne Website-Prüfung)", "Website not checked (snapshot without website check)") }],
+      note: { de: "Website nicht geprüft.", en: "Website not checked." },
+    };
+  }
+  if (site.state === "not_checked") {
+    const label = tr(ctx, `Website nicht abgerufen: ${site.reason?.de ?? ""}`, `Website not fetched: ${site.reason?.en ?? ""}`);
+    if (site.skip === "disabled") return { status: "unknown", evidence: [{ kind: "note", label }], note: { de: "Website-Prüfung nicht aktiviert.", en: "Website check not enabled." } };
+    return {
+      status: "not_relevant",
+      evidence: [{ kind: "note", label }],
+      note:
+        site.skip === "not_webapp"
+          ? { de: "Die Website wird nur bei Webprodukten geprüft.", en: "The website is only checked for web products." }
+          : { de: "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\".", en: "Without a fetchable website in the website field there is nothing to check; the field itself is covered by the rule \"Website field set\"." },
+    };
+  }
+  if (site.state === "failed") {
+    return {
+      status: "unknown",
+      evidence: [{ kind: "note", label: tr(ctx, `Abruf von ${site.url} fehlgeschlagen: ${site.reason?.de ?? ""}`, `Fetching ${site.url} failed: ${site.reason?.en ?? ""}`), url: site.url ?? undefined }],
+      note: { de: "Abruf fehlgeschlagen; die Regel zählt als unbekannt, nicht als fehlend.", en: "Fetch failed; the rule counts as unknown, not as missing." },
+    };
+  }
+  if (!needsContent) return null;
+  const status = site.status ?? 0;
+  if (status < 200 || status >= 300) {
+    return { status: "unknown", evidence: [siteStatusEvidence(ctx, site)], note: { de: `Die Website antwortet mit Status ${status}; der Inhalt ist nicht prüfbar.`, en: `The website responds with status ${status}; its content cannot be checked.` } };
+  }
+  if (!site.html || !site.facts) {
+    return { status: "unknown", evidence: [siteStatusEvidence(ctx, site)], note: { de: "Die Antwort ist keine HTML-Seite.", en: "The response is not an HTML page." } };
+  }
+  return null;
+}
+
+function siteContent(ctx: RuleContext): { site: SiteCheck; facts: NonNullable<SiteCheck["facts"]>; url: string } {
+  const site = ctx.snapshot.site!;
+  return { site, facts: site.facts!, url: site.finalUrl ?? site.url ?? "" };
+}
+
+const LEGAL_NOTE = {
+  de: "Geprüft wurde nur, ob ein Link vorhanden ist, nicht der Inhalt.",
+  en: "Only the presence of a link was checked, not its content.",
+};
+
+/** Impressum und Datenschutz: Link im ausgelieferten HTML. Ohne Links, aber mit Skripten, bleibt der Status unbekannt. */
+function legalLinkOutcome(ctx: RuleContext, kind: "imprint" | "privacy"): RuleOutcome {
+  const u = siteUnavailable(ctx, true);
+  if (u) return u;
+  const { facts, url } = siteContent(ctx);
+  const found = facts[kind];
+  const words = kind === "imprint" ? tr(ctx, "Impressum, Imprint oder Legal Notice", "Impressum, imprint or legal notice") : tr(ctx, "Datenschutz oder Privacy", "Datenschutz or privacy");
+  if (found) {
+    return {
+      status: "present",
+      evidence: [{ kind: "field", label: tr(ctx, `Link "${found.text}" auf ${found.href}`, `Link "${found.text}" to ${found.href}`), url, lines: [found.line, found.line] }],
+      note: LEGAL_NOTE,
+    };
+  }
+  if (facts.linkCount === 0 && facts.scriptCount > 0) {
+    return {
+      status: "unknown",
+      evidence: [{ kind: "note", label: tr(ctx, `Im ausgelieferten HTML von ${url} stehen keine Links, aber ${facts.scriptCount} Skript(e)`, `The delivered HTML of ${url} contains no links but ${facts.scriptCount} script(s)`), url }],
+      note: { de: "Die Seite erzeugt ihre Inhalte vermutlich per JavaScript, das RepoLaunch nicht ausführt.", en: "The page probably renders its content with JavaScript, which RepoLaunch does not execute." },
+    };
+  }
+  return {
+    status: "missing",
+    evidence: [{ kind: "absence", label: tr(ctx, `Im ausgelieferten HTML von ${url} (ohne JavaScript, ${facts.linkCount} Links) kein Link mit Text oder Ziel ${words}`, `In the delivered HTML of ${url} (without JavaScript, ${facts.linkCount} links) no link with text or target ${words}`), url }],
+  };
 }
 
 // ---------- Regeln ----------
@@ -1044,6 +1134,173 @@ export const RULES: RuleDefinition[] = [
         status: g.state,
         evidence: [{ kind: g.state === "present" ? "field" : "absence", label: tr(ctx, `Offene Issues mit Label "good first issue": ${g.count}${g.reason ? ` (${g.reason.de})` : ""}`, `Open issues labelled "good first issue": ${g.count}${g.reason ? ` (${g.reason.en})` : ""}`), url: `${ctx.snapshot.htmlUrl}/issues?q=is%3Aopen+label%3A%22good+first+issue%22` }],
       };
+    },
+  },
+  {
+    id: "usability.site_reachable",
+    version: 1,
+    category: "usability",
+    readmeContent: false,
+    title: { de: "Website: erreichbar", en: "Website: reachable" },
+    rationale: {
+      de: "Bei einem Webprodukt ist die Website der eigentliche Einstieg. Ist sie nicht erreichbar, endet der Besuch dort.",
+      en: "For a web product the website is the actual entry point. If it is unreachable, the visit ends there.",
+    },
+    task: {
+      de: "Prüfe die Adresse im Website-Feld und die Veröffentlichung der Seite, zum Beispiel GitHub Pages oder das Hosting.",
+      en: "Check the address in the website field and how the page is published, for example GitHub Pages or the hosting.",
+    },
+    effortMinutes: [15, 60],
+    impact: {
+      de: "Besucher aus GitHub und Suche erreichen die Anwendung.",
+      en: "Visitors from GitHub and search reach the application.",
+    },
+    evaluate(ctx) {
+      const u = siteUnavailable(ctx, false);
+      if (u) return u;
+      const site = ctx.snapshot.site!;
+      const status = site.status ?? 0;
+      const ev = [siteStatusEvidence(ctx, site)];
+      if (status >= 200 && status < 300) return { status: "present", evidence: ev };
+      if (status === 404 || status === 410) return { status: "missing", evidence: ev, note: { de: `Die Website antwortet mit Status ${status}.`, en: `The website responds with status ${status}.` } };
+      return {
+        status: "unknown",
+        evidence: ev,
+        note: { de: `Status ${status} ist kein eindeutiges Ergebnis, etwa wegen Zugriffsschutz oder einer vorübergehenden Störung.`, en: `Status ${status} is not conclusive, for example due to access protection or a temporary outage.` },
+      };
+    },
+  },
+  {
+    id: "distribution.site_title",
+    version: 1,
+    category: "distribution",
+    readmeContent: false,
+    title: { de: "Website: Seitentitel", en: "Website: page title" },
+    rationale: {
+      de: "Der Seitentitel (title-Element) erscheint in Suchergebnissen, Lesezeichen und Browser-Tabs.",
+      en: "The page title (title element) appears in search results, bookmarks and browser tabs.",
+    },
+    task: {
+      de: "Setze im HTML-Kopf ein title-Element mit Name und Nutzen der Anwendung.",
+      en: "Add a title element with the name and benefit of the application to the HTML head.",
+    },
+    effortMinutes: [5, 15],
+    impact: {
+      de: "Verständlichere Einträge in Suchergebnissen und Tabs; keine Garantie für Rankings.",
+      en: "Clearer entries in search results and tabs; no ranking guarantee.",
+    },
+    evaluate(ctx) {
+      const u = siteUnavailable(ctx, true);
+      if (u) return u;
+      const { facts, url } = siteContent(ctx);
+      if (facts.title) return { status: "present", evidence: [{ kind: "field", label: tr(ctx, "Website: title-Element im HTML", "Website: title element in the HTML"), url, lines: [facts.title.line, facts.title.line], snippet: facts.title.text }] };
+      return { status: "missing", evidence: [{ kind: "absence", label: tr(ctx, `Kein nicht leeres title-Element im ausgelieferten HTML von ${url}`, `No non-empty title element in the delivered HTML of ${url}`), url }] };
+    },
+  },
+  {
+    id: "distribution.site_description",
+    version: 1,
+    category: "distribution",
+    readmeContent: false,
+    title: { de: "Website: Meta-Beschreibung", en: "Website: meta description" },
+    rationale: {
+      de: "Suchmaschinen und Link-Vorschauen zeigen die Meta-Beschreibung oft als Kurztext unter dem Titel.",
+      en: "Search engines and link previews often show the meta description as a short text below the title.",
+    },
+    task: {
+      de: "Ergänze im HTML-Kopf eine meta description mit ein bis zwei Sätzen zum Nutzen.",
+      en: "Add a meta description with one or two sentences about the benefit to the HTML head.",
+    },
+    effortMinutes: [5, 15],
+    impact: {
+      de: "Aussagekräftigere Kurztexte in Suchergebnissen und Vorschauen; keine Garantie für Rankings.",
+      en: "More meaningful snippets in search results and previews; no ranking guarantee.",
+    },
+    evaluate(ctx) {
+      const u = siteUnavailable(ctx, true);
+      if (u) return u;
+      const { facts, url } = siteContent(ctx);
+      if (facts.description) return { status: "present", evidence: [{ kind: "field", label: tr(ctx, "Website: meta description im HTML", "Website: meta description in the HTML"), url, lines: [facts.description.line, facts.description.line], snippet: facts.description.text }] };
+      return { status: "missing", evidence: [{ kind: "absence", label: tr(ctx, `Kein meta-Element name="description" mit Inhalt im ausgelieferten HTML von ${url}`, `No meta element name="description" with content in the delivered HTML of ${url}`), url }] };
+    },
+  },
+  {
+    id: "distribution.site_og_image",
+    version: 1,
+    category: "distribution",
+    readmeContent: false,
+    title: { de: "Website: Vorschaubild für geteilte Links", en: "Website: preview image for shared links" },
+    rationale: {
+      de: "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens.",
+      en: "With an Open Graph image (og:image), social networks and messengers show an image instead of an empty frame when the link is shared.",
+    },
+    task: {
+      de: "Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property=\"og:image\" und absoluter Adresse darauf.",
+      en: "Create a preview image (about 1200 × 630 pixels) and reference it with meta property=\"og:image\" and an absolute address.",
+    },
+    effortMinutes: [15, 45],
+    impact: {
+      de: "Geteilte Links fallen in Feeds und Chats eher auf.",
+      en: "Shared links stand out more in feeds and chats.",
+    },
+    evaluate(ctx) {
+      const u = siteUnavailable(ctx, true);
+      if (u) return u;
+      const { facts, url } = siteContent(ctx);
+      if (facts.ogImage) {
+        return {
+          status: "present",
+          evidence: [{ kind: "field", label: tr(ctx, "Website: og:image im HTML", "Website: og:image in the HTML"), url, lines: [facts.ogImage.line, facts.ogImage.line], snippet: facts.ogImage.url }],
+          note: { de: "Das Bild selbst wurde nicht abgerufen.", en: "The image itself was not fetched." },
+        };
+      }
+      return { status: "missing", evidence: [{ kind: "absence", label: tr(ctx, `Kein meta-Element property="og:image" mit Inhalt im ausgelieferten HTML von ${url}`, `No meta element property="og:image" with content in the delivered HTML of ${url}`), url }] };
+    },
+  },
+  {
+    id: "trust.site_imprint",
+    version: 1,
+    category: "trust",
+    readmeContent: false,
+    title: { de: "Website: Impressum verlinkt", en: "Website: legal notice (imprint) linked" },
+    rationale: {
+      de: "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung.",
+      en: "A legal notice (imprint) shows who is behind the offer; many visitors and business customers look for it. In some countries, for example Germany, certain websites may be required to have one. This is a hint, not legal advice.",
+    },
+    task: {
+      de: "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.",
+      en: "Check whether your website needs or benefits from a legal notice and link it visibly, for example in the footer. Seek legal advice if in doubt.",
+    },
+    effortMinutes: [15, 60],
+    impact: {
+      de: "Mehr Vertrauen, besonders bei Geschäftskunden.",
+      en: "More trust, especially among business customers.",
+    },
+    evaluate(ctx) {
+      return legalLinkOutcome(ctx, "imprint");
+    },
+  },
+  {
+    id: "trust.site_privacy",
+    version: 1,
+    category: "trust",
+    readmeContent: false,
+    title: { de: "Website: Datenschutzerklärung verlinkt", en: "Website: privacy policy linked" },
+    rationale: {
+      de: "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
+      en: "A privacy policy shows which data the website processes. Depending on the country and the processing it may be required, for example under the GDPR. This is a hint, not legal advice.",
+    },
+    task: {
+      de: "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
+      en: "Check which information about data processing your website needs and link a privacy policy visibly. Seek legal advice if in doubt.",
+    },
+    effortMinutes: [30, 120],
+    impact: {
+      de: "Besucher können nachvollziehen, was mit ihren Daten geschieht.",
+      en: "Visitors can see what happens with their data.",
+    },
+    evaluate(ctx) {
+      return legalLinkOutcome(ctx, "privacy");
     },
   },
 ];

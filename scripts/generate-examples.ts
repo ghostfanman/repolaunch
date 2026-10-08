@@ -8,6 +8,7 @@ import { FIXTURE_OWNER, fixtureTransport } from "@/core/github/fixture-transport
 import { GitHubHttp } from "@/core/github/http";
 import { DEFAULT_COLLECT_LIMITS } from "@/core/limits";
 import { buildExport } from "@/core/report/export";
+import { fixtureSiteFetcher } from "@/core/site/fixture";
 import { runAudit } from "@/core/rules/engine";
 import type { UserContext } from "@/core/types";
 import { FIXTURE_REPOS } from "@/fixtures/repos";
@@ -21,7 +22,13 @@ const EXAMPLES: { dir: string; fixture: string; user: UserContext }[] = [
 
 for (const ex of EXAMPLES) {
   const http = new GitHubHttp({ limits: DEFAULT_COLLECT_LIMITS, transport: fixtureTransport(FIXTURE_REPOS) });
-  const snapshot = await collectSnapshot(http, { owner: FIXTURE_OWNER, repo: ex.fixture, goal: ex.user.goal, source: "fixture", fixtureName: ex.fixture }, DEFAULT_COLLECT_LIMITS, () => NOW);
+  const snapshot = await collectSnapshot(
+    http,
+    { owner: FIXTURE_OWNER, repo: ex.fixture, goal: ex.user.goal, source: "fixture", fixtureName: ex.fixture, projectTypeOverride: ex.user.projectTypeOverride },
+    DEFAULT_COLLECT_LIMITS,
+    () => NOW,
+    { siteFetcher: fixtureSiteFetcher(FIXTURE_REPOS) },
+  );
   const audit = runAudit(snapshot, ex.user, { now: NOW });
   const bundle = buildExport(snapshot, audit, ex.user, null);
   const out = path.resolve("docs/examples", ex.dir);

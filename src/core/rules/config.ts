@@ -61,6 +61,13 @@ export const DEFAULT_RULE_CONFIG: RuleConfig = {
     "distribution.funding": { enabled: true, weights: w(0, 0, 0, 0, 0), goalAdjust: { sponsors: 3, support_clients: 1 } },
     "distribution.commercial_offer": { enabled: true, weights: w(0, 0, 0, 0, 0), goalAdjust: { support_clients: 3, saas_customers: 3 } },
     "distribution.contributor_entry": { enabled: true, weights: w(0, 0, 0, 0, 0), goalAdjust: { contributors: 2 } },
+    // Website aus dem Website-Feld, nur bei Webprodukten. Impressum und Datenschutz sind Hinweise, keine Rechtsberatung.
+    "usability.site_reachable": { enabled: true, weights: w(0, 0, 3, 0, 0), goalAdjust: {} },
+    "distribution.site_title": { enabled: true, weights: w(0, 0, 2, 0, 0), goalAdjust: {} },
+    "distribution.site_description": { enabled: true, weights: w(0, 0, 2, 0, 0), goalAdjust: {} },
+    "distribution.site_og_image": { enabled: true, weights: w(0, 0, 1, 0, 0), goalAdjust: {} },
+    "trust.site_imprint": { enabled: true, weights: w(0, 0, 1, 0, 0), goalAdjust: {} },
+    "trust.site_privacy": { enabled: true, weights: w(0, 0, 2, 0, 0), goalAdjust: {} },
   },
 };
 

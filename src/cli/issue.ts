@@ -178,8 +178,8 @@ function footer(de: boolean, runUrl: string | undefined, repository: string | un
   const again = newIssueUrl(repository);
   const next = again ? (de ? ` [Neue Analyse starten](${again}), zum Beispiel nach deinen Änderungen.` : ` [Start a new analysis](${again}), for example after your changes.`) : "";
   return de
-    ? `---\n_Automatisch erstellt von RepoLaunch${run}. Regelbasierter Audit ohne KI: nur öffentliche Daten über die GitHub-API gelesen, kein Code ausgeführt._${next}`
-    : `---\n_Created automatically by RepoLaunch${run}. Rule-based audit without AI: only public data read via the GitHub API, no code executed._${next}`;
+    ? `---\n_Automatisch erstellt von RepoLaunch${run}. Regelbasierter Audit ohne KI: öffentliche Daten über die GitHub-API gelesen, bei Webprodukten zusätzlich ein lesender Abruf der im Repository angegebenen Website; kein Code ausgeführt._${next}`
+    : `---\n_Created automatically by RepoLaunch${run}. Rule-based audit without AI: public data read via the GitHub API, for web products also one read-only request to the website given in the repository; no code executed._${next}`;
 }
 
 export async function runIssueAudit(input: IssueAuditInput, api: IssueApi, deps: CliDeps & { now?: () => Date } = {}): Promise<IssueAuditResult> {

@@ -1,8 +1,9 @@
 name: "RepoLaunch: Analyse per Issue"
 
 # Für alle nutzbar: Jede Person mit GitHub-Konto öffnet das Issue-Formular "Repository analysieren".
-# Dieser Workflow liest nur öffentliche Daten über die GitHub-API, schreibt den Bericht als Kommentar
-# und schließt das Issue. Kein KI-Paket, kein Code des geprüften Repositories wird ausgeführt.
+# Dieser Workflow liest öffentliche Daten über die GitHub-API und bei Webprodukten einmal lesend die im
+# Repository angegebene Website, schreibt den Bericht als Kommentar und schließt das Issue.
+# Kein KI-Paket, kein Code des geprüften Repositories wird ausgeführt.
 
 on:
   issues:

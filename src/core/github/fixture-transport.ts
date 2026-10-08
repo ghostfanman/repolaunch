@@ -22,6 +22,8 @@ export interface FixtureRepo {
   releases?: unknown[];
   tags?: unknown[];
   goodFirstIssues?: unknown[];
+  /** Antworten der Website je Adresse (für die Website-Prüfung, siehe src/core/site/fixture.ts). */
+  site?: Record<string, { status: number; contentType?: string; html?: string; location?: string }>;
 }
 
 export const FIXTURE_OWNER = "repolaunch-fixtures";
