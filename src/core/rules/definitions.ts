@@ -35,6 +35,8 @@ export interface RuleDefinition {
   category: Category;
   /** Regel prüft README-Inhalt. Fehlt die README, wird die Aufgabe in "README erstellen" gebündelt. */
   readmeContent: boolean;
+  /** "website": Regel bewertet die Website aus dem Website-Feld, nicht das Repository (Gruppe "Website"). */
+  scope?: "website";
   title: Localized;
   rationale: Localized;
   task: Localized;
@@ -1141,6 +1143,7 @@ export const RULES: RuleDefinition[] = [
     version: 1,
     category: "usability",
     readmeContent: false,
+    scope: "website",
     title: { de: "Website: erreichbar", en: "Website: reachable" },
     rationale: {
       de: "Bei einem Webprodukt ist die Website der eigentliche Einstieg. Ist sie nicht erreichbar, endet der Besuch dort.",
@@ -1175,6 +1178,7 @@ export const RULES: RuleDefinition[] = [
     version: 1,
     category: "distribution",
     readmeContent: false,
+    scope: "website",
     title: { de: "Website: Seitentitel", en: "Website: page title" },
     rationale: {
       de: "Der Seitentitel (title-Element) erscheint in Suchergebnissen, Lesezeichen und Browser-Tabs.",
@@ -1202,6 +1206,7 @@ export const RULES: RuleDefinition[] = [
     version: 1,
     category: "distribution",
     readmeContent: false,
+    scope: "website",
     title: { de: "Website: Meta-Beschreibung", en: "Website: meta description" },
     rationale: {
       de: "Suchmaschinen und Link-Vorschauen zeigen die Meta-Beschreibung oft als Kurztext unter dem Titel.",
@@ -1229,6 +1234,7 @@ export const RULES: RuleDefinition[] = [
     version: 1,
     category: "distribution",
     readmeContent: false,
+    scope: "website",
     title: { de: "Website: Vorschaubild für geteilte Links", en: "Website: preview image for shared links" },
     rationale: {
       de: "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens.",
@@ -1262,6 +1268,7 @@ export const RULES: RuleDefinition[] = [
     version: 1,
     category: "trust",
     readmeContent: false,
+    scope: "website",
     title: { de: "Website: Impressum verlinkt", en: "Website: legal notice (imprint) linked" },
     rationale: {
       de: "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung.",
@@ -1285,6 +1292,7 @@ export const RULES: RuleDefinition[] = [
     version: 1,
     category: "trust",
     readmeContent: false,
+    scope: "website",
     title: { de: "Website: Datenschutzerklärung verlinkt", en: "Website: privacy policy linked" },
     rationale: {
       de: "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
@@ -1304,6 +1312,9 @@ export const RULES: RuleDefinition[] = [
     },
   },
 ];
+
+/** Regeln der Gruppe "Website" (lesende Prüfung der Website aus dem Website-Feld). */
+export const WEBSITE_RULE_IDS: ReadonlySet<string> = new Set(RULES.filter((r) => r.scope === "website").map((r) => r.id));
 
 export function ruleById(id: string): RuleDefinition | undefined {
   return RULES.find((r) => r.id === id);

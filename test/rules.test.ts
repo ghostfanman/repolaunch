@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { classifyProject } from "@/core/analysis/classify";
 import { applyRuleOverrides, DEFAULT_RULE_CONFIG, effectiveWeight, RULESET_VERSION } from "@/core/rules/config";
 import { RULES } from "@/core/rules/definitions";
-import { openWeight, runAudit } from "@/core/rules/engine";
-import { GOALS, PROJECT_TYPES, type Goal, type ProjectType, type RepoSnapshot } from "@/core/types";
+import { compareTasks, openWeight, prioritize, runAudit } from "@/core/rules/engine";
+import { GOALS, PROJECT_TYPES, type Category, type Finding, type Goal, type ProjectType, type RepoSnapshot } from "@/core/types";
 import { cloneFixture, fixtureSnapshot, NOW, user } from "./helpers";
 
 function finding(audit: ReturnType<typeof runAudit>, ruleId: string) {
@@ -298,5 +298,70 @@ describe("Hinweis auf abgeschaltete Regeln", () => {
     const cfg = applyRuleOverrides(DEFAULT_RULE_CONFIG, { rules: { "distribution.topics": { enabled: false } } });
     const a = runAudit(await fixtureSnapshot("web-app"), user(), { config: cfg, now: NOW });
     expect(finding(a, "distribution.topics").activeWith).toBeUndefined();
+  });
+});
+
+describe("Reihenfolge der Aufgaben", () => {
+  // Sortierung aus Regelwerk 2026.10.1, zum Vergleich für alle Projekttypen außer Webprodukt
+  const ruleOrder = new Map(RULES.map((r, i) => [r.id, i]));
+  const categories = ["understanding", "usability", "trust", "distribution"];
+  const legacy = (findings: ReturnType<typeof audit>["findings"]) =>
+    findings
+      .filter((f) => f.status === "missing" && f.task && f.effortMinutes)
+      .sort((a, b) => openWeight(b) - openWeight(a) || a.effortMinutes![0] - b.effortMinutes![0] || categories.indexOf(a.category) - categories.indexOf(b.category) || ruleOrder.get(a.ruleId)! - ruleOrder.get(b.ruleId)!)
+      .slice(0, 5)
+      .map((f) => f.id);
+
+  it("andere Projekttypen behalten die bisherige Reihenfolge", async () => {
+    for (const name of ["cli-tool", "library", "web-app"]) {
+      for (const goal of GOALS) {
+        for (const type of ["cli", "library", "template", "other"] as ProjectType[]) {
+          const a = audit(await fixtureSnapshot(name, goal), goal, type);
+          expect(a.tasks.map((t) => t.findingId), `${name} ${goal} ${type}`).toEqual(legacy(a.findings));
+        }
+      }
+    }
+  });
+
+  it("ist deterministisch, unabhängig von der Eingabereihenfolge", async () => {
+    const a = audit(await fixtureSnapshot("web-app", "saas_customers"), "saas_customers");
+    const reversed = prioritize([...a.findings].reverse(), "webapp").map((t) => t.findingId);
+    expect(reversed).toEqual(a.tasks.map((t) => t.findingId));
+  });
+
+  it("Webprodukt: bei gleicher Schwere zuerst Website-Befunde, Schwere bleibt erstes Kriterium", async () => {
+    const f = (ruleId: string, severity: "high" | "medium" | "low", weight: number, category: Category): Finding => ({
+      id: `${ruleId}@1`,
+      ruleId,
+      ruleVersion: 1,
+      category,
+      status: "missing",
+      severity,
+      weight,
+      title: ruleId,
+      evidence: [],
+      rationale: "",
+      task: "x",
+      effort: "x",
+      effortMinutes: [5, 10],
+      impactHypothesis: "x",
+    });
+    const findings = [
+      f("trust.security_policy", "medium", 2, "trust"),
+      f("trust.site_privacy", "medium", 2, "trust"),
+      f("understanding.description", "high", 3, "understanding"),
+      f("distribution.site_og_image", "low", 1, "distribution"),
+      f("usability.visual_demo", "low", 1, "usability"),
+    ];
+    expect(prioritize([...findings], "webapp").map((t) => t.findingId)).toEqual([
+      "understanding.description@1",
+      "trust.site_privacy@1",
+      "trust.security_policy@1",
+      "distribution.site_og_image@1",
+      "usability.visual_demo@1",
+    ]);
+    // Ohne Webprodukt zählt die Gruppe nicht
+    expect(prioritize([...findings], "cli").map((t) => t.findingId).slice(1, 3)).toEqual(["trust.security_policy@1", "trust.site_privacy@1"]);
+    expect([...findings].sort(compareTasks("webapp"))[0]!.ruleId).toBe("understanding.description");
   });
 });

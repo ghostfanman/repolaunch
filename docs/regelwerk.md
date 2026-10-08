@@ -24,6 +24,19 @@ Eine Regelversion steigt, wenn sich ihre Auswertung ändert. Reine Gewichtsände
 
 Ohne Website-Feld oder mit einer Adresse auf github.com sind die Regeln nicht relevant (das Feld selbst bewertet `distribution.homepage`). Ist der Abruf abgeschaltet (`REPOLAUNCH_SITE_CHECK=0`) oder fehlgeschlagen, gelten sie als unbekannt und senken nur die Abdeckung. Enthält das HTML keine Links, aber Skripte, bleiben Impressum und Datenschutz unbekannt, weil RepoLaunch kein JavaScript ausführt.
 
+## Reihenfolge der fünf Aufgaben
+
+Die Aufgaben werden nach diesen Kriterien sortiert, in dieser Reihenfolge (Code: `compareTasks` in `src/core/rules/engine.ts`):
+
+1. Schwere des offenen Teils, absteigend: hoch, mittel, niedrig.
+2. Nur bei Projekttyp "Webprodukt / SaaS": Website-Regeln (`scope: "website"`, Gruppe "Website") vor Regeln, die nur das Repository betreffen. Besucher eines Webprodukts sehen zuerst die Website.
+3. Offenes Gewicht (Gewicht abzüglich Teilgutschrift), absteigend.
+4. Untere Grenze des geschätzten Aufwands in Minuten, aufsteigend.
+5. Kategorie: Verständnis, Nutzbarkeit, Vertrauen, Verbreitung und Vermarktung.
+6. Position im Regelkatalog. Sie ist für jede Regel eindeutig, daher gibt es keine Gleichstände und die Sortierung ist deterministisch.
+
+Für alle anderen Projekttypen entfällt Kriterium 2. Weil die Schwere direkt aus dem offenen Gewicht folgt (3 hoch, 2 mittel, 1 niedrig), ergibt sich dort genau die Reihenfolge von Regelwerk 2026.10.1.
+
 ## Gewichtsmodell
 
 1. Grundgewicht je Projekttyp (`weights`, 0 bis 3).

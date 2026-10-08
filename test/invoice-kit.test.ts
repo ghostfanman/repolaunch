@@ -48,12 +48,13 @@ describe("Fall invoice-kit (Issue #2)", () => {
 
   it("die fünf Aufgaben enthalten keine reinen Mitwirkenden-Aufgaben; die Sicherheitsrichtlinie bleibt", async () => {
     const { audit } = await auditInvoiceKit();
+    // Webprodukt: bei gleicher Schwere zuerst die Website (Regelwerk 2026.10.2)
     expect(audit.tasks.map((t) => t.findingId)).toEqual([
-      "trust.security_policy@1",
       "trust.site_privacy@1",
-      "usability.visual_demo@2",
+      "trust.security_policy@1",
       "trust.site_imprint@1",
       "distribution.site_og_image@1",
+      "usability.visual_demo@2",
     ]);
     for (const id of CONTRIBUTOR_ONLY) {
       expect(audit.tasks.some((t) => t.findingId.startsWith(`${id}@`)), id).toBe(false);

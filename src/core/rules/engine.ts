@@ -10,7 +10,7 @@ import { detectInjection } from "../security/injection";
 import { t } from "@/i18n/messages";
 import { GOALS, PROJECT_TYPES, type AuditResult, type Category, type Finding, type Goal, type PrioritizedTask, type ProjectType, type ReadinessScore, type RepoSnapshot, type Severity, type UserContext } from "../types";
 import { DEFAULT_RULE_CONFIG, effectiveWeight, type RuleConfig } from "./config";
-import { RULES, type RuleContext } from "./definitions";
+import { RULES, WEBSITE_RULE_IDS, type RuleContext } from "./definitions";
 import { buildGuide } from "./guides";
 
 const CATEGORY_ORDER: Category[] = ["understanding", "usability", "trust", "distribution"];
@@ -155,7 +155,7 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
     }
   }
 
-  const tasks = prioritize(findings);
+  const tasks = prioritize(findings, classification.used);
   const score = computeScore(findings, lang);
   return {
     schemaVersion: 1,
@@ -176,17 +176,37 @@ export function openWeight(f: Finding): number {
   return f.weight - (f.partialCredit ?? 0);
 }
 
-export function prioritize(findings: Finding[]): PrioritizedTask[] {
+const SEVERITY_RANK: Record<Severity, number> = { high: 3, medium: 2, low: 1, none: 0 };
+
+/**
+ * Vollständige Reihenfolge der priorisierten Aufgaben (auch in docs/regelwerk.md beschrieben):
+ * 1. Schwere des offenen Teils, absteigend (hoch, mittel, niedrig).
+ * 2. Nur bei Projekttyp "webapp": Website-Regeln (Gruppe "Website") vor Regeln, die nur das Repository betreffen.
+ *    Besucher eines Webprodukts sehen zuerst die Website.
+ * 3. Offenes Gewicht (Gewicht abzüglich Teilgutschrift), absteigend.
+ * 4. Untere Grenze des Aufwands in Minuten, aufsteigend.
+ * 5. Kategorie: Verständnis, Nutzbarkeit, Vertrauen, Verbreitung.
+ * 6. Position im Regelkatalog (RULES). Sie ist eindeutig; damit ist die Sortierung deterministisch.
+ * Für andere Projekttypen entfällt Schritt 2; weil die Schwere aus dem offenen Gewicht folgt, entspricht die
+ * Reihenfolge dann genau der von Regelwerk 2026.10.1.
+ */
+export function compareTasks(projectType: ProjectType): (a: Finding, b: Finding) => number {
   const ruleOrder = new Map(RULES.map((r, i) => [r.id, i]));
+  const websiteFirst = projectType === "webapp";
+  const site = (f: Finding) => (WEBSITE_RULE_IDS.has(f.ruleId) ? 1 : 0);
+  return (a, b) =>
+    SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity] ||
+    (websiteFirst ? site(b) - site(a) : 0) ||
+    openWeight(b) - openWeight(a) ||
+    a.effortMinutes![0] - b.effortMinutes![0] ||
+    CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) ||
+    (ruleOrder.get(a.ruleId) ?? 0) - (ruleOrder.get(b.ruleId) ?? 0);
+}
+
+export function prioritize(findings: Finding[], projectType: ProjectType): PrioritizedTask[] {
   return findings
     .filter((f) => f.status === "missing" && f.task && f.effortMinutes)
-    .sort(
-      (a, b) =>
-        openWeight(b) - openWeight(a) ||
-        a.effortMinutes![0] - b.effortMinutes![0] ||
-        CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) ||
-        (ruleOrder.get(a.ruleId) ?? 0) - (ruleOrder.get(b.ruleId) ?? 0),
-    )
+    .sort(compareTasks(projectType))
     .slice(0, 5)
     .map((f, i) => ({
       rank: i + 1,
