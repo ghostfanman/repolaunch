@@ -95,6 +95,10 @@ Alle Einstellungen über Umgebungsvariablen, siehe [.env.example](.env.example).
 - [Bestandene Prüfungen und Blocker](docs/checks.md)
 - Beispielberichte: [CLI-Tool](docs/examples/cli-tool/audit.md), [Webprodukt](docs/examples/web-app/audit.md)
 
+## Maintainer
+
+Emanuele ([@ghostfanman](https://github.com/ghostfanman)), entwickelt zusammen mit Claude Code.
+
 ## Lizenz
 
 Der Audit-Kern und dieses Repository stehen unter der [MIT-Lizenz](LICENSE). Siehe auch [CONTRIBUTING.md](CONTRIBUTING.md) und [SECURITY.md](SECURITY.md).

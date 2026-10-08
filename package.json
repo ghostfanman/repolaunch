@@ -4,6 +4,11 @@
   "private": true,
   "description": "Belegbarer Repository-Audit, priorisierte Aufgaben und optionales KI-Launch-Paket für GitHub-Maintainer.",
   "license": "MIT",
+  "author": "Emanuele (https://github.com/ghostfanman)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghostfanman/repolaunch.git"
+  },
   "type": "module",
   "engines": {
     "node": ">=22.13"
