@@ -31,6 +31,8 @@ Next.js Route Handler (src/app/api)  ->  Service (src/server/service.ts)
 
 Der Kern (`src/core`) kennt weder Next.js noch SQLite und ist vollständig mit Fixtures testbar.
 
+Zweiter Zugang ohne Server: `src/cli/audit.ts` nutzt denselben Kern und wird vom Workflow `.github/workflows/repolaunch-audit.yml` gestartet. Eingaben kommen aus dem Formular "Run workflow" ausschließlich über Umgebungsvariablen, der Bericht geht in die Zusammenfassung des Laufs, die Dateien in ein Artefakt mit 7 Tagen Aufbewahrung. Das KI-Paket nutzt das Repository-Secret `ANTHROPIC_API_KEY`, das nur bei gesetztem Häkchen an den Lauf übergeben wird.
+
 ## Entscheidungen
 
 | Thema | Entscheidung | Begründung |

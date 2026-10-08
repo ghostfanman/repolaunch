@@ -12,6 +12,16 @@ RepoLaunch analysiert ein öffentliches GitHub-Repository mit reinem Lesezugriff
 
 RepoLaunch verspricht keine Rankings, Trending-Platzierungen, Sterne oder Umsätze. Der angezeigte Score ist ein interner Bereitschaftsscore dieses Werkzeugs; Sterne fließen nicht ein.
 
+## Direkt auf GitHub nutzen (ohne Server)
+
+1. Im Repository den Reiter **Actions** öffnen und links **RepoLaunch: Repository analysieren** wählen.
+2. **Run workflow** klicken, das Formular ausfüllen (Repository, Ziel, Sprache, optional Projekttyp, Zielgruppe, Merkmale) und starten.
+3. Nach etwa einer Minute den Lauf öffnen: Der vollständige Bericht steht in der Zusammenfassung, alle Dateien liegen unten unter **Artifacts** (7 Tage aufbewahrt).
+
+Optional KI-Launch-Paket: einmalig unter **Settings > Secrets and variables > Actions** das Secret `ANTHROPIC_API_KEY` anlegen und im Formular das Häkchen setzen. Ohne Häkchen wird der Schlüssel nicht an den Lauf übergeben. Die Ergebnisse sehen nur Personen mit Zugriff auf dieses Repository.
+
+Lokal ohne Oberfläche: `INPUT_REPO=owner/repo npm run repo-audit`.
+
 ## Schnellstart
 
 Voraussetzungen: Node.js 24 LTS (empfohlen) oder Node.js ab 22.13. Keine nativen Abhängigkeiten; SQLite kommt über das eingebaute `node:sqlite`.
@@ -40,7 +50,7 @@ REPOLAUNCH_DEMO=1 AI_PROVIDER=fake npm start
 ```sh
 npm run typecheck
 npm run lint
-npm test                    # 124 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, LLM-Fehler, Exporte, Ende-zu-Ende
+npm test                    # 136 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, LLM-Fehler, Exporte, Ende-zu-Ende
 npm run build
 npm run smoke:browser       # gegen laufenden Server mit REPOLAUNCH_DEMO=1 AI_PROVIDER=fake (axe-core, WCAG 2.2 A/AA)
 npm run smoke:live          # Live-Audit eines öffentlichen Repositorys, Standard: ghostfanman/invoice-kit (nur lesend)

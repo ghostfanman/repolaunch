@@ -11,6 +11,7 @@ Entwickelt bis 7. Oktober 2026 als Unterprojekt in `ghostfanman/invoice-kit` (Br
 | `npm test` | 124 von 124 Tests bestanden |
 | `npm run build` | erfolgreich |
 | Browser-Smoke-Test | 18 von 18 Prüfungen bestanden |
+| Audit direkt auf GitHub (`.github/workflows/repolaunch-audit.yml`, `npm run repo-audit`) | 12 eigene Tests (Eingaben, Fehler, KI ohne Schlüssel, KI mit Testadapter, KI-Fehler); Probelauf gegen `ghostfanman/invoice-kit` mit Zusammenfassung und Ausgabedateien wie auf dem Runner |
 | Workflow `.github/workflows/ci.yml` | übernommen aus dem Ursprungsrepository, ohne Pfadfilter und Unterverzeichnis |
 
 ## Bestanden (im Ursprungsrepository, 7. Oktober 2026)
