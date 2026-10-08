@@ -359,9 +359,9 @@
         "impactHypothesis": null
       },
       {
-        "id": "usability.visual_demo@2",
+        "id": "usability.visual_demo@3",
         "ruleId": "usability.visual_demo",
-        "ruleVersion": 2,
+        "ruleVersion": 3,
         "category": "usability",
         "title": "Screenshot, Animation oder Demo",
         "rationale": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss. Ein Demo-Link ist vorhanden, es fehlt nur ein Bild der Anwendung.",
@@ -1315,7 +1315,7 @@
       },
       {
         "rank": 5,
-        "findingId": "usability.visual_demo@2",
+        "findingId": "usability.visual_demo@3",
         "title": "Screenshot, Animation oder Demo",
         "task": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
         "severity": "low",
@@ -1608,20 +1608,20 @@
           "effort": "10 bis 20 Min.",
           "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
           "findingIds": [
-            "usability.visual_demo@2"
+            "usability.visual_demo@3"
           ]
         },
         {
           "week": 2,
-          "title": "Erstes Release vorbereiten",
-          "why": "Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung.",
+          "title": "Verbesserungen veröffentlichen",
+          "why": "Die erledigten Aufgaben gebündelt live stellen; das gibt einen konkreten Anlass für die Ankündigung.",
           "effort": "30 bis 90 Min.",
-          "signal": "Release mit Notes veröffentlicht",
+          "signal": "Änderungen sind auf der Website bzw. im Repository sichtbar",
           "findingIds": []
         },
         {
           "week": 3,
-          "title": "Release ankündigen",
+          "title": "Neuerungen ankündigen",
           "why": "Kurze, ehrliche Ankündigung mit Nutzen, Installationsweg und Link. Keine Versprechen zu Reichweite.",
           "effort": "30 bis 60 Min.",
           "signal": "Besuche und Rückfragen nach der Ankündigung (sofern messbar)",
@@ -1655,6 +1655,7 @@
     },
     "injectionFlags": [],
     "siteScope": {
+      "fetched": true,
       "url": "https://repolaunch-fixtures.github.io/invoice-kit/",
       "finalUrl": "https://repolaunch-fixtures.github.io/invoice-kit/",
       "uncheckedReadmeLinks": [

@@ -9,6 +9,7 @@ export type SiteFetchFailure =
   | "too_many_redirects"
   | "bad_redirect"
   | "unsupported_encoding"
+  | "decode_error"
   | "network_error";
 
 export type SiteFetchResult =
@@ -26,8 +27,9 @@ export type SiteFetchResult =
       documentBytes: number;
       /** Übertragene Bytes des Bodys (nach HTTP-Transferkodierung, vor dem Entpacken). */
       transferBytes: number;
-      /** true, wenn das Dokument wegen des Größenlimits nur teilweise gelesen wurde. */
+      /** true, wenn das Dokument nur teilweise gelesen wurde (Größenlimit oder nicht dekodierbarer Rest). */
       truncated: boolean;
+      truncatedBy?: "limit" | "decode";
       redirects: string[];
       /** Gesendete HTTP-Anfragen; jede Weiterleitung zählt als eigener Abruf. */
       requests: number;

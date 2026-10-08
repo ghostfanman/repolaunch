@@ -11,7 +11,7 @@ import http, { type IncomingMessage } from "node:http";
 import https from "node:https";
 import { isIP, type LookupFunction } from "node:net";
 import type { Transform } from "node:stream";
-import { createBrotliDecompress, createGunzip, createInflate } from "node:zlib";
+import { constants as zlibConstants, createBrotliDecompress, createGunzip, createInflate, createInflateRaw } from "node:zlib";
 import { isPublicAddress } from "./address";
 import { isHtmlContentType, type SiteFetcher, type SiteFetchFailure, type SiteFetchResult } from "./types";
 
@@ -63,12 +63,12 @@ function withSignal<T>(p: Promise<T>, signal: AbortSignal): Promise<T> {
   });
 }
 
-function sendRequest(url: URL, address: { address: string; family: number }, signal: AbortSignal): Promise<IncomingMessage> {
+function sendRequest(url: URL, addresses: { address: string; family: number }[], signal: AbortSignal): Promise<IncomingMessage> {
   const mod = url.protocol === "https:" ? https : http;
-  // Verbindung nur zur bereits geprüften Adresse
+  // Verbindung nur zu bereits geprüften Adressen; mit all: true (Happy Eyeballs) alle geprüften Adressen
   const pinned: LookupFunction = (_host, opts, cb) => {
-    if (opts.all) cb(null, [{ address: address.address, family: address.family }]);
-    else cb(null, address.address, address.family);
+    if (opts.all) cb(null, addresses.map((a) => ({ address: a.address, family: a.family })));
+    else cb(null, addresses[0]!.address, addresses[0]!.family);
   };
   return new Promise((resolve, reject) => {
     const req = mod.request(
@@ -96,34 +96,44 @@ interface BodyRead {
   body: Buffer;
   transferBytes: number;
   truncated: boolean;
+  /** Grund für ein unvollständiges Dokument: Größenlimit oder nicht dekodierbarer Rest der Antwort. */
+  truncatedBy?: "limit" | "decode";
+}
+
+/** Entpacker, der auch bei leerem oder unvollständigem Strom ohne Fehler endet (Sync-Flush statt Finish). */
+function makeDecoder(encoding: string, firstByte: number | undefined): Transform | null {
+  if (encoding === "gzip" || encoding === "x-gzip") return createGunzip({ finishFlush: zlibConstants.Z_SYNC_FLUSH });
+  if (encoding === "br") return createBrotliDecompress({ finishFlush: zlibConstants.BROTLI_OPERATION_FLUSH });
+  // "deflate" kommt in der Praxis mit und ohne zlib-Kopf vor; ohne gültigen Kopf ist es rohes Deflate.
+  const zlibHeader = firstByte !== undefined && (firstByte & 0x0f) === 8;
+  return zlibHeader ? createInflate({ finishFlush: zlibConstants.Z_SYNC_FLUSH }) : createInflateRaw({ finishFlush: zlibConstants.Z_SYNC_FLUSH });
 }
 
 /**
  * Liest den Body gestreamt und entpackt ihn dabei. Das Limit gilt für die entpackten Bytes: Ist es erreicht,
  * wird abgeschnitten (truncated), Verbindung und Entpacker werden sofort beendet. Das schützt auch gegen stark
- * komprimierte Antworten. Die übertragene Menge ist zusätzlich auf maxBytes begrenzt.
+ * komprimierte Antworten. Die übertragene Menge ist zusätzlich begrenzt: Wird sie überschritten, endet der
+ * Empfang, und der Entpacker verarbeitet noch, was schon empfangen wurde (bis zu einem Datenblock über dem Limit).
  */
 function readBody(res: IncomingMessage, encoding: string, maxBytes: number, signal: AbortSignal): Promise<BodyRead> {
-  let decoder: Transform | null;
-  if (encoding === "identity") decoder = null;
-  else if (encoding === "gzip" || encoding === "x-gzip") decoder = createGunzip();
-  else if (encoding === "deflate") decoder = createInflate();
-  else if (encoding === "br") decoder = createBrotliDecompress();
-  else {
+  if (!["identity", "gzip", "x-gzip", "deflate", "br"].includes(encoding)) {
     res.destroy();
     return Promise.reject(new FetchFailure("unsupported_encoding"));
   }
+  const compressed = encoding !== "identity";
   return new Promise<BodyRead>((resolve, reject) => {
+    let decoder: Transform | null = null;
     const chunks: Buffer[] = [];
     let size = 0;
     let transferBytes = 0;
-    let truncated = false;
+    let truncatedBy: BodyRead["truncatedBy"];
     let settled = false;
     let resEnded = false;
+    let transferCapped = false;
     const done = () => {
       if (settled) return;
       settled = true;
-      resolve({ body: Buffer.concat(chunks, size), transferBytes, truncated });
+      resolve({ body: Buffer.concat(chunks, size), transferBytes, truncated: truncatedBy !== undefined, ...(truncatedBy ? { truncatedBy } : {}) });
     };
     const fail = (failure: SiteFetchFailure) => {
       if (settled) return;
@@ -132,8 +142,9 @@ function readBody(res: IncomingMessage, encoding: string, maxBytes: number, sign
       decoder?.destroy();
       reject(new FetchFailure(failure));
     };
+    // Entpacktes Limit erreicht: sofort beenden
     const cut = () => {
-      truncated = true;
+      truncatedBy = "limit";
       done();
       res.destroy();
       decoder?.destroy();
@@ -152,39 +163,64 @@ function readBody(res: IncomingMessage, encoding: string, maxBytes: number, sign
       chunks.push(chunk);
       size += chunk.byteLength;
     };
+    const attachDecoder = (d: Transform) => {
+      decoder = d;
+      d.on("data", take);
+      d.on("end", done);
+      d.on("error", () => {
+        // Beschädigte Daten (mit Sync-Flush endet ein bloß unvollständiger Strom ohne Fehler): Bereits Entpacktes
+        // gilt als unvollständiges Dokument, ohne entpackte Daten ist die Antwort nicht lesbar.
+        if (size > 0) {
+          truncatedBy = "decode";
+          done();
+        } else fail("decode_error");
+      });
+    };
     res.on("data", (chunk: Buffer) => {
-      if (settled) return;
+      if (settled || transferCapped) return;
       transferBytes += chunk.byteLength;
+      if (compressed && !decoder) attachDecoder(makeDecoder(encoding, chunk[0]) as Transform);
       if (decoder) decoder.write(chunk);
       else take(chunk);
-      if (!settled && transferBytes > maxBytes) cut();
+      if (!settled && transferBytes > maxBytes) {
+        // Übertragungsgrenze: nicht mehr empfangen, aber Empfangenes noch entpacken
+        transferCapped = true;
+        truncatedBy = "limit";
+        res.destroy();
+        if (decoder) decoder.end();
+        else done();
+      }
     });
     res.on("end", () => {
       resEnded = true;
       if (decoder) decoder.end();
       else done();
     });
-    res.on("error", () => fail(signal.aborted ? "timeout" : "network_error"));
-    res.on("close", () => {
-      if (!resEnded) fail(signal.aborted ? "timeout" : "network_error");
+    res.on("error", () => {
+      if (!transferCapped) fail(signal.aborted ? "timeout" : "network_error");
     });
-    if (decoder) {
-      decoder.on("data", take);
-      decoder.on("end", done);
-      // Beschädigte komprimierte Daten
-      decoder.on("error", () => fail("network_error"));
-    }
+    res.on("close", () => {
+      if (!resEnded && !transferCapped) fail(signal.aborted ? "timeout" : "network_error");
+    });
   });
 }
 
+/** Zeichensatz wie im HTML-Standard: BOM vor Header, Header vor meta; meta mit utf-16 bedeutet utf-8. */
 function decodeText(body: Buffer, contentType: string): string {
-  const fromHeader = contentType.match(/charset\s*=\s*"?([\w-]+)/i)?.[1];
-  const fromMeta = body.subarray(0, 2048).toString("latin1").match(/<meta[^>]+charset\s*=\s*["']?([\w-]+)/i)?.[1];
-  const label = (fromHeader ?? fromMeta ?? "utf-8").toLowerCase();
+  let label: string;
+  if (body[0] === 0xef && body[1] === 0xbb && body[2] === 0xbf) label = "utf-8";
+  else if (body[0] === 0xfe && body[1] === 0xff) label = "utf-16be";
+  else if (body[0] === 0xff && body[1] === 0xfe) label = "utf-16le";
+  else {
+    const fromHeader = contentType.match(/charset\s*=\s*["']?([\w-]+)/i)?.[1];
+    let fromMeta = body.subarray(0, 2048).toString("latin1").match(/<meta[^>]+charset\s*=\s*["']?([\w-]+)/i)?.[1];
+    if (fromMeta && /^utf-16/i.test(fromMeta)) fromMeta = "utf-8";
+    label = (fromHeader ?? fromMeta ?? "utf-8").toLowerCase();
+  }
   try {
-    return new TextDecoder(label).decode(body).replace(/^﻿/, "");
+    return new TextDecoder(label).decode(body).replace(/^\uFEFF/, "");
   } catch {
-    return new TextDecoder("utf-8").decode(body).replace(/^﻿/, "");
+    return new TextDecoder("utf-8").decode(body).replace(/^\uFEFF/, "");
   }
 }
 
@@ -215,10 +251,10 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
 
         // Adresse auflösen und prüfen, bevor eine Verbindung entsteht
         const host = url.hostname.replace(/^\[|\]$/g, "");
-        let target: { address: string; family: number };
+        let targets: { address: string; family: number }[];
         if (isIP(host)) {
           if (!isAllowed(host)) return fail("blocked_address");
-          target = { address: host, family: isIP(host) };
+          targets = [{ address: host, family: isIP(host) }];
         } else {
           let addresses: { address: string; family: number }[];
           try {
@@ -229,13 +265,13 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
           if (addresses.length === 0) return fail("dns_failed");
           // Eine einzige nicht erlaubte Adresse reicht zur Ablehnung.
           if (addresses.some((a) => !isAllowed(a.address))) return fail("blocked_address");
-          target = addresses[0]!;
+          targets = addresses;
         }
 
         let res: IncomingMessage;
         requests += 1;
         try {
-          res = await sendRequest(url, target, signal);
+          res = await sendRequest(url, targets, signal);
         } catch {
           return fail(signal.aborted ? "timeout" : "network_error");
         }
@@ -280,6 +316,7 @@ export function createSiteFetcher(options: SiteFetchOptions = {}): SiteFetcher {
           documentBytes: read.body.byteLength,
           transferBytes: read.transferBytes,
           truncated: read.truncated,
+          ...(read.truncatedBy ? { truncatedBy: read.truncatedBy } : {}),
           redirects,
           requests,
         };

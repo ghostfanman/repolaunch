@@ -1,7 +1,8 @@
 // Verständliche Einordnung für Einsteiger: Score in Worten, Stärken und kurze Begriffserklärungen.
 // Die Einordnung beschreibt nur den internen Score; sie ist keine Erfolgsprognose.
 
-import type { AuditResult, Finding, Language, PreviousAudit, RepoSnapshot, SiteScope } from "../types";
+import { t } from "@/i18n/messages";
+import type { AuditResult, Finding, Goal, Language, PreviousAudit, ProjectType, RepoSnapshot, SiteScope } from "../types";
 
 export function scoreVerdict(value: number | null, lang: Language): string {
   const de = lang === "de";
@@ -26,7 +27,7 @@ const GLOSSARY: { match: RegExp; term: Record<Language, string>; text: Record<La
   { match: /\bIssues?\b/i, term: { de: "Issue", en: "Issue" }, text: { de: "Ein Eintrag für Fragen, Fehler oder Ideen im Reiter „Issues“.", en: "An entry for questions, bugs or ideas in the “Issues” tab." } },
   { match: /\bPull Requests?\b/i, term: { de: "Pull Request", en: "Pull request" }, text: { de: "Ein Änderungsvorschlag, den andere einreichen und du prüfst und übernimmst.", en: "A proposed change that others submit and you review and merge." } },
   { match: /\bLi[cz]en[sz]/i, term: { de: "Lizenz", en: "License" }, text: { de: "Regelt, was andere mit deinem Code tun dürfen. Ohne Lizenz ist die Nutzung rechtlich unklar.", en: "Defines what others may do with your code. Without one, use is legally unclear." } },
-  { match: /\bMarkdown\b|eckigen Klammern|square brackets/i, term: { de: "Markdown", en: "Markdown" }, text: { de: "Die einfache Textformatierung von GitHub: # für Überschriften, - für Listen, [Text](Adresse) für Links.", en: "GitHub's simple text formatting: # for headings, - for lists, [text](address) for links." } },
+  { match: /\bMarkdown\b|eckigen Klammern|square brackets/i, term: { de: "Markdown", en: "Markdown" }, text: { de: "Die einfache Textformatierung von GitHub: `#` für Überschriften, `-` für Listen, `[Text](Adresse)` für Links.", en: "GitHub's simple text formatting: `#` for headings, `-` for lists, `[text](address)` for links." } },
 ];
 
 /** Begriffe, die im übergebenen Text vorkommen, mit kurzer Erklärung. */
@@ -38,8 +39,9 @@ export function glossaryFor(text: string, lang: Language): { term: string; text:
  * Konkreter Satz zu einer belegten früheren Analyse. Weicht die Regelwerkversion ab, sagt er ausdrücklich,
  * dass ein Unterschied auch vom Regelwerk stammen kann. Ohne frühere Analyse gibt es keinen Satz.
  */
-export function previousAuditSentence(prev: PreviousAudit, current: { rulesetVersion: string; commitSha: string }, lang: Language): string {
+export function previousAuditSentence(prev: PreviousAudit, current: { rulesetVersion: string; commitSha: string; goal: Goal; projectType: ProjectType }, lang: Language): string {
   const de = lang === "de";
+  const m = t(lang);
   const score = prev.score === null ? (de ? "ohne Score" : "without a score") : de ? `${prev.score} von 100 Punkten` : `${prev.score} out of 100 points`;
   const sameCommit = prev.commitSha !== null && prev.commitSha === current.commitSha;
   const commit = prev.commitSha ? (de ? `, Commit \`${prev.commitSha.slice(0, 7)}\`` : `, commit \`${prev.commitSha.slice(0, 7)}\``) : "";
@@ -47,14 +49,28 @@ export function previousAuditSentence(prev: PreviousAudit, current: { rulesetVer
     ? `Frühere Analyse dieses Repositorys (${prev.reference}, ${prev.date}): ${score} mit Regelwerk \`${prev.rulesetVersion}\`${commit}.`
     : `Earlier analysis of this repository (${prev.reference}, ${prev.date}): ${score} with ruleset \`${prev.rulesetVersion}\`${commit}.`;
   const outside = de ? "Angaben außerhalb des Commits (z. B. Beschreibung, Topics, Releases, Website)" : "information outside the commit (e.g. description, topics, releases, website)";
+  // Ziel und Projekttyp ändern die Gewichte; nur belegte Unterschiede werden genannt
+  const changed: string[] = [];
+  if (prev.goal && prev.goal !== current.goal) changed.push(de ? `Ziel damals "${m.goals[prev.goal]}"` : `goal then "${m.goals[prev.goal]}"`);
+  if (prev.projectType && prev.projectType !== current.projectType) changed.push(de ? `Projekttyp damals "${m.projectTypes[prev.projectType]}"` : `project type then "${m.projectTypes[prev.projectType]}"`);
+  const settings = changed.length ? (de ? ` Außerdem anders: ${changed.join(", ")}; auch das verändert die Gewichte.` : ` Also different: ${changed.join(", ")}; this changes the weights too.`) : "";
   if (prev.rulesetVersion !== current.rulesetVersion) {
     return de
-      ? `${head} Das Regelwerk ist seitdem ein anderes (\`${current.rulesetVersion}\`): Ein Unterschied im Score kann auch vom Regelwerk stammen, nicht nur von Änderungen am Repository.${sameCommit ? ` Analysiert wurde derselbe Commit; ein Unterschied stammt daher aus dem Regelwerk oder aus ${outside}.` : ""}`
-      : `${head} The ruleset has changed since (\`${current.rulesetVersion}\`): a difference in score may also come from the ruleset, not only from changes to the repository.${sameCommit ? ` The same commit was analysed; a difference therefore comes from the ruleset or from ${outside}.` : ""}`;
+      ? `${head} Das Regelwerk ist seitdem ein anderes (\`${current.rulesetVersion}\`): Ein Unterschied im Score kann auch vom Regelwerk stammen, nicht nur von Änderungen am Repository.${settings}${sameCommit && !changed.length ? ` Analysiert wurde derselbe Commit; ein Unterschied stammt daher aus dem Regelwerk oder aus ${outside}.` : ""}`
+      : `${head} The ruleset has changed since (\`${current.rulesetVersion}\`): a difference in score may also come from the ruleset, not only from changes to the repository.${settings}${sameCommit && !changed.length ? ` The same commit was analysed; a difference therefore comes from the ruleset or from ${outside}.` : ""}`;
   }
-  return de
-    ? `${head} Gleiches Regelwerk, die Scores sind vergleichbar.${sameCommit ? ` Derselbe Commit; ein Unterschied stammt aus ${outside}.` : ""}`
-    : `${head} Same ruleset, the scores are comparable.${sameCommit ? ` Same commit; a difference comes from ${outside}.` : ""}`;
+  if (changed.length) {
+    return de ? `${head} Gleiches Regelwerk, aber ${changed.join(", ")}: Die Scores sind nicht direkt vergleichbar.` : `${head} Same ruleset, but ${changed.join(", ")}: the scores are not directly comparable.`;
+  }
+  const known = prev.goal !== null && prev.projectType !== null;
+  const comparable = known
+    ? de
+      ? "Gleiches Regelwerk, gleiches Ziel und gleicher Projekttyp: Die Scores sind vergleichbar."
+      : "Same ruleset, goal and project type: the scores are comparable."
+    : de
+      ? "Gleiches Regelwerk; vergleichbar, sofern Ziel und Projekttyp gleich waren."
+      : "Same ruleset; comparable if goal and project type were the same.";
+  return `${head} ${comparable}${sameCommit ? (de ? ` Derselbe Commit; ein Unterschied stammt aus ${outside}.` : ` Same commit; a difference comes from ${outside}.`) : ""}`;
 }
 
 /**
@@ -66,24 +82,26 @@ export function requestLines(snapshot: Pick<RepoSnapshot, "stats" | "site">, lan
   const st = snapshot.stats;
   const lines = [
     {
-      label: "GitHub-API",
+      label: de ? "GitHub-API" : "GitHub API",
       value: de
         ? `${st.requests} ${st.requests === 1 ? "Anfrage" : "Anfragen"} (${st.notModified} × 304), ${st.bytes} B`
         : `${st.requests} ${st.requests === 1 ? "request" : "requests"} (${st.notModified} × 304), ${st.bytes} B`,
     },
   ];
-  const site = snapshot.site;
-  const n = site?.requests ?? 0;
-  if (site && n > 0) {
-    const hops = site.redirects?.length ?? 0;
-    const redirects = hops > 0 ? (de ? ` (davon ${hops} ${hops === 1 ? "Weiterleitung" : "Weiterleitungen"})` : ` (${hops} of them ${hops === 1 ? "a redirect" : "redirects"})`) : "";
-    lines.push({
-      label: "Website",
-      value: de
-        ? `${n} ${n === 1 ? "Abruf" : "Abrufe"}${redirects}, ${site.transferBytes ?? 0} B übertragen`
-        : `${n} ${n === 1 ? "fetch" : "fetches"}${redirects}, ${site.transferBytes ?? 0} B transferred`,
-    });
+  const site = snapshot.site as (RepoSnapshot["site"] & { bytes?: number }) | undefined;
+  if (!site || site.state === "not_checked") return lines;
+  // Schnappschüsse aus Regelwerk 2026.10.1 kennen requests und transferBytes noch nicht
+  const n = site.requests ?? (site.state === "fetched" ? (site.redirects?.length ?? 0) + 1 : 0);
+  if (n === 0) return lines;
+  const fetches = de ? `${n} ${n === 1 ? "Abruf" : "Abrufe"}` : `${n} ${n === 1 ? "fetch" : "fetches"}`;
+  if (site.state === "failed") {
+    lines.push({ label: "Website", value: de ? `${fetches}, fehlgeschlagen: ${site.reason?.de ?? ""}` : `${fetches}, failed: ${site.reason?.en ?? ""}` });
+    return lines;
   }
+  const hops = site.redirects?.length ?? 0;
+  const redirects = hops > 0 ? (de ? ` (davon ${hops} ${hops === 1 ? "Weiterleitung" : "Weiterleitungen"})` : ` (${hops} of them ${hops === 1 ? "a redirect" : "redirects"})`) : "";
+  const bytes = site.transferBytes ?? site.bytes ?? 0;
+  lines.push({ label: "Website", value: de ? `${fetches}${redirects}, ${bytes} B übertragen` : `${fetches}${redirects}, ${bytes} B transferred` });
   return lines;
 }
 
@@ -98,6 +116,12 @@ export function siteScopeText(scope: SiteScope, lang: Language): string {
         ? ` Die README verlinkt ${n} weitere ${n === 1 ? "Seite" : "Seiten"} derselben Website; ${n === 1 ? "sie wurde" : "sie wurden"} nicht geprüft.`
         : ` The README links ${n} more ${n === 1 ? "page" : "pages"} of the same website; ${n === 1 ? "it was" : "they were"} not checked.`
       : "";
+  // Ältere Auswertungen ohne Kennzeichen galten immer als abgerufen
+  if (scope.fetched === false) {
+    return de
+      ? `Geprüft werden sollte genau eine Seite: die Adresse aus dem Website-Feld (${scope.url}), ohne JavaScript und ohne Unterseiten. Der Abruf ist fehlgeschlagen, die Website-Befunde sind deshalb unbekannt.${more}`
+      : `Exactly one page was to be checked: the address from the website field (${scope.url}), without JavaScript and without subpages. The fetch failed, so the website findings are unknown.${more}`;
+  }
   return de
     ? `Geprüft wurde genau eine Seite: die Adresse aus dem Website-Feld (${scope.url}), ohne JavaScript und ohne Unterseiten.${redirected}${more}`
     : `Exactly one page was checked: the address from the website field (${scope.url}), without JavaScript and without subpages.${redirected}${more}`;

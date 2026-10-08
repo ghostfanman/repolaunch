@@ -100,7 +100,13 @@ function siteEntryFile(ctx: GuideContext): string | null {
   const target = site?.finalUrl ?? site?.url;
   if (!target) return null;
   try {
-    if (new URL(target).hostname.toLowerCase() !== `${ctx.snapshot.owner}.github.io`.toLowerCase()) return null;
+    const u = new URL(target);
+    const pagesHost = `${ctx.snapshot.owner}.github.io`.toLowerCase();
+    if (u.hostname.toLowerCase() !== pagesHost) return null;
+    // Projektseite: erster Pfadteil ist der Repository-Name; Benutzerseite: Repository heißt owner.github.io
+    const first = decodeURIComponent(u.pathname.split("/")[1] ?? "").toLowerCase();
+    const repo = ctx.snapshot.repo.toLowerCase();
+    if (first !== repo && repo !== pagesHost) return null;
   } catch {
     return null;
   }
@@ -227,7 +233,7 @@ const GUIDES: Record<string, Builder> = {
     ),
 
   "usability.visual_demo": (ctx, L, u, variant) => ({
-    action: variant === "screenshot_only" ? L("Screenshot in die README einfügen", "Add a screenshot to the README") : L("Screenshot oder Demo-Link in die README einfügen", "Add a screenshot or demo link to the README"),
+    action: L("Screenshot in die README einfügen", "Add a screenshot to the README"),
     steps: [
       { text: L("Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“).", "Take a screenshot of your project (Windows: Win+Shift+S, Mac: Cmd+Shift+4, Linux: “Print” key).") },
       { text: L("Öffne die README im Bearbeitungsmodus:", "Open the README in edit mode:"), link: { label: L("README bearbeiten", "Edit README"), url: u.edit(ctx.readmePath ?? "README.md") } },
@@ -240,14 +246,11 @@ const GUIDES: Record<string, Builder> = {
       { text: L("Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“.", "Replace the text in the square brackets of the image link with a short description, e.g. “App start page”.") },
       commitStep(L),
     ],
-    // Ist der Demo-Link schon da, braucht es keine Vorlage dafür.
-    template:
+    // Ein Demo-Link allein erfüllt die Regel nicht (siehe usability.visual_demo@2); er ist nur eine Ergänzung.
+    note:
       variant === "screenshot_only"
         ? undefined
-        : {
-            label: L("Alternative: Link zu einer Demo", "Alternative: link to a demo"),
-            content: L("[Live-Demo ansehen](https://[Adresse deiner Demo])", "[Try the live demo](https://[address of your demo])"),
-          },
+        : L("Gibt es eine laufende Demo, verlinke sie zusätzlich direkt unter dem Bild.", "If there is a running demo, also link it right below the image."),
   }),
 
   "usability.docs": (ctx, L, u) =>

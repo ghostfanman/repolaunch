@@ -192,7 +192,7 @@ export function siteScope(snapshot: RepoSnapshot, readme: MarkdownDoc | null): S
     seen.add(c.key);
     unchecked.push(link.target);
   }
-  return { url: site.url, ...(site.finalUrl ? { finalUrl: site.finalUrl } : {}), uncheckedReadmeLinks: unchecked };
+  return { fetched: site.state === "fetched", url: site.url, ...(site.finalUrl ? { finalUrl: site.finalUrl } : {}), uncheckedReadmeLinks: unchecked };
 }
 
 /** Offenes Gewicht eines fehlenden Befunds: volles Gewicht abzüglich einer Teilgutschrift. */

@@ -90,7 +90,9 @@ export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, 
   out.push(`## ${m.report.scoreHeading}`, "", `> ${m.report.scoreDisclaimer}`, "");
   out.push(s.value === null ? `${m.report.scoreNone} (${version})` : `**${s.value} / 100** (${version}), ${m.report.coverage} ${Math.round(s.coverage * 100)} %`, "");
   out.push(`> ${m.report.comparability}`, "");
-  if (context.previous) out.push(previousAuditSentence(context.previous, { rulesetVersion: audit.rulesetVersion, commitSha: snapshot.commitSha }, lang), "");
+  if (context.previous) {
+    out.push(previousAuditSentence(context.previous, { rulesetVersion: audit.rulesetVersion, commitSha: snapshot.commitSha, goal: user.goal, projectType: audit.classification.used }, lang), "");
+  }
   out.push(`${m.report.calculation}: ${s.formula}`, "");
   out.push(`| ${de ? "Kategorie" : "Category"} | ${de ? "Erfüllt" : "Met"} | ${de ? "Bewertet" : "Scored"} | ${de ? "Unbekannt" : "Unknown"} |`, "| --- | --- | --- | --- |");
   for (const c of s.byCategory) out.push(`| ${m.categories[c.category]} | ${c.achieved} | ${c.possible} | ${c.unknownWeight} |`);

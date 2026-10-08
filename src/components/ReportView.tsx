@@ -242,7 +242,9 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
         </p>
         <p className="muted">{m.report.scoreDisclaimer}</p>
         {s.value === null ? (
-          <p>{m.report.scoreNone}</p>
+          <p>
+            {m.report.scoreNone} ({m.report.rulesetVersion}: <code>{audit.rulesetVersion}</code>)
+          </p>
         ) : (
           <div className="score">
             <span className="value">

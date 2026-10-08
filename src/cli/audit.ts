@@ -11,6 +11,7 @@ import { fetchTransport, GitHubHttp, type Transport } from "@/core/github/http";
 import { DEFAULT_COLLECT_LIMITS } from "@/core/limits";
 import { parseRepoInput, suggestRepoInput } from "@/core/repo-input";
 import { buildExport } from "@/core/report/export";
+import { inlineText } from "@/core/security/sanitize";
 import { requestLines } from "@/core/report/plain";
 import { createSiteFetcher } from "@/core/site/fetch";
 import type { SiteFetcher } from "@/core/site/types";
@@ -46,13 +47,15 @@ export interface CliResult {
   files: string[];
   outputDir?: string;
   artifactName?: string;
+  /** Code des Erfassungsfehlers (z. B. not_found_or_private, rate_limited), nur bei exitCode 1. */
+  errorCode?: string;
   /** Kennzahlen des Audits, z. B. für einen maschinenlesbaren Vermerk im Issue-Kommentar. */
-  audit?: { fullName: string; rulesetVersion: string; score: number | null; commitSha: string; analyzedAt: string };
+  audit?: { fullName: string; rulesetVersion: string; score: number | null; commitSha: string; analyzedAt: string; goal: Goal; projectType: ProjectType };
 }
 
-function fail(lang: Language, message: string, exitCode = 2): CliResult {
+function fail(lang: Language, message: string, exitCode = 2, errorCode?: string): CliResult {
   const title = lang === "de" ? "RepoLaunch: Analyse nicht möglich" : "RepoLaunch: analysis not possible";
-  return { exitCode, summary: `# ${title}\n\n${message}\n`, files: [] };
+  return { exitCode, summary: `# ${title}\n\n${message}\n`, files: [], ...(errorCode ? { errorCode } : {}) };
 }
 
 async function providerFromEnv(): Promise<{ provider: LlmProvider | null; secrets: string[] }> {
@@ -85,11 +88,12 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
   }
 
   const goal = (env.INPUT_GOAL || "users").trim() as Goal;
-  if (!GOALS.includes(goal)) return fail(lang, de ? `Unbekanntes Ziel: ${goal}` : `Unknown goal: ${goal}`);
+  // Eingaben nur maskiert zurückgeben: Sie stammen aus untrusted Formularen und landen in einem Kommentar.
+  if (!GOALS.includes(goal)) return fail(lang, de ? `Unbekanntes Ziel: ${inlineText(goal, 80)}` : `Unknown goal: ${inlineText(goal, 80)}`);
 
   const typeRaw = (env.INPUT_PROJECT_TYPE || "auto").trim();
   if (typeRaw !== "auto" && !PROJECT_TYPES.includes(typeRaw as ProjectType)) {
-    return fail(lang, de ? `Unbekannter Projekttyp: ${typeRaw}` : `Unknown project type: ${typeRaw}`);
+    return fail(lang, de ? `Unbekannter Projekttyp: ${inlineText(typeRaw, 80)}` : `Unknown project type: ${inlineText(typeRaw, 80)}`);
   }
   const audience = env.INPUT_AUDIENCE?.trim() || undefined;
   const knownFeatures = env.INPUT_KNOWN_FEATURES?.trim() || undefined;
@@ -125,7 +129,7 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
   } catch (err) {
     if (err instanceof CollectError) {
       const extra = err.resetAt ? ` (Reset ${err.resetAt})` : err.retryAfterSeconds ? ` (Retry-After ${err.retryAfterSeconds}s)` : "";
-      return fail(lang, `${repoInput.owner}/${repoInput.repo}: ${m.jobErrors[err.code] ?? err.code}${extra}`, 1);
+      return fail(lang, `${repoInput.owner}/${repoInput.repo}: ${m.jobErrors[err.code] ?? err.code}${extra}`, 1, err.code);
     }
     throw err;
   }
@@ -197,6 +201,14 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
     files,
     outputDir,
     artifactName,
-    audit: { fullName: snapshot.fullName, rulesetVersion: audit.rulesetVersion, score: audit.score.value, commitSha: snapshot.commitSha, analyzedAt: snapshot.analyzedAt },
+    audit: {
+      fullName: snapshot.fullName,
+      rulesetVersion: audit.rulesetVersion,
+      score: audit.score.value,
+      commitSha: snapshot.commitSha,
+      analyzedAt: snapshot.analyzedAt,
+      goal,
+      projectType: audit.classification.used,
+    },
   };
 }

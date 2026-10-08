@@ -144,17 +144,21 @@ const FUNDING_RE = /(github\.com\/sponsors|opencollective\.com|patreon\.com|ko-f
 /** Links auf Bilder oder Aufnahmen: Sie zeigen das Produkt selbst. */
 const MEDIA_RE = /(screenshot|asciinema|video|youtube\.com|youtu\.be|vimeo\.com|loom\.com|\.gif(\?|#|$)|\.mp4(\?|#|$)|\.webm(\?|#|$))/;
 /** Links, die eine Demo oder die laufende Anwendung ankündigen. */
-const DEMO_WORD_RE = /(demo|live|playground|try it|ausprobieren)/;
+const DEMO_WORD_RE = /\b(demo|live|playground|try it|ausprobieren)\b/;
 
-/** Adresse ohne Protokoll, Query, Fragment und abschließenden Schrägstrich, klein geschrieben; null bei relativen oder fremden Schemata. */
+/**
+ * Adresse ohne Protokoll, Query, Fragment und abschließenden Schrägstrich, klein geschrieben; ein Port bleibt
+ * Teil der Adresse, "/index.html" am Ende gilt als dieselbe Seite wie das Verzeichnis. null bei relativen oder
+ * fremden Schemata.
+ */
 export function comparableUrl(raw: string | null | undefined): { host: string; key: string } | null {
   if (!raw) return null;
   try {
     const u = new URL(raw.trim());
     if (u.protocol !== "https:" && u.protocol !== "http:") return null;
-    const host = u.hostname.toLowerCase();
-    const path = u.pathname.replace(/\/+$/, "");
-    return { host, key: `${host}${path}`.toLowerCase() };
+    const host = u.hostname.toLowerCase().replace(/\.$/, "");
+    const path = u.pathname.replace(/\/index\.html?$/i, "").replace(/\/+$/, "");
+    return { host, key: `${host}${u.port ? `:${u.port}` : ""}${path}`.toLowerCase() };
   } catch {
     return null;
   }
@@ -168,7 +172,9 @@ type DemoLink = { link: { text: string; target: string; line: number }; reason: 
  */
 export function findDemoLink(ctx: Pick<RuleContext, "snapshot" | "readme">): DemoLink | null {
   if (!ctx.readme) return null;
-  const home = comparableUrl(ctx.snapshot.meta.homepage);
+  // Ein Website-Feld auf GitHub selbst ist keine laufende Anwendung
+  const homeRaw = comparableUrl(ctx.snapshot.meta.homepage);
+  const home = homeRaw && homeRaw.host !== "github.com" && homeRaw.host !== "www.github.com" ? homeRaw : null;
   const pagesHost = `${ctx.snapshot.owner}.github.io`.toLowerCase();
   const candidates = ctx.readme.links.filter((l) => !l.image && !BADGE_RE.test(l.target.toLowerCase()));
   for (const l of candidates) {
@@ -195,7 +201,8 @@ function daysSince(iso: string | null, now: Date): number | null {
 /** Beschriftete Größenangaben: entpacktes Dokument und, falls abweichend, die Übertragungsgröße. */
 export function siteSizeLines(site: SiteCheck, lang: Language): string[] {
   const de = lang === "de";
-  if (!site.documentBytes) return [de ? "Inhalt nicht gelesen (kein Status 2xx oder keine HTML-Seite)" : "Content not read (no 2xx status or not an HTML page)"];
+  const ok = (site.status ?? 0) >= 200 && (site.status ?? 0) < 300;
+  if (!ok || !site.html) return [de ? "Inhalt nicht gelesen (kein Status 2xx oder keine HTML-Seite)" : "Content not read (no 2xx status or not an HTML page)"];
   const lines: string[] = [];
   const compressed = site.contentEncoding && site.contentEncoding !== "identity";
   if (compressed && site.transferBytes !== site.documentBytes) {
@@ -205,10 +212,11 @@ export function siteSizeLines(site: SiteCheck, lang: Language): string[] {
     lines.push(de ? `Dokument: ${site.documentBytes} B, unkomprimiert übertragen` : `Document: ${site.documentBytes} B, transferred uncompressed`);
   }
   if (site.truncated) {
+    const why = site.truncatedBy === "decode" ? (de ? "Rest der Antwort nicht dekodierbar" : "rest of the response not decodable") : de ? "Größenlimit" : "size limit";
     lines.push(
       de
-        ? `Abgeschnitten: nur die ersten ${site.documentBytes} B gelesen (Größenlimit); Angaben im fehlenden Teil sind unbekannt`
-        : `Truncated: only the first ${site.documentBytes} B were read (size limit); anything in the missing part is unknown`,
+        ? `Abgeschnitten: nur die ersten ${site.documentBytes} B gelesen (${why}); Angaben im fehlenden Teil sind unbekannt`
+        : `Truncated: only the first ${site.documentBytes} B were read (${why}); anything in the missing part is unknown`,
     );
   }
   return lines;
@@ -237,8 +245,8 @@ function truncatedUnknown(ctx: RuleContext, inHead: boolean): RuleOutcome | null
     status: "unknown",
     evidence: [siteStatusEvidence(ctx, site)],
     note: {
-      de: `Das HTML wurde nach ${site.documentBytes} B abgeschnitten (Größenlimit); ${inHead ? "der Kopfbereich ist unvollständig" : "der fehlende Teil kann den Link enthalten"}.`,
-      en: `The HTML was truncated after ${site.documentBytes} B (size limit); ${inHead ? "the head section is incomplete" : "the missing part may contain the link"}.`,
+      de: `Das HTML wurde nach ${site.documentBytes} B abgeschnitten (${site.truncatedBy === "decode" ? "Rest nicht dekodierbar" : "Größenlimit"}); ${inHead ? "der Kopfbereich ist unvollständig" : "der fehlende Teil kann den Link enthalten"}.`,
+      en: `The HTML was truncated after ${site.documentBytes} B (${site.truncatedBy === "decode" ? "rest not decodable" : "size limit"}); ${inHead ? "the head section is incomplete" : "the missing part may contain the link"}.`,
     },
   };
 }
@@ -556,7 +564,7 @@ export const RULES: RuleDefinition[] = [
   },
   {
     id: "usability.visual_demo",
-    version: 2,
+    version: 3,
     category: "usability",
     readmeContent: true,
     title: { de: "Screenshot, Animation oder Demo", en: "Screenshot, animation or demo" },
@@ -565,8 +573,8 @@ export const RULES: RuleDefinition[] = [
       en: "For visual products an image immediately shows what you get. For CLIs it is a plus, not a must.",
     },
     task: {
-      de: "Füge einen aktuellen Screenshot, eine kurze Aufnahme oder einen Demo-Link in die README ein.",
-      en: "Add a current screenshot, a short recording or a demo link to the README.",
+      de: "Füge einen aktuellen Screenshot oder eine kurze Aufnahme in die README ein; ein Link zur laufenden Demo ergänzt das, ersetzt es aber nicht.",
+      en: "Add a current screenshot or a short recording to the README; a link to the running demo complements it but does not replace it.",
     },
     effortMinutes: [20, 60],
     impact: {

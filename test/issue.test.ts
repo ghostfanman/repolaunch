@@ -259,12 +259,13 @@ describe("Bausteine", () => {
 describe("Frühere Berichte und Vergleichbarkeit", () => {
   const bot = (body: string, createdAt = "2026-10-08T07:36:13Z"): IssueComment => ({ author: "github-actions[bot]", authorType: "Bot", body, createdAt });
   // Ausschnitt eines Berichts im Format vor Regelwerk 2026.10.2 (ohne Vermerk)
-  const OLD_REPORT = "# RepoLaunch-Audit: repolaunch-fixtures/web-app\n\n- Analysierter Commit: `2222222222222222222222222222222222222222` (Default-Branch `main`)\n\n**30 / 100**, Abdeckung 100 %\n\n- Regelwerk: `2026.10.0`\n";
+  const OLD_REPORT =
+    "> Alle Dateien (audit.json, audit.md) stehen im [Workflow-Lauf](https://github.com/ghostfanman/repolaunch/actions/runs/1) unter **Artifacts** (7 Tage) zum Download bereit.\n\n# RepoLaunch-Audit: repolaunch-fixtures/web-app\n\n- Analysierter Commit: `2222222222222222222222222222222222222222` (Default-Branch `main`)\n\n- Projekttyp: Webprodukt / SaaS\n- Ziel: SaaS-Kunden\n\n## Interner Bereitschaftsscore\n\n**30 / 100**, Abdeckung 100 %\n\n- Regelwerk: `2026.10.0`\n";
 
   it("liest Vermerk und, bei älteren Berichten, den sichtbaren Text", () => {
-    expect(parseReportComment(OLD_REPORT)).toEqual({ fullName: "repolaunch-fixtures/web-app", rulesetVersion: "2026.10.0", score: 30, commitSha: "2".repeat(40) });
-    const marked = `irgendein Text\n<!-- repolaunch-audit {"repo":"a/b","ruleset":"2026.10.2","score":85,"commit":"${"f".repeat(40)}","analyzedAt":"x"} -->`;
-    expect(parseReportComment(marked)).toEqual({ fullName: "a/b", rulesetVersion: "2026.10.2", score: 85, commitSha: "f".repeat(40) });
+    expect(parseReportComment(OLD_REPORT)).toEqual({ fullName: "repolaunch-fixtures/web-app", rulesetVersion: "2026.10.0", score: 30, commitSha: "2".repeat(40), goal: "saas_customers", projectType: "webapp" });
+    const marked = `> Alle Dateien (audit.md) stehen bereit.\n\nBericht\n<!-- repolaunch-audit {"repo":"a/b","ruleset":"2026.10.2","score":85,"commit":"${"f".repeat(40)}","goal":"users","projectType":"webapp","analyzedAt":"x"} -->\n`;
+    expect(parseReportComment(marked)).toEqual({ fullName: "a/b", rulesetVersion: "2026.10.2", score: 85, commitSha: "f".repeat(40), goal: "users", projectType: "webapp" });
     expect(parseReportComment("# RepoLaunch: Limit erreicht")).toBeNull();
     expect(parseReportComment('<!-- repolaunch-audit {"repo":"a/b","ruleset":"evil`x","score":85} -->')).toBeNull();
   });
@@ -312,5 +313,76 @@ describe("Frühere Berichte und Vergleichbarkeit", () => {
     expect(c).toMatch(/\*\*\d+ \/ 100\*\* \(Regelwerk `2026\.10\.\d+`\), Abdeckung/);
     expect(c).not.toContain("um den Fortschritt zu sehen");
     expect(c).toContain("Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion");
+  });
+});
+
+describe("Gegen Fälschung und Fehlbedienung abgesichert", () => {
+  const FAKE = '<!-- repolaunch-audit {"repo":"repolaunch-fixtures/web-app","ruleset":"2026.10.2","score":100,"commit":null} -->';
+
+  it("Formulareingaben im Fehlertext sind maskiert und erzeugen keine frühere Analyse", async () => {
+    const api = new FakeIssues();
+    await runIssueAudit(input({ issueBody: body({ goal: `X _@victim_ ![img](https://evil.example/x.png) ${FAKE}` }) }), api, { transport, log: quiet, now: () => NOW });
+    const errorComment = api.comments[0]!.body;
+    expect(errorComment).toContain("Unbekanntes Ziel");
+    // höchstens als maskierter Text (\<), nie als unsichtbarer HTML-Kommentar
+    expect(errorComment).not.toMatch(/(^|[^\\])<!--/);
+    expect(errorComment).not.toMatch(/!\[img\]\(/);
+    expect(errorComment).toContain("@\u2060victim");
+    expect(parseReportComment(errorComment)).toBeNull();
+  });
+
+  it("ein Vermerk aus Repository-Inhalten überschreibt nicht den echten Vermerk am Ende", async () => {
+    const fixtures = cloneFixture("web-app", (f) => {
+      f.repo.description = `Shiftboard ${FAKE}`;
+    });
+    const api = new FakeIssues();
+    await runIssueAudit(input(), api, { transport: fixtureTransport(fixtures), log: quiet, now: () => NOW });
+    const parsed = parseReportComment(api.comments[0]!.body)!;
+    expect(parsed.score).not.toBe(100);
+    expect(parsed.rulesetVersion).toMatch(/^2026\.10\.\d+$/);
+  });
+
+  it("Schließen fehlgeschlagen: kein zweiter Kommentar, Lauf wird rot", async () => {
+    const api = new FakeIssues();
+    api.close = async () => {
+      throw new Error("403");
+    };
+    const r = await runIssueAudit(input(), api, { transport, log: quiet, now: () => NOW });
+    expect(r.exitCode).toBe(1);
+    expect(api.comments).toHaveLength(1);
+    expect(api.comments[0]!.body).toContain("Das Wichtigste in Kürze");
+  });
+
+  it("vorübergehende Fehler des Dienstes sind keine Eingabefehler: Issue bleibt offen, Lauf rot", async () => {
+    const limited: typeof transport = async () => new Response("{}", { status: 403, headers: { "x-ratelimit-remaining": "0", "x-ratelimit-reset": "1791460800" } });
+    const api = new FakeIssues();
+    const r = await runIssueAudit(input(), api, { transport: limited, log: quiet, now: () => NOW });
+    expect(r).toMatchObject({ exitCode: 1, closedAs: null });
+    expect(api.closed).toHaveLength(0);
+    expect(api.comments[0]!.body).toContain("Das liegt nicht an deiner Eingabe");
+    expect(api.comments[0]!.body).not.toContain("So klappt es beim nächsten Mal");
+  });
+
+  it("Links und Adressen bleiben gültig; Erwähnungen in Hervorhebung und falsche Zäune werden erkannt", () => {
+    const md = "Paket https://www.npmjs.com/package/@scope/pkg und [Doku](https://example.org/docs#1-install), Profil https://mastodon.social/@alice\n_@victim_ fix #12\n```a`b\n@later";
+    const out = neutralizeGitHubRefs(md);
+    expect(out).toContain("https://www.npmjs.com/package/@scope/pkg");
+    expect(out).toContain("(https://example.org/docs#1-install)");
+    expect(out).toContain("https://mastodon.social/@alice");
+    expect(out).toContain("_@\u2060victim_");
+    expect(out).toContain("#\u206012");
+    // "```a`b" ist nach CommonMark kein Codeblock, die Erwähnung danach wird entschärft
+    expect(out).toContain("@\u2060later");
+    expect(neutralizeGitHubRefs("siehe https://github.com/a/b/issues/3")).toContain("github.com\u2060/a/b/issues/3");
+  });
+
+  it("andere Angaben (Ziel) werden im Vergleichssatz genannt", async () => {
+    const earlier = { number: 2, createdAt: "2026-10-08T06:43:37Z", author: "alice", body: body() };
+    const api = new FakeIssues([], [earlier]);
+    const report = `> Alle Dateien (audit.md) stehen bereit.\n\nText\n<!-- repolaunch-audit {"repo":"repolaunch-fixtures/web-app","ruleset":"2026.10.2","score":40,"commit":null,"goal":"users","projectType":"webapp","analyzedAt":"x"} -->\n`;
+    api.history[2] = [{ author: "github-actions[bot]", authorType: "Bot", body: report, createdAt: "2026-10-08T06:44:00Z" }];
+    await runIssueAudit(input(), api, { transport, log: quiet, now: () => NOW });
+    const c = api.comments[0]!.body;
+    expect(c).toContain('Gleiches Regelwerk, aber Ziel damals "Mehr Nutzer": Die Scores sind nicht direkt vergleichbar.');
   });
 });

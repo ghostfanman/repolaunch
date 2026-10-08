@@ -15,7 +15,7 @@
 
 **Das ist schon gut:** Aussagekräftige Repository-Beschreibung, README vorhanden, Konkretes Nutzungsbeispiel, Dokumentierter Schnellstart
 
-> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Klick-für-Klick-Anleitung für die GitHub-Webseite, ein Terminal brauchst du nicht. Für die meisten Schritte brauchst du Schreibrechte am Repository. Lass danach erneut analysieren: Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion, die neben dem Score steht.
+> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Schritt-für-Schritt-Anleitung; Aufgaben im Repository gehen direkt auf der GitHub-Webseite, ohne Terminal. Dafür brauchst du Schreibrechte am Repository. Lass danach erneut analysieren: Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion, die neben dem Score steht.
 
 ## Fünf priorisierte Aufgaben
 
@@ -180,7 +180,7 @@ Prüfregel und Belege: Website-Feld gesetzt (`distribution.homepage@1`), siehe �
 - **Topics**: Schlagwörter, über die man dein Projekt in der GitHub-Suche und auf Themenseiten findet.
 - **Commit**: Eine gespeicherte Änderung. „Commit changes“ speichert deine Bearbeitung im Repository.
 - **Issue**: Ein Eintrag für Fragen, Fehler oder Ideen im Reiter „Issues“.
-- **Markdown**: Die einfache Textformatierung von GitHub: # für Überschriften, - für Listen, [Text](Adresse) für Links.
+- **Markdown**: Die einfache Textformatierung von GitHub: `#` für Überschriften, `-` für Listen, `[Text](Adresse)` für Links.
 
 ## Interner Bereitschaftsscore
 
@@ -306,11 +306,11 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgu
     ```
   
 
-#### Screenshot, Animation oder Demo (`usability.visual_demo@2`)
+#### Screenshot, Animation oder Demo (`usability.visual_demo@3`)
 
 - Status: **fehlt**, Schwere: niedrig, Gewicht: 1
 - Begründung: Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss.
-- Aufgabe: Füge einen aktuellen Screenshot, eine kurze Aufnahme oder einen Demo-Link in die README ein.
+- Aufgabe: Füge einen aktuellen Screenshot oder eine kurze Aufnahme in die README ein; ein Link zur laufenden Demo ergänzt das, ersetzt es aber nicht.
 - Aufwand: 20 bis 60 Min.
 - Erwartete Wirkung (Hypothese): Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten.
 
@@ -322,11 +322,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgu
   4. Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“.
   5. Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig.
 
-  Alternative: Link zu einer Demo:
-
-  ```text
-  [Live-Demo ansehen](https://[Adresse deiner Demo])
-  ```
+  > Hinweis: Gibt es eine laufende Demo, verlinke sie zusätzlich direkt unter dem Bild.
 
 - Belege:
 

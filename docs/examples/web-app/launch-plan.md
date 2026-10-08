@@ -27,8 +27,8 @@ Abgeleitet aus den Befunden. Erwartete Wirkungen sind Hypothesen, keine Zusagen.
 - [ ] **Zielgruppe und Nutzen benannt** (20 bis 60 Min.) `understanding.audience@1`
   Ergänze einen Abschnitt "Funktionen" oder "Für wen" mit drei bis fünf konkreten Punkten.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Screenshot, Animation oder Demo** (20 bis 60 Min.) `usability.visual_demo@2`
-  Füge einen aktuellen Screenshot, eine kurze Aufnahme oder einen Demo-Link in die README ein.
+- [ ] **Screenshot, Animation oder Demo** (20 bis 60 Min.) `usability.visual_demo@3`
+  Füge einen aktuellen Screenshot oder eine kurze Aufnahme in die README ein; ein Link zur laufenden Demo ergänzt das, ersetzt es aber nicht.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
 - [ ] **Erstes Release vorbereiten** (30 bis 90 Min.) `trust.releases@1`
   Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung.

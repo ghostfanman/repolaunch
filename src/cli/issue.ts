@@ -4,7 +4,8 @@
 
 import { runAuditCli, type CliDeps, type CliResult } from "@/cli/audit";
 import { parseRepoInput, suggestRepoInput } from "@/core/repo-input";
-import type { Language, PreviousAudit } from "@/core/types";
+import { GOALS, PROJECT_TYPES, type Goal, type Language, type PreviousAudit, type ProjectType } from "@/core/types";
+import { t } from "@/i18n/messages";
 
 /** Überschriften des Formulars (.github/ISSUE_TEMPLATE/repolaunch-audit.yml). Ein Test hält beide synchron. */
 export const FORM_LABELS = {
@@ -123,11 +124,50 @@ export function newIssueUrl(repository: string | undefined): string | null {
   return `https://github.com/${repository}/issues/new?template=repolaunch-audit.yml`;
 }
 
-/** Vermerk am Ende eines Berichtskommentars, unsichtbar in der Darstellung, für spätere Vergleiche. */
-const MARKER_RE = /<!-- repolaunch-audit (\{[^\n]*?\}) -->/;
+/**
+ * Vermerk am Ende eines Berichtskommentars, unsichtbar in der Darstellung, für spätere Vergleiche. Er zählt nur
+ * als letzte Zeile: Repository-Inhalte oder Formulareingaben stehen nie dort, der Fuß und der Vermerk kommen
+ * immer von RepoLaunch selbst.
+ */
+const MARKER_RE = /\n<!-- repolaunch-audit (\{[^\n]*\}) -->\s*$/;
+
+/** So beginnt jeder erfolgreiche Bericht (auch vor Regelwerk 2026.10.2); Fehler- und Limitkommentare nicht. */
+const REPORT_START_RE = /^> (Alle Dateien|All files) \(/;
+
+/** Codeblöcke entfernen, damit zitierte Repository-Inhalte nicht als Berichtsangaben gelesen werden. */
+function withoutCodeBlocks(md: string): string {
+  const out: string[] = [];
+  let fence: string | null = null;
+  for (const line of md.split("\n")) {
+    if (fence) {
+      if (closesFence(line, fence)) fence = null;
+      continue;
+    }
+    const open = opensFence(line);
+    if (open) {
+      fence = open;
+      continue;
+    }
+    out.push(line);
+  }
+  return out.join("\n");
+}
+
+/** Öffnender Zaun nach CommonMark: mindestens drei ` oder ~; bei ` darf die Infozeile kein ` enthalten. */
+function opensFence(line: string): string | null {
+  const m = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line);
+  if (!m) return null;
+  if (m[1]![0] === "`" && m[2]!.includes("`")) return null;
+  return m[1]!;
+}
+
+function closesFence(line: string, fence: string): boolean {
+  const m = /^ {0,3}(`{3,}|~{3,})\s*$/.exec(line);
+  return Boolean(m && m[1]![0] === fence[0] && m[1]!.length >= fence.length);
+}
 
 export function reportMarker(a: NonNullable<CliResult["audit"]>): string {
-  return `<!-- repolaunch-audit ${JSON.stringify({ repo: a.fullName, ruleset: a.rulesetVersion, score: a.score, commit: a.commitSha, analyzedAt: a.analyzedAt })} -->`;
+  return `<!-- repolaunch-audit ${JSON.stringify({ repo: a.fullName, ruleset: a.rulesetVersion, score: a.score, commit: a.commitSha, goal: a.goal, projectType: a.projectType, analyzedAt: a.analyzedAt })} -->`;
 }
 
 const VERSION_RE = /^\d{4}\.\d{1,2}\.\d+(\+[\w.-]+)?$/;
@@ -136,12 +176,26 @@ const VERSION_RE = /^\d{4}\.\d{1,2}\.\d+(\+[\w.-]+)?$/;
  * Liest Repository, Regelwerk, Score und Commit aus einem früheren Berichtskommentar: zuerst aus dem Vermerk,
  * für Berichte vor Regelwerk 2026.10.2 aus dem sichtbaren Text. Liefert null, wenn etwas fehlt oder nicht passt.
  */
-export function parseReportComment(raw: string): { fullName: string; rulesetVersion: string; score: number | null; commitSha: string | null } | null {
-  const body = raw.replace(/\u2060/g, "");
+type ParsedReport = { fullName: string; rulesetVersion: string; score: number | null; commitSha: string | null; goal: Goal | null; projectType: ProjectType | null };
+
+/** Rückübersetzung der Bezeichnungen aus dem sichtbaren Bericht (beide Sprachen) in Codes. */
+function labelToCode<T extends string>(label: string | undefined, pick: (lang: Language) => Record<T, string>): T | null {
+  if (!label) return null;
+  const clean = label.split(" (")[0]!.trim();
+  for (const lang of ["de", "en"] as const) {
+    const hit = (Object.entries(pick(lang)) as Array<[T, string]>).find(([, v]) => v === clean);
+    if (hit) return hit[0];
+  }
+  return null;
+}
+
+export function parseReportComment(raw: string): ParsedReport | null {
+  const body = raw.replace(/\u2060/g, "").replace(/\r\n?/g, "\n");
+  if (!REPORT_START_RE.test(body.trimStart())) return null;
   const marker = MARKER_RE.exec(body);
   if (marker) {
     try {
-      const m = JSON.parse(marker[1]!) as { repo?: unknown; ruleset?: unknown; score?: unknown; commit?: unknown };
+      const m = JSON.parse(marker[1]!) as { repo?: unknown; ruleset?: unknown; score?: unknown; commit?: unknown; goal?: unknown; projectType?: unknown };
       const ok =
         typeof m.repo === "string" &&
         /^[\w.-]+\/[\w.-]+$/.test(m.repo) &&
@@ -149,19 +203,36 @@ export function parseReportComment(raw: string): { fullName: string; rulesetVers
         VERSION_RE.test(m.ruleset) &&
         (m.score === null || (typeof m.score === "number" && Number.isInteger(m.score) && m.score >= 0 && m.score <= 100)) &&
         (m.commit === undefined || m.commit === null || (typeof m.commit === "string" && /^[0-9a-f]{40}$/.test(m.commit)));
-      if (ok) return { fullName: m.repo as string, rulesetVersion: m.ruleset as string, score: m.score as number | null, commitSha: (m.commit as string | null | undefined) ?? null };
+      if (ok) {
+        return {
+          fullName: m.repo as string,
+          rulesetVersion: m.ruleset as string,
+          score: m.score as number | null,
+          commitSha: (m.commit as string | null | undefined) ?? null,
+          goal: GOALS.includes(m.goal as Goal) ? (m.goal as Goal) : null,
+          projectType: PROJECT_TYPES.includes(m.projectType as ProjectType) ? (m.projectType as ProjectType) : null,
+        };
+      }
     } catch {
       // Vermerk unlesbar: weiter mit dem sichtbaren Text
     }
   }
-  const name = /^# RepoLaunch[- ]audit: (\S+)$/im.exec(body)?.[1]?.replace(/\\/g, "");
-  const ruleset = /(?:Regelwerk|Ruleset):? (?:\*\*)?`([^`\s]+)`/.exec(body)?.[1];
-  const score = /\*\*(\d{1,3}) \/ 100\*\*/.exec(body)?.[1];
-  const commit = /(?:Analysierter Commit|Analysed commit|Analyzed commit): `([0-9a-f]{40})`/.exec(body)?.[1] ?? null;
+  // Berichte vor 2026.10.2: sichtbarer Text ohne Codeblöcke; der Score steht im Score-Abschnitt.
+  const text = withoutCodeBlocks(body);
+  const name = /^# RepoLaunch[- ]audit: (\S+)$/im.exec(text)?.[1]?.replace(/\\/g, "");
+  const ruleset = /(?:Regelwerk|Ruleset):? (?:\*\*)?`([^`\s]+)`/.exec(text)?.[1];
+  const scoreSection = text.split(/^## (?:Interner Bereitschaftsscore|Internal readiness score)\s*$/m)[1] ?? "";
+  const score = /\*\*(\d{1,3}) \/ 100\*\*/.exec(scoreSection)?.[1];
+  const commit = /(?:Analysierter Commit|Analysed commit|Analyzed commit): `([0-9a-f]{40})`/.exec(text)?.[1] ?? null;
   if (!name || !/^[\w.-]+\/[\w.-]+$/.test(name) || !ruleset || !VERSION_RE.test(ruleset)) return null;
   const value = score === undefined ? null : Number(score);
-  return { fullName: name, rulesetVersion: ruleset, score: value !== null && value <= 100 ? value : null, commitSha: commit };
+  const goal = labelToCode(/^- (?:Ziel|Goal): (.+)$/m.exec(text)?.[1], (l) => t(l).goals);
+  const projectType = labelToCode(/^- (?:Projekttyp|Project type): (.+)$/m.exec(text)?.[1], (l) => t(l).projectTypes);
+  return { fullName: name, rulesetVersion: ruleset, score: value !== null && value <= 100 ? value : null, commitSha: commit, goal, projectType };
 }
+
+/** Erfassungsfehler, die an der angefragten Adresse liegen; alle anderen gelten als vorübergehender Fehler des Dienstes. */
+const INPUT_LIKE_ERRORS = new Set(["not_found_or_private", "private_unsupported", "empty_repository"]);
 
 /** Bot, unter dem der Workflow mit GITHUB_TOKEN kommentiert. Nur dessen Berichte zählen als Beleg. */
 const REPORT_AUTHOR = "github-actions[bot]";
@@ -188,6 +259,8 @@ export async function findPreviousAudit(api: IssueApi, target: string, currentIs
         rulesetVersion: parsed.rulesetVersion,
         score: parsed.score,
         commitSha: parsed.commitSha,
+        goal: parsed.goal,
+        projectType: parsed.projectType,
       };
     }
   }
@@ -213,25 +286,34 @@ export function isFormIssue(body: string): boolean {
  * Links auf fremde Issues werden außerhalb von Codeblöcken mit einem unsichtbaren Wortverbinder getrennt.
  */
 export function neutralizeGitHubRefs(md: string): string {
-  const WJ = "⁠";
+  const WJ = "\u2060";
+  // Querverweise auf Issues und Pull Requests fremder Repositories, auch innerhalb von Adressen
+  const issueUrl = (t: string) => t.replace(/github\.com\/(?=[^\s/]+\/[^\s/]+\/(?:issues|pull|discussions)\/\d)/gi, `github.com${WJ}/`);
+  const text = (t: string) =>
+    issueUrl(
+      t
+        .replace(/(^|[^A-Za-z0-9])@(?=[A-Za-z0-9])/g, `$1@${WJ}`)
+        .replace(/#(?=\d)/g, `#${WJ}`)
+        .replace(/\bGH-(?=\d)/gi, (m) => `${m.slice(0, 2)}${WJ}-`),
+    );
   let fence: string | null = null;
   return md
     .split("\n")
     .map((line) => {
-      const f = line.match(/^\s{0,3}(`{3,}|~{3,})/);
       if (fence) {
-        if (f && f[1]![0] === fence[0] && f[1]!.length >= fence.length) fence = null;
+        if (closesFence(line, fence)) fence = null;
         return line;
       }
-      if (f) {
-        fence = f[1]!;
+      const open = opensFence(line);
+      if (open) {
+        fence = open;
         return line;
       }
+      // Adressen bleiben gültig (z. B. npmjs.com/package/@scope/x oder Anker #1-install); nur Issue-Links werden getrennt.
       return line
-        .replace(/(^|[^A-Za-z0-9_])@(?=[A-Za-z0-9])/g, `$1@${WJ}`)
-        .replace(/#(?=\d)/g, `#${WJ}`)
-        .replace(/\bGH-(?=\d)/gi, (m) => `${m.slice(0, 2)}${WJ}-`)
-        .replace(/github\.com\/(?=[^\s/]+\/[^\s/]+\/(?:issues|pull|discussions)\/\d)/gi, `github.com${WJ}/`);
+        .split(/(https?:\/\/[^\s<>()\]]+)/)
+        .map((part, i) => (i % 2 === 1 ? issueUrl(part) : text(part)))
+        .join("");
     })
     .join("\n");
 }
@@ -243,10 +325,9 @@ export function truncateComment(md: string, note: string, max = MAX_COMMENT_CHAR
   lines.pop();
   let fence: string | null = null;
   for (const line of lines) {
-    const f = line.match(/^\s{0,3}(`{3,}|~{3,})/);
     if (fence) {
-      if (f && f[1]![0] === fence[0] && f[1]!.length >= fence.length) fence = null;
-    } else if (f) fence = f[1]!;
+      if (closesFence(line, fence)) fence = null;
+    } else fence = opensFence(line);
   }
   if (fence) lines.push(fence);
   return `${lines.join("\n")}\n\n> ${note}\n`;
@@ -267,7 +348,8 @@ export interface IssueAuditInput {
 export interface IssueAuditResult {
   exitCode: number;
   comment: string;
-  closedAs: "completed" | "not_planned";
+  /** null: Issue bleibt offen (vorübergehender Fehler des Dienstes). */
+  closedAs: "completed" | "not_planned" | null;
   artifactName?: string;
   outputDir?: string;
 }
@@ -288,14 +370,22 @@ export async function runIssueAudit(input: IssueAuditInput, api: IssueApi, deps:
   const lang: Language = langCode === "en" ? "en" : "de";
   const de = lang === "de";
 
-  async function finish(text: string, closedAs: "completed" | "not_planned", extra: Partial<IssueAuditResult> = {}, marker = ""): Promise<IssueAuditResult> {
-    const body = neutralizeGitHubRefs(
-      `${truncateComment(text, de ? "Bericht gekürzt. Der vollständige Bericht liegt als audit.md im Artefakt des Workflow-Laufs." : "Report truncated. The full report is available as audit.md in the workflow run artifact.")}\n\n${footer(de, input.runUrl, input.repository)}\n${marker ? `\n${marker}\n` : ""}`,
-    );
+  async function finish(text: string, closedAs: "completed" | "not_planned" | null, extra: Partial<IssueAuditResult> = {}, marker = "", exitCode = 0): Promise<IssueAuditResult> {
+    // Erst entschärfen, dann kürzen: Die Kürzung berücksichtigt so auch die eingefügten Zeichen.
+    const note = de ? "Bericht gekürzt. Der vollständige Bericht liegt als audit.md im Artefakt des Workflow-Laufs." : "Report truncated. The full report is available as audit.md in the workflow run artifact.";
+    const body = `${truncateComment(neutralizeGitHubRefs(text), note)}\n\n${neutralizeGitHubRefs(footer(de, input.runUrl, input.repository))}\n${marker ? `\n${marker}\n` : ""}`;
     await api.comment(input.issueNumber, body);
-    await api.close(input.issueNumber, closedAs);
-    log(`Issue #${input.issueNumber}: Kommentar geschrieben, geschlossen (${closedAs})`);
-    return { exitCode: 0, comment: body, closedAs, ...extra };
+    if (closedAs) {
+      try {
+        await api.close(input.issueNumber, closedAs);
+      } catch (err) {
+        // Der Bericht steht schon: kein zweiter Fehlerkommentar, aber ein roter Lauf für die verantwortliche Person.
+        log(`Issue #${input.issueNumber}: Schließen fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`);
+        return { exitCode: 1, comment: body, closedAs, ...extra };
+      }
+    }
+    log(`Issue #${input.issueNumber}: Kommentar geschrieben${closedAs ? `, geschlossen (${closedAs})` : ", offen gelassen"}`);
+    return { exitCode, comment: body, closedAs, ...extra };
   }
 
   // 1. Grenzen pro Person und insgesamt (frühere Formular-Issues der letzten Stunde)
@@ -332,7 +422,12 @@ export async function runIssueAudit(input: IssueAuditInput, api: IssueApi, deps:
   // Frühere Berichte zum selben Repository im Issue-Verlauf: nur als Hinweis zur Vergleichbarkeit, Fehler hier stoppen nichts.
   let previous: PreviousAudit | undefined;
   const target = formRepo(input.issueBody);
-  if (target) {
+  // Nur bei sonst gültigen Angaben suchen; ungültige Anfragen kosten so keine zusätzlichen API-Aufrufe.
+  const goalOk = GOALS.includes((optionCode(form.goal) ?? "users") as Goal);
+  const typeCode = optionCode(form.projectType) ?? "auto";
+  const typeOk = typeCode === "auto" || PROJECT_TYPES.includes(typeCode as ProjectType);
+  const langOk = langCode === undefined || langCode === "de" || langCode === "en";
+  if (target && goalOk && typeOk && langOk) {
     try {
       previous = await findPreviousAudit(api, target, input.issueNumber, input.repository);
     } catch (err) {
@@ -340,6 +435,14 @@ export async function runIssueAudit(input: IssueAuditInput, api: IssueApi, deps:
     }
   }
   const result = await runAuditCli(env, { ...deps, provider: null, artifactsUrl: input.runUrl, previous });
+  // Vorübergehende Fehler des Dienstes (Ratenlimit, Zeitlimit, GitHub-Störung) sind keine Eingabefehler:
+  // Issue bleibt offen, der Lauf wird rot, ein erneuter Lauf über "Re-run" ist möglich.
+  if (result.exitCode === 1 && result.errorCode && !INPUT_LIKE_ERRORS.has(result.errorCode)) {
+    const later = de
+      ? "Das liegt nicht an deiner Eingabe. Bitte versuche es später mit einem neuen Issue erneut; die verantwortliche Person sieht den fehlgeschlagenen Lauf."
+      : "This is not caused by your input. Please try again later with a new issue; the maintainer can see the failed run.";
+    return finish(`${result.summary}\n${later}`, null, {}, "", 1);
+  }
   if (result.exitCode !== 0) {
     const retry = newIssueUrl(input.repository);
     const tips = de

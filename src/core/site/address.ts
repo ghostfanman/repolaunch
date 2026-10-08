@@ -24,7 +24,7 @@ const BLOCKED_V4: [string, number][] = [
 // IPv6: erlaubt ist nur globaler Unicast (2000::/3) ohne Sonderbereiche. Loopback, Link-Local,
 // Unique-Local, Multicast sowie IPv4-eingebettete Adressen (::ffff:0:0/96, 64:ff9b::/96) liegen außerhalb und sind damit gesperrt.
 const BLOCKED_V6: [string, number][] = [
-  ["2001::", 32], // Teredo (eingebettete IPv4-Adresse)
+  ["2001::", 23], // IETF-Protokollzuweisungen, u. a. Teredo (eingebettete IPv4-Adresse) und ORCHID
   ["2001:db8::", 32], // Dokumentation
   ["2002::", 16], // 6to4 (eingebettete IPv4-Adresse)
 ];

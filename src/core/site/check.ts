@@ -16,6 +16,7 @@ export const SITE_FAILURE_TEXT: Record<SiteFetchFailure, Localized> = {
   too_many_redirects: L("mehr als drei Weiterleitungen", "more than three redirects"),
   bad_redirect: L("Weiterleitung auf ein ungültiges oder nicht erlaubtes Ziel", "redirect to an invalid or disallowed target"),
   unsupported_encoding: L("unbekannte Kodierung der Antwort", "unknown response encoding"),
+  decode_error: L("Antwort ließ sich nicht entpacken", "response could not be decompressed"),
   network_error: L("Verbindung fehlgeschlagen", "connection failed"),
 };
 
@@ -42,7 +43,7 @@ export async function checkHomepage(snapshot: RepoSnapshot, projectTypeOverride:
   if ((url.protocol !== "http:" && url.protocol !== "https:") || url.username || url.password) {
     return notChecked("invalid_homepage", null, L("Website-Feld enthält keine gültige http(s)-Adresse", "website field contains no valid http(s) address"));
   }
-  const host = url.hostname.toLowerCase();
+  const host = url.hostname.toLowerCase().replace(/\.$/, "");
   if (host === "github.com" || host === "www.github.com") {
     return notChecked("github_homepage", url.toString(), L("Website-Feld zeigt auf GitHub selbst", "website field points to GitHub itself"));
   }
@@ -67,6 +68,7 @@ export async function checkHomepage(snapshot: RepoSnapshot, projectTypeOverride:
     documentBytes: result.documentBytes,
     transferBytes: result.transferBytes,
     truncated: result.truncated,
+    ...(result.truncatedBy ? { truncatedBy: result.truncatedBy } : {}),
     redirects: result.redirects,
     requests: result.requests,
     html,

@@ -2,7 +2,8 @@
 
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
-import { gzipSync } from "node:zlib";
+import { randomBytes } from "node:crypto";
+import { deflateRawSync, deflateSync, gzipSync } from "node:zlib";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { buildExport } from "@/core/report/export";
 import { requestLines } from "@/core/report/plain";
@@ -32,6 +33,9 @@ const PAGE = `<!DOCTYPE html>
 
 // Kopfbereich vollständig, Rechtslinks erst nach viel Inhalt im Fußbereich
 const LONG_PAGE = `<!DOCTYPE html>\n<html><head>\n<title>Lange Seite</title>\n</head>\n<body>\n${"<p>Inhalt</p>\n".repeat(2000)}<footer><a href="/impressum">Impressum</a> <a href="/datenschutz">Datenschutz</a></footer>\n</body></html>\n`;
+
+// Rund 1,2 MB komprimiert (zufällige Daten als Base64), entpackt deutlich über 1 MB
+const BIG_GZIP = gzipSync(Buffer.from(`<html><head><title>Groß</title></head><body>${randomBytes(1_200_000).toString("base64")}</body></html>`), { level: 1 });
 
 let server: Server;
 let base = "";
@@ -65,6 +69,20 @@ beforeAll(async () => {
       return void res.end();
     }
     if (url === "/gzip-bomb") return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "gzip" }).end(gzipSync(Buffer.alloc(5_000_000, 0x61)));
+    if (url === "/gz-empty") return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "gzip" }).end();
+    if (url === "/br-empty") return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "br" }).end();
+    if (url === "/raw-deflate") return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "deflate" }).end(deflateRawSync(PAGE));
+    if (url === "/zlib-deflate") return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "deflate" }).end(deflateSync(PAGE));
+    if (url === "/gzip-trailing") return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "gzip" }).end(Buffer.concat([gzipSync(PAGE), Buffer.from("garbage!")]));
+    if (url === "/gzip-corrupt") {
+      const broken = Buffer.from(BIG_GZIP);
+      broken.fill(0xff, 300_000, 300_064);
+      return void res.writeHead(200, { "content-type": "text/html", "content-encoding": "gzip" }).end(broken);
+    }
+    if (url === "/gzip-big") {
+      res.writeHead(200, { "content-type": "text/html", "content-encoding": "gzip" });
+      return void res.end(BIG_GZIP);
+    }
     if (url === "/long") return void res.writeHead(200, { "content-type": "text/html; charset=utf-8", "content-encoding": "gzip" }).end(gzipSync(LONG_PAGE));
     res.writeHead(500).end();
   });
@@ -124,6 +142,13 @@ describe("Abruf der Website", () => {
     expect(lines[0]!.label).toBe("GitHub-API");
     expect(lines[1]).toEqual({ label: "Website", value: `4 Abrufe (davon 3 Weiterleitungen), ${Buffer.byteLength(PAGE)} B übertragen` });
     expect(requestLines(s, "en")[1]!.value).toBe(`4 fetches (3 of them redirects), ${Buffer.byteLength(PAGE)} B transferred`);
+    expect(requestLines(s, "en")[0]!.label).toBe("GitHub API");
+    // Fehlgeschlagener Abruf: Anzahl und Grund statt einer Byteangabe
+    const failed = { ...s, site: { state: "failed" as const, url: "https://x.example/", requests: 1, reason: { de: "Zeitlimit überschritten", en: "time limit exceeded" } } };
+    expect(requestLines(failed, "de")[1]).toEqual({ label: "Website", value: "1 Abruf, fehlgeschlagen: Zeitlimit überschritten" });
+    // Ältere Schnappschüsse (2026.10.1) ohne requests und transferBytes
+    const old = { ...s, site: { state: "fetched" as const, url: "https://x.example/", redirects: [], bytes: 7643 } };
+    expect(requestLines(old, "de")[1]).toEqual({ label: "Website", value: "1 Abruf, 7643 B übertragen" });
     // Gesperrte Adresse: keine Anfrage gesendet, daher keine Website-Zeile
     const blocked = await fetcher()(`${base}/to-private`);
     expect(blocked).toMatchObject({ ok: false, requests: 1 });
@@ -179,6 +204,33 @@ describe("Abruf der Website", () => {
     const r = await fetcher({ maxBytes: 1_000_000 })(`${base}${path}`);
     expect(r).toMatchObject({ ok: true, status: 200, truncated: true, documentBytes: 1_000_000, contentEncoding: "identity" });
     if (r.ok) expect(r.transferBytes).toBeLessThanOrEqual(1_100_000);
+  });
+
+  it("Übertragungsgrenze verwirft keine schon empfangenen Daten: Abschneiden immer genau am Limit", async () => {
+    expect(BIG_GZIP.byteLength).toBeGreaterThan(1_000_000);
+    for (let i = 0; i < 3; i += 1) {
+      const r = await fetcher({ maxBytes: 1_000_000 })(`${base}/gzip-big`);
+      expect(r).toMatchObject({ ok: true, truncated: true, truncatedBy: "limit", documentBytes: 1_000_000 });
+    }
+  });
+
+  it("leere komprimierte Antworten sind leere Seiten, kein Fehler", async () => {
+    for (const path of ["/gz-empty", "/br-empty"]) {
+      expect(await fetcher()(`${base}${path}`), path).toMatchObject({ ok: true, status: 200, documentBytes: 0, truncated: false });
+    }
+  });
+
+  it("deflate mit und ohne zlib-Kopf wird gelesen; beschädigte gzip-Daten werden ehrlich gemeldet", async () => {
+    for (const path of ["/raw-deflate", "/zlib-deflate"]) {
+      const r = await fetcher()(`${base}${path}`);
+      expect(r, path).toMatchObject({ ok: true, documentBytes: Buffer.byteLength(PAGE), truncated: false });
+    }
+    // Node verwirft bei einem Fehler die im selben Schritt entpackten Daten: ehrlich als nicht entpackbar melden
+    expect(await fetcher()(`${base}/gzip-trailing`)).toMatchObject({ ok: false, failure: "decode_error" });
+    // Beschädigung mitten im Strom nach bereits gelesenen Daten: Dokument unvollständig statt Fehler
+    const c = await fetcher({ maxBytes: 2_000_000 })(`${base}/gzip-corrupt`);
+    expect(c).toMatchObject({ ok: true, truncated: true, truncatedBy: "decode" });
+    if (c.ok) expect(c.documentBytes).toBeGreaterThan(0);
   });
 
   it("gzip-Bombe: das Limit gilt für die entpackten Bytes, übertragen wird wenig", async () => {
@@ -355,12 +407,32 @@ describe("Website-Regeln", () => {
     s.site = await checkHomepage(s, undefined, counting);
     const a = runAudit(s, user("users"), { now: NOW });
     expect(calls).toBe(1);
-    expect(a.siteScope).toEqual({ url: SITE, finalUrl: SITE, uncheckedReadmeLinks: ["https://Shiftboard.example/app/hilfe.html#start", "https://shiftboard.example/app/preise"] });
+    expect(a.siteScope).toEqual({ fetched: true, url: SITE, finalUrl: SITE, uncheckedReadmeLinks: ["https://Shiftboard.example/app/hilfe.html#start", "https://shiftboard.example/app/preise"] });
     const md = buildExport(s, a, user("users"), null).contents["audit.md"]!;
     expect(md).toContain("### Website");
     expect(md).toContain("> Geprüft wurde genau eine Seite: die Adresse aus dem Website-Feld (https://shiftboard.example/app/), ohne JavaScript und ohne Unterseiten. Die README verlinkt 2 weitere Seiten derselben Website; sie wurden nicht geprüft.");
     // Website-Befunde stehen nur in der Gruppe Website, nicht zusätzlich in den Kategorien
     expect(md.split("Website: Datenschutzerklärung verlinkt (`trust.site_privacy@2`)")).toHaveLength(2);
+  });
+
+  it("fehlgeschlagener Abruf: Hinweis sagt das, statt eine geprüfte Seite zu behaupten", async () => {
+    const SITE = "https://shiftboard.example/";
+    const fixtures = cloneFixture("web-app", (x) => (x.repo.homepage = SITE));
+    const s = await fixtureSnapshot("web-app", "users", fixtures);
+    s.site = await checkHomepage(s, undefined, async (u) => ({ ok: false, requestedUrl: u, failure: "timeout", redirects: [], requests: 1 }));
+    const a = runAudit(s, user("users"), { now: NOW });
+    expect(a.siteScope?.fetched).toBe(false);
+    const md = buildExport(s, a, user("users"), null).contents["audit.md"]!;
+    expect(md).toContain("Geprüft werden sollte genau eine Seite");
+    expect(md).not.toContain("Geprüft wurde genau eine Seite");
+  });
+
+  it("leere HTML-Seite: Beleg nennt 0 B statt 'nicht gelesen'", async () => {
+    const SITE = `${base}/gz-empty`;
+    const s = await fixtureSnapshot("web-app", "users", cloneFixture("web-app", (x) => (x.repo.homepage = SITE)));
+    s.site = await checkHomepage(s, undefined, fetcher());
+    const a = runAudit(s, user("users"), { now: NOW });
+    expect(f(a, "usability.site_reachable").evidence[0]!.snippet).toContain("Dokument: 0 B, unkomprimiert übertragen");
   });
 
   it("ohne Website-Abruf (anderer Projekttyp, kein Website-Feld) nur die GitHub-Zeile", async () => {

@@ -91,7 +91,11 @@ describe("Projekttypabhängige Gewichtung", () => {
 
   it("30-Tage-Plan: erstes oder nächstes Release richtet sich nach den Daten, auch wenn die Regel abgeschaltet ist", async () => {
     const a = audit(await fixtureSnapshot("web-app"), "users");
-    expect(a.launchPlan.tasks.some((x) => x.title === "Erstes Release vorbereiten" && x.findingIds.length === 0)).toBe(true);
+    // Webprodukt mit Ziel Nutzer: Release-Regel abgeschaltet, daher kein Repository-Release im Plan
+    expect(a.launchPlan.tasks.some((x) => x.title === "Verbesserungen veröffentlichen" && x.findingIds.length === 0)).toBe(true);
+    expect(a.launchPlan.tasks.some((x) => /Release/.test(x.title))).toBe(false);
+    const saas = audit(await fixtureSnapshot("web-app", "saas_customers"), "saas_customers");
+    expect(saas.launchPlan.tasks.some((x) => x.title === "Erstes Release vorbereiten")).toBe(true);
     const cli = audit(await fixtureSnapshot("cli-tool"), "users");
     expect(cli.launchPlan.tasks.some((x) => x.title === "Nächstes Release vorbereiten")).toBe(true);
   });
@@ -205,7 +209,7 @@ describe("Unbekannte Daten und Score", () => {
   });
 });
 
-describe("Demo-Erkennung (usability.visual_demo@2)", () => {
+describe("Demo-Erkennung (usability.visual_demo@3)", () => {
   const web = (readme: string, homepage = "") =>
     cloneFixture("web-app", (f) => {
       f.repo.homepage = homepage;
@@ -216,7 +220,7 @@ describe("Demo-Erkennung (usability.visual_demo@2)", () => {
   it("README-Link auf das Website-Feld gilt als Demo: nur der Screenshot fehlt, Schwere sinkt", async () => {
     const a = audit(await fixtureSnapshot("web-app", "users", web(readme("[Open the app](http://Example.com/App)"), "https://example.com/app/")));
     const f = finding(a, "usability.visual_demo");
-    expect(f.id).toBe("usability.visual_demo@2");
+    expect(f.id).toBe("usability.visual_demo@3");
     expect(f).toMatchObject({ status: "missing", severity: "low", weight: 3, partialCredit: 2, variant: "screenshot_only" });
     expect(f.task).toContain("Screenshot");
     expect(f.task).not.toContain("Demo-Link in die README");
@@ -363,5 +367,33 @@ describe("Reihenfolge der Aufgaben", () => {
     // Ohne Webprodukt zählt die Gruppe nicht
     expect(prioritize([...findings], "cli").map((t) => t.findingId).slice(1, 3)).toEqual(["trust.security_policy@1", "trust.site_privacy@1"]);
     expect([...findings].sort(compareTasks("webapp"))[0]!.ruleId).toBe("understanding.description");
+  });
+});
+
+describe("Demo-Erkennung: Fehlalarme ausgeschlossen (usability.visual_demo@3)", () => {
+  const web = (readme: string, homepage = "") =>
+    cloneFixture("web-app", (f) => {
+      f.repo.homepage = homepage;
+      f.readme = { path: "README.md", text: readme };
+    });
+  const readme = (line: string) => `# Shiftboard\n\nShift planning for small teams, running in the browser without installation.\n\n${line}\n`;
+
+  it("Website-Feld auf GitHub zählt nicht als Demo", async () => {
+    const a = audit(await fixtureSnapshot("web-app", "users", web(readme("[Releases](https://github.com/repolaunch-fixtures/web-app/releases)"), "https://github.com/repolaunch-fixtures/web-app")));
+    expect(finding(a, "usability.visual_demo")).toMatchObject({ status: "missing", severity: "high" });
+    expect(finding(a, "usability.visual_demo").partialCredit).toBeUndefined();
+  });
+
+  it("Demo-Wörter nur als ganze Wörter", async () => {
+    const a = audit(await fixtureSnapshot("web-app", "users", web(readme("[delivery notes](https://example.org/notes)"))));
+    expect(finding(a, "usability.visual_demo").variant).toBeUndefined();
+    const b = audit(await fixtureSnapshot("web-app", "users", web(readme("[Live demo](https://example.org/app)"))));
+    expect(finding(b, "usability.visual_demo").variant).toBe("screenshot_only");
+  });
+
+  it("die Aufgabe verlangt Screenshot oder Aufnahme, ein Demo-Link ist nur Ergänzung", async () => {
+    const a = audit(await fixtureSnapshot("web-app", "users", web(readme("Nothing here."))));
+    expect(finding(a, "usability.visual_demo").task).toContain("ersetzt es aber nicht");
+    expect(finding(a, "usability.visual_demo").guide?.template).toBeUndefined();
   });
 });

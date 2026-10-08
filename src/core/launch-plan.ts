@@ -24,20 +24,37 @@ export function buildLaunchPlan(findings: Finding[], tasks: PrioritizedTask[], u
   const hasRelease = snapshot.releases.items.length > 0 || snapshot.releases.tagsFound === true;
   const archived = snapshot.meta.archived;
 
+  // Ist die Release-Regel für Projekttyp und Ziel abgeschaltet (z. B. Webprodukt mit Ziel "mehr Nutzer"),
+  // geht es um veröffentlichte Verbesserungen, nicht um ein Repository-Release.
+  const releasesRelevant = releasesFinding !== undefined && releasesFinding.status !== "not_relevant";
+
   if (!archived) {
-    plan.push({
-      week: 2,
-      title: hasRelease ? (de ? "Nächstes Release vorbereiten" : "Prepare the next release") : (de ? "Erstes Release vorbereiten" : "Prepare a first release"),
-      why: de
-        ? "Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung."
-        : "A release bundles the improvements and gives a concrete reason for the announcement.",
-      effort: de ? "30 bis 90 Min." : "30 to 90 min",
-      signal: de ? "Release mit Notes veröffentlicht" : "Release with notes published",
-      findingIds: releasesMissing && releasesFinding ? [releasesFinding.id] : [],
-    });
+    plan.push(
+      releasesRelevant
+        ? {
+            week: 2,
+            title: hasRelease ? (de ? "Nächstes Release vorbereiten" : "Prepare the next release") : de ? "Erstes Release vorbereiten" : "Prepare a first release",
+            why: de
+              ? "Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung."
+              : "A release bundles the improvements and gives a concrete reason for the announcement.",
+            effort: de ? "30 bis 90 Min." : "30 to 90 min",
+            signal: de ? "Release mit Notes veröffentlicht" : "Release with notes published",
+            findingIds: releasesMissing && releasesFinding ? [releasesFinding.id] : [],
+          }
+        : {
+            week: 2,
+            title: de ? "Verbesserungen veröffentlichen" : "Publish the improvements",
+            why: de
+              ? "Die erledigten Aufgaben gebündelt live stellen; das gibt einen konkreten Anlass für die Ankündigung."
+              : "Put the completed tasks live together; this gives a concrete reason for the announcement.",
+            effort: de ? "30 bis 90 Min." : "30 to 90 min",
+            signal: de ? "Änderungen sind auf der Website bzw. im Repository sichtbar" : "Changes are visible on the website or in the repository",
+            findingIds: [],
+          },
+    );
     plan.push({
       week: 3,
-      title: de ? "Release ankündigen" : "Announce the release",
+      title: releasesRelevant ? (de ? "Release ankündigen" : "Announce the release") : de ? "Neuerungen ankündigen" : "Announce what is new",
       why: de
         ? "Kurze, ehrliche Ankündigung mit Nutzen, Installationsweg und Link. Keine Versprechen zu Reichweite."
         : "A short, honest announcement with benefit, installation path and link. No promises about reach.",

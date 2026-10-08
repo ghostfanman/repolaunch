@@ -27,16 +27,16 @@ Abgeleitet aus den Befunden. Erwartete Wirkungen sind Hypothesen, keine Zusagen.
 - [ ] **Website: Vorschaubild für geteilte Links** (15 bis 45 Min.) `distribution.site_og_image@2`
   Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property="og:image" und absoluter Adresse darauf.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Screenshot, Animation oder Demo** (10 bis 20 Min.) `usability.visual_demo@2`
+- [ ] **Screenshot, Animation oder Demo** (10 bis 20 Min.) `usability.visual_demo@3`
   Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Erstes Release vorbereiten** (30 bis 90 Min.)
-  Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung.
-  Messbares Signal: Release mit Notes veröffentlicht
+- [ ] **Verbesserungen veröffentlichen** (30 bis 90 Min.)
+  Die erledigten Aufgaben gebündelt live stellen; das gibt einen konkreten Anlass für die Ankündigung.
+  Messbares Signal: Änderungen sind auf der Website bzw. im Repository sichtbar
 
 ### Woche 3
 
-- [ ] **Release ankündigen** (30 bis 60 Min.)
+- [ ] **Neuerungen ankündigen** (30 bis 60 Min.)
   Kurze, ehrliche Ankündigung mit Nutzen, Installationsweg und Link. Keine Versprechen zu Reichweite.
   Messbares Signal: Besuche und Rückfragen nach der Ankündigung (sofern messbar)
 - [ ] **In einer passenden Entwicklercommunity vorstellen** (30 bis 60 Min.)

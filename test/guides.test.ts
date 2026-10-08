@@ -81,4 +81,20 @@ describe("Anleitungen für Einsteiger", () => {
     for (const v of [0, 50, 80, 100]) expect(scoreVerdict(v, "de")).not.toMatch(/Erfolg|garantiert|Ranking/);
     expect(glossaryFor("Öffne die README und klicke Commit changes", "de").map((g) => g.term)).toEqual(["README", "Commit"]);
   });
+
+  it("Website-Anleitung verweist nur dann auf eine Datei im Repository, wenn die Pages-Seite dazu gehört", async () => {
+    const snapshot = await fixtureSnapshot("invoice-kit");
+    const own = { ...snapshot, site: { state: "fetched" as const, url: "https://repolaunch-fixtures.github.io/invoice-kit/", finalUrl: "https://repolaunch-fixtures.github.io/invoice-kit/" } };
+    const other = { ...snapshot, site: { state: "fetched" as const, url: "https://repolaunch-fixtures.github.io/other-project/", finalUrl: "https://repolaunch-fixtures.github.io/other-project/" } };
+    const g1 = buildGuide("distribution.site_title", { snapshot: own, lang: "de", readmePath: "README.md", projectType: "webapp", manifests: [] })!;
+    const g2 = buildGuide("distribution.site_title", { snapshot: other, lang: "de", readmePath: "README.md", projectType: "webapp", manifests: [] })!;
+    expect(g1.steps[0]!.link?.url).toContain("/edit/main/index.html");
+    expect(g2.steps[0]!.link).toBeUndefined();
+    expect(g2.steps[0]!.text).toContain("Öffne die Startdatei deiner Website");
+  });
+
+  it("Glossar enthält keine kaputten Links", () => {
+    const md = glossaryFor("eckigen Klammern", "de").map((g) => g.text).join(" ");
+    expect(md).toContain("`[Text](Adresse)`");
+  });
 });

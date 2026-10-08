@@ -121,7 +121,7 @@
       "requests": 7,
       "notModified": 0,
       "bytes": 2756,
-      "durationMs": 48
+      "durationMs": 52
     },
     "site": {
       "state": "not_checked",
@@ -352,9 +352,9 @@
         "impactHypothesis": null
       },
       {
-        "id": "usability.visual_demo@2",
+        "id": "usability.visual_demo@3",
         "ruleId": "usability.visual_demo",
-        "ruleVersion": 2,
+        "ruleVersion": 3,
         "category": "usability",
         "title": "Screenshot, Animation oder Demo",
         "rationale": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss.",
@@ -369,7 +369,7 @@
             "url": "https://github.com/repolaunch-fixtures/cli-tool/blob/1111111111111111111111111111111111111111/README.md"
           }
         ],
-        "task": "Füge einen aktuellen Screenshot, eine kurze Aufnahme oder einen Demo-Link in die README ein.",
+        "task": "Füge einen aktuellen Screenshot oder eine kurze Aufnahme in die README ein; ein Link zur laufenden Demo ergänzt das, ersetzt es aber nicht.",
         "effort": "20 bis 60 Min.",
         "effortMinutes": [
           20,
@@ -377,7 +377,7 @@
         ],
         "impactHypothesis": "Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten.",
         "guide": {
-          "action": "Screenshot oder Demo-Link in die README einfügen",
+          "action": "Screenshot in die README einfügen",
           "steps": [
             {
               "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
@@ -399,10 +399,7 @@
               "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
             }
           ],
-          "template": {
-            "label": "Alternative: Link zu einer Demo",
-            "content": "[Live-Demo ansehen](https://[Adresse deiner Demo])"
-          }
+          "note": "Gibt es eine laufende Demo, verlinke sie zusätzlich direkt unter dem Bild."
         }
       },
       {

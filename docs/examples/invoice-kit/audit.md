@@ -15,7 +15,7 @@
 
 **Das ist schon gut:** Aussagekräftige Repository-Beschreibung, README vorhanden, Lizenzinformation, Website-Feld gesetzt
 
-> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Klick-für-Klick-Anleitung für die GitHub-Webseite, ein Terminal brauchst du nicht. Für die meisten Schritte brauchst du Schreibrechte am Repository. Lass danach erneut analysieren: Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion, die neben dem Score steht.
+> So nutzt du diesen Bericht: Arbeite die Aufgaben unten der Reihe nach ab. Jede hat eine Schritt-für-Schritt-Anleitung; Aufgaben im Repository gehen direkt auf der GitHub-Webseite, ohne Terminal. Dafür brauchst du Schreibrechte am Repository. Lass danach erneut analysieren: Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion, die neben dem Score steht.
 
 ## Fünf priorisierte Aufgaben
 
@@ -161,14 +161,14 @@ Aufwand: 10 bis 20 Min. · Wichtigkeit: niedrig
 
 Erwartete Wirkung (Hypothese): Besucher sehen schon auf der Repository-Seite, was sie erwartet, bevor sie die Demo öffnen.
 
-Prüfregel und Belege: Screenshot, Animation oder Demo (`usability.visual_demo@2`), siehe „Alle Befunde“.
+Prüfregel und Belege: Screenshot, Animation oder Demo (`usability.visual_demo@3`), siehe „Alle Befunde“.
 
 ## Begriffe kurz erklärt
 
 - **README**: Die Startseite deines Projekts: die Datei README.md, die GitHub unter der Dateiliste anzeigt.
 - **Commit**: Eine gespeicherte Änderung. „Commit changes“ speichert deine Bearbeitung im Repository.
 - **Issue**: Ein Eintrag für Fragen, Fehler oder Ideen im Reiter „Issues“.
-- **Markdown**: Die einfache Textformatierung von GitHub: # für Überschriften, - für Listen, [Text](Adresse) für Links.
+- **Markdown**: Die einfache Textformatierung von GitHub: `#` für Überschriften, `-` für Listen, `[Text](Adresse)` für Links.
 
 ## Interner Bereitschaftsscore
 
@@ -300,7 +300,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgu
     ```
   
 
-#### Screenshot, Animation oder Demo (`usability.visual_demo@2`)
+#### Screenshot, Animation oder Demo (`usability.visual_demo@3`)
 
 - Status: **fehlt**, Schwere: niedrig, Gewicht: 3 (teilweise erfüllt, angerechnet: 2 / 3)
 - Begründung: Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss. Ein Demo-Link ist vorhanden, es fehlt nur ein Bild der Anwendung.

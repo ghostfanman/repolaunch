@@ -40,7 +40,7 @@ describe("Fall invoice-kit (Issue #2)", () => {
   it("erkennt den Live-Link in Zeile 5 als Demo: nur der Screenshot fehlt", async () => {
     const { audit } = await auditInvoiceKit();
     const demo = audit.findings.find((f) => f.ruleId === "usability.visual_demo")!;
-    expect(demo).toMatchObject({ id: "usability.visual_demo@2", status: "missing", severity: "low", weight: 3, partialCredit: 2, variant: "screenshot_only" });
+    expect(demo).toMatchObject({ id: "usability.visual_demo@3", status: "missing", severity: "low", weight: 3, partialCredit: 2, variant: "screenshot_only" });
     expect(demo.evidence[0]).toMatchObject({ lines: [5, 5] });
     expect(demo.evidence[0]!.label).toContain("Zeile 5: https://repolaunch-fixtures.github.io/invoice-kit/");
     // Kein Widerspruch mehr: der nächste Schritt wertet dieselbe Zeile als Handlungslink
@@ -57,7 +57,7 @@ describe("Fall invoice-kit (Issue #2)", () => {
       "trust.security_policy@1",
       "trust.site_imprint@2",
       "distribution.site_og_image@2",
-      "usability.visual_demo@2",
+      "usability.visual_demo@3",
     ]);
     for (const id of CONTRIBUTOR_ONLY) {
       expect(audit.tasks.some((t) => t.findingId.startsWith(`${id}@`)), id).toBe(false);
@@ -115,7 +115,7 @@ describe("Fall invoice-kit (Issue #2)", () => {
 
   it("mit belegter früherer Analyse (Issue 4, Regelwerk 2026.10.1): Satz zum Regelwerk und zum gleichen Commit", async () => {
     const { snapshot, audit } = await auditInvoiceKit();
-    const previous: PreviousAudit = { reference: "Issue 4 in ghostfanman/repolaunch", date: "2026-10-08", rulesetVersion: "2026.10.1", score: 85, commitSha: snapshot.commitSha };
+    const previous: PreviousAudit = { reference: "Issue 4 in ghostfanman/repolaunch", date: "2026-10-08", rulesetVersion: "2026.10.1", score: 85, commitSha: snapshot.commitSha, goal: "users", projectType: "webapp" };
     const md = buildExport(snapshot, audit, user("users"), null, { previous }).contents["audit.md"]!;
     expect(md).toContain("Frühere Analyse dieses Repositorys (Issue 4 in ghostfanman/repolaunch, 2026-10-08): 85 von 100 Punkten mit Regelwerk `2026.10.1`, Commit `f288a59`.");
     expect(md).toContain("Ein Unterschied im Score kann auch vom Regelwerk stammen");

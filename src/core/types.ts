@@ -106,6 +106,9 @@ export interface PreviousAudit {
   rulesetVersion: string;
   score: number | null;
   commitSha: string | null;
+  /** Ziel und verwendeter Projekttyp der früheren Analyse; beide ändern die Gewichte. null, wenn nicht belegt. */
+  goal: Goal | null;
+  projectType: ProjectType | null;
 }
 
 /** Merkmale aus dem ausgelieferten HTML der Website, ohne JavaScript. Zeilen beziehen sich auf das HTML. */
@@ -140,8 +143,10 @@ export interface SiteCheck {
   documentBytes?: number;
   /** Übertragene Bytes des Bodys vor dem Entpacken. */
   transferBytes?: number;
-  /** Dokument wegen des Größenlimits nur teilweise gelesen. */
+  /** Dokument nur teilweise gelesen. */
   truncated?: boolean;
+  /** Grund: Größenlimit oder nicht dekodierbarer Rest der Antwort. */
+  truncatedBy?: "limit" | "decode";
   redirects?: string[];
   /** Gesendete HTTP-Anfragen an die Website, Weiterleitungen eingeschlossen. */
   requests?: number;
@@ -308,6 +313,8 @@ export interface AuditResult {
 
 /** Geprüft wird genau eine Seite (Adresse aus dem Website-Feld). Weitere von der README verlinkte Seiten derselben Website bleiben ungeprüft. */
 export interface SiteScope {
+  /** false: Der Abruf ist fehlgeschlagen; geprüft werden sollte genau diese eine Seite. */
+  fetched: boolean;
   url: string;
   finalUrl?: string;
   /** Links der README auf weitere Seiten derselben Website (gleiche Adresse oder Unterpfad), nicht abgerufen. */
