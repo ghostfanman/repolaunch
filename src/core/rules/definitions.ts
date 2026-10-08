@@ -22,6 +22,11 @@ export interface RuleOutcome {
   evidence: Evidence[];
   /** Zusätzliche Begründung, z. B. warum etwas unbekannt oder nicht relevant ist. */
   note?: Localized;
+  /**
+   * Nur bei "missing": Die Regel ist teilweise erfüllt. Offen bleibt nur ein Teil des Gewichts
+   * (openWeight); der Rest wird im Score angerechnet. Aufgabe, Aufwand und Wirkung beschreiben nur den offenen Teil.
+   */
+  partial?: { variant: string; openWeight: number; task: Localized; effortMinutes: [number, number]; impact: Localized };
 }
 
 export interface RuleDefinition {
@@ -133,6 +138,49 @@ function linkMatches(doc: MarkdownDoc, pred: (target: string, text: string, imag
 const BADGE_RE = /(shields\.io|badge|badgen\.net|\/badges?\/|codecov\.io|coveralls|travis-ci|circleci|github\.com\/[^/]+\/[^/]+\/actions\/workflows|\.svg(\?|$)|img\.shields)/;
 const REGISTRY_RE = /(npmjs\.com\/package|npmjs\.org\/package|pypi\.org\/project|crates\.io\/crates|pkg\.go\.dev|packagist\.org\/packages|rubygems\.org\/gems|hub\.docker\.com|ghcr\.io|marketplace\.visualstudio\.com|github\.com\/marketplace|jsr\.io\/@|nuget\.org\/packages|formulae\.brew\.sh)/;
 const FUNDING_RE = /(github\.com\/sponsors|opencollective\.com|patreon\.com|ko-fi\.com|buymeacoffee\.com|liberapay\.com|polar\.sh|thanks\.dev)/;
+
+/** Links auf Bilder oder Aufnahmen: Sie zeigen das Produkt selbst. */
+const MEDIA_RE = /(screenshot|asciinema|video|youtube\.com|youtu\.be|vimeo\.com|loom\.com|\.gif(\?|#|$)|\.mp4(\?|#|$)|\.webm(\?|#|$))/;
+/** Links, die eine Demo oder die laufende Anwendung ankündigen. */
+const DEMO_WORD_RE = /(demo|live|playground|try it|ausprobieren)/;
+
+/** Adresse ohne Protokoll, Query, Fragment und abschließenden Schrägstrich, klein geschrieben; null bei relativen oder fremden Schemata. */
+export function comparableUrl(raw: string | null | undefined): { host: string; key: string } | null {
+  if (!raw) return null;
+  try {
+    const u = new URL(raw.trim());
+    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    const host = u.hostname.toLowerCase();
+    const path = u.pathname.replace(/\/+$/, "");
+    return { host, key: `${host}${path}`.toLowerCase() };
+  } catch {
+    return null;
+  }
+}
+
+type DemoLink = { link: { text: string; target: string; line: number }; reason: "homepage" | "pages" | "keyword" };
+
+/**
+ * Sucht in der README einen Link auf die laufende Anwendung: gleiche Adresse wie das Website-Feld
+ * (auch Unterpfade), eine GitHub-Pages-Adresse des Besitzers oder ein als Demo beschrifteter Link.
+ */
+export function findDemoLink(ctx: Pick<RuleContext, "snapshot" | "readme">): DemoLink | null {
+  if (!ctx.readme) return null;
+  const home = comparableUrl(ctx.snapshot.meta.homepage);
+  const pagesHost = `${ctx.snapshot.owner}.github.io`.toLowerCase();
+  const candidates = ctx.readme.links.filter((l) => !l.image && !BADGE_RE.test(l.target.toLowerCase()));
+  for (const l of candidates) {
+    const c = comparableUrl(l.target);
+    if (c && home && (c.key === home.key || c.key.startsWith(`${home.key}/`))) return { link: l, reason: "homepage" };
+  }
+  for (const l of candidates) {
+    if (comparableUrl(l.target)?.host === pagesHost) return { link: l, reason: "pages" };
+  }
+  for (const l of candidates) {
+    if (comparableUrl(l.target) && DEMO_WORD_RE.test(`${l.text} ${l.target}`.toLowerCase())) return { link: l, reason: "keyword" };
+  }
+  return null;
+}
 
 function daysSince(iso: string | null, now: Date): number | null {
   if (!iso) return null;
@@ -374,7 +422,7 @@ export const RULES: RuleDefinition[] = [
   },
   {
     id: "usability.visual_demo",
-    version: 1,
+    version: 2,
     category: "usability",
     readmeContent: true,
     title: { de: "Screenshot, Animation oder Demo", en: "Screenshot, animation or demo" },
@@ -397,9 +445,38 @@ export const RULES: RuleDefinition[] = [
       const doc = ctx.readme!;
       const img = linkMatches(doc, (t, _x, image) => image && !BADGE_RE.test(t))[0];
       if (img) return { status: "present", evidence: [readmeEvidence(ctx, tr(ctx, "Bild in der README", "Image in the README"), img.line, img.line)] };
-      const demo = linkMatches(doc, (t, x) => /(demo|screenshot|asciinema|video|youtube|vimeo|loom|\.gif|\.mp4|live|playground)/.test(`${t} ${x}`))[0];
-      if (demo) return { status: "present", evidence: [readmeEvidence(ctx, tr(ctx, "Demo-Link", "Demo link"), demo.line, demo.line)] };
-      return { status: "missing", evidence: [readmeAbsence(ctx, tr(ctx, "kein Bild außer Badges und kein Link auf Demo/Screenshot/Video", "no image other than badges and no demo/screenshot/video link"))] };
+      const media = linkMatches(doc, (t, x, image) => !image && MEDIA_RE.test(`${t} ${x}`))[0];
+      if (media) return { status: "present", evidence: [readmeEvidence(ctx, tr(ctx, `Link auf Screenshot oder Aufnahme: ${media.target}`, `Link to a screenshot or recording: ${media.target}`), media.line, media.line)] };
+      const noImage = readmeAbsence(ctx, tr(ctx, "kein Bild außer Badges und kein Link auf Screenshot oder Video", "no image other than badges and no screenshot or video link"));
+      const demo = findDemoLink(ctx);
+      if (demo) {
+        const l = demo.link;
+        const label =
+          demo.reason === "homepage"
+            ? tr(ctx, `Demo-Link in Zeile ${l.line}: ${l.target} (entspricht dem Website-Feld des Repositorys)`, `Demo link in line ${l.line}: ${l.target} (matches the repository website field)`)
+            : demo.reason === "pages"
+              ? tr(ctx, `Demo-Link in Zeile ${l.line}: ${l.target} (GitHub Pages des Besitzers)`, `Demo link in line ${l.line}: ${l.target} (GitHub Pages of the owner)`)
+              : tr(ctx, `Demo-Link in Zeile ${l.line}: ${l.target}`, `Demo link in line ${l.line}: ${l.target}`);
+        return {
+          status: "missing",
+          evidence: [readmeEvidence(ctx, label, l.line, l.line), noImage],
+          note: { de: "Ein Demo-Link ist vorhanden, es fehlt nur ein Bild der Anwendung.", en: "A demo link is present; only an image of the application is missing." },
+          partial: {
+            variant: "screenshot_only",
+            openWeight: 1,
+            task: {
+              de: "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
+              en: "Add a screenshot of the application to the README, for example right below the existing demo link.",
+            },
+            effortMinutes: [10, 20],
+            impact: {
+              de: "Besucher sehen schon auf der Repository-Seite, was sie erwartet, bevor sie die Demo öffnen.",
+              en: "Visitors see what to expect on the repository page before opening the demo.",
+            },
+          },
+        };
+      }
+      return { status: "missing", evidence: [readmeAbsence(ctx, tr(ctx, "kein Bild außer Badges, kein Link auf Screenshot oder Video und kein Demo-Link (Website-Feld, GitHub Pages oder als Demo beschriftet)", "no image other than badges, no screenshot or video link and no demo link (website field, GitHub Pages or labelled as demo)"))] };
     },
   },
   {

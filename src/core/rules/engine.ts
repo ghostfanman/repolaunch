@@ -93,17 +93,23 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
     const outcome = rule.evaluate(ctx);
     const status = outcome.status;
     const bundled = status === "missing" && rule.readmeContent && readmeMissing;
+    // Teilweise erfüllt: angerechnet wird das Gewicht ohne den offenen Teil; Schwere und Aufgabe beziehen sich nur auf den offenen Teil.
+    const partial = status === "missing" ? outcome.partial : undefined;
+    const credit = partial ? Math.max(0, weight - partial.openWeight) : 0;
+    const effortMinutes = partial?.effortMinutes ?? rule.effortMinutes;
     findings.push({
       ...base,
       status,
-      severity: status === "missing" ? severityForWeight(weight) : "none",
+      severity: status === "missing" ? severityForWeight(weight - credit) : "none",
       weight: status === "not_relevant" ? 0 : weight,
       rationale: outcome.note ? `${base.rationale} ${outcome.note[lang]}` : base.rationale,
       evidence: outcome.evidence,
-      task: status === "missing" && !bundled ? rule.task[lang] : null,
-      effort: status === "missing" ? formatEffort(rule.effortMinutes, lang) : null,
-      effortMinutes: status === "missing" ? rule.effortMinutes : null,
-      impactHypothesis: status === "missing" ? rule.impact[lang] : null,
+      task: status === "missing" && !bundled ? (partial?.task ?? rule.task)[lang] : null,
+      effort: status === "missing" ? formatEffort(effortMinutes, lang) : null,
+      effortMinutes: status === "missing" ? effortMinutes : null,
+      impactHypothesis: status === "missing" ? (partial?.impact ?? rule.impact)[lang] : null,
+      ...(credit > 0 ? { partialCredit: credit } : {}),
+      ...(partial ? { variant: partial.variant } : {}),
       exclusionReason:
         status === "unknown"
           ? outcome.note?.[lang] ?? (lang === "de" ? "Daten nicht verfügbar." : "Data not available.")
@@ -118,7 +124,7 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
   // Anleitungen für Einsteiger zu jeder offenen Aufgabe
   const guideCtx = { snapshot, lang, readmePath: ctx.readmePath, projectType: classification.used, manifests: ctx.manifests };
   for (const f of findings) {
-    if (f.status === "missing" && f.task) f.guide = buildGuide(f.ruleId, guideCtx);
+    if (f.status === "missing" && f.task) f.guide = buildGuide(f.ruleId, guideCtx, f.variant);
   }
 
   // Fehlt die README, werden die README-Inhaltsregeln in einer Aufgabe gebündelt.
@@ -146,13 +152,18 @@ export function runAudit(snapshot: RepoSnapshot, user: UserContext, opts: AuditO
   };
 }
 
+/** Offenes Gewicht eines fehlenden Befunds: volles Gewicht abzüglich einer Teilgutschrift. */
+export function openWeight(f: Finding): number {
+  return f.weight - (f.partialCredit ?? 0);
+}
+
 export function prioritize(findings: Finding[]): PrioritizedTask[] {
   const ruleOrder = new Map(RULES.map((r, i) => [r.id, i]));
   return findings
     .filter((f) => f.status === "missing" && f.task && f.effortMinutes)
     .sort(
       (a, b) =>
-        b.weight - a.weight ||
+        openWeight(b) - openWeight(a) ||
         a.effortMinutes![0] - b.effortMinutes![0] ||
         CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) ||
         (ruleOrder.get(a.ruleId) ?? 0) - (ruleOrder.get(b.ruleId) ?? 0),
@@ -182,10 +193,9 @@ export function computeScore(findings: Finding[], lang: "de" | "en"): ReadinessS
     if (f.status === "present" || f.status === "missing") {
       possible += f.weight;
       cat.possible += f.weight;
-      if (f.status === "present") {
-        achieved += f.weight;
-        cat.achieved += f.weight;
-      }
+      const got = f.status === "present" ? f.weight : (f.partialCredit ?? 0);
+      achieved += got;
+      cat.achieved += got;
     } else {
       if (f.status === "unknown") {
         unknownWeight += f.weight;
@@ -205,7 +215,7 @@ export function computeScore(findings: Finding[], lang: "de" | "en"): ReadinessS
     excluded,
     formula:
       lang === "de"
-        ? `Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte bewerteter Regeln × 100 = ${achieved} / ${possible} × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = ${possible} / ${relevant}.`
-        : `Score = sum of weights of met rules / sum of weights of scored rules × 100 = ${achieved} / ${possible} × 100. Unknown and not relevant rules do not count. Coverage = scored weights / (scored + unknown weights) = ${possible} / ${relevant}.`,
+        ? `Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = ${achieved} / ${possible} × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = ${possible} / ${relevant}.`
+        : `Score = sum of weights of met rules (including partial credit) / sum of weights of scored rules × 100 = ${achieved} / ${possible} × 100. Unknown and not relevant rules do not count. Coverage = scored weights / (scored + unknown weights) = ${possible} / ${relevant}.`,
   };
 }

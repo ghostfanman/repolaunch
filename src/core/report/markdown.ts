@@ -163,7 +163,8 @@ function guideMd(g: TaskGuide, lang: Language): string[] {
 function findingMd(f: Finding, lang: Language, taskRank?: number): string {
   const m = t(lang);
   const lines = [`#### ${inlineText(f.title)} (\`${f.id}\`)`, ""];
-  lines.push(`- ${m.report.status}: **${m.statuses[f.status]}**${f.status === "missing" ? `, ${m.report.severity}: ${m.severities[f.severity]}` : ""}, ${m.report.weight}: ${f.weight}`);
+  const partial = f.partialCredit ? ` (${m.report.partialCredit}: ${f.partialCredit} / ${f.weight})` : "";
+  lines.push(`- ${m.report.status}: **${m.statuses[f.status]}**${f.status === "missing" ? `, ${m.report.severity}: ${m.severities[f.severity]}` : ""}, ${m.report.weight}: ${f.weight}${partial}`);
   lines.push(`- ${m.report.rationale}: ${inlineText(f.rationale, 800)}`);
   if (f.task) lines.push(`- ${m.report.task}: ${inlineText(f.task, 800)}`);
   if (f.effort) lines.push(`- ${m.report.effort}: ${f.effort}`);

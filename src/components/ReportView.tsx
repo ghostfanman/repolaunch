@@ -110,7 +110,10 @@ function FindingItem({ f, lang }: { f: Finding; lang: Language }) {
             <code>{f.id}</code>
           </dd>
           <dt>{m.report.weight}</dt>
-          <dd>{f.weight}</dd>
+          <dd>
+            {f.weight}
+            {f.partialCredit ? ` (${m.report.partialCredit}: ${f.partialCredit} / ${f.weight})` : ""}
+          </dd>
           <dt>{m.report.rationale}</dt>
           <dd>{f.rationale}</dd>
           {f.task && (

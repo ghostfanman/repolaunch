@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { classifyProject } from "@/core/analysis/classify";
 import { applyRuleOverrides, DEFAULT_RULE_CONFIG, RULESET_VERSION } from "@/core/rules/config";
 import { RULES } from "@/core/rules/definitions";
-import { runAudit } from "@/core/rules/engine";
+import { openWeight, runAudit } from "@/core/rules/engine";
 import type { Goal, ProjectType, RepoSnapshot } from "@/core/types";
 import { cloneFixture, fixtureSnapshot, NOW, user } from "./helpers";
 
@@ -108,7 +108,7 @@ describe("Befunde mit Belegen", () => {
   it("liefert fünf priorisierte Aufgaben, sortiert nach Gewicht", async () => {
     const a = audit(await fixtureSnapshot("web-app", "saas_customers"), "saas_customers");
     expect(a.tasks).toHaveLength(5);
-    const weights = a.tasks.map((t) => a.findings.find((f) => f.id === t.findingId)!.weight);
+    const weights = a.tasks.map((t) => openWeight(a.findings.find((f) => f.id === t.findingId)!));
     expect([...weights].sort((x, y) => y - x)).toEqual(weights);
   });
 
@@ -134,7 +134,7 @@ describe("Unbekannte Daten und Score", () => {
   it("Score entspricht der dokumentierten Formel", async () => {
     const a = audit(await fixtureSnapshot("cli-tool"));
     const scored = a.findings.filter((f) => f.status === "present" || f.status === "missing");
-    const achieved = scored.filter((f) => f.status === "present").reduce((n, f) => n + f.weight, 0);
+    const achieved = scored.reduce((n, f) => n + (f.status === "present" ? f.weight : (f.partialCredit ?? 0)), 0);
     const possible = scored.reduce((n, f) => n + f.weight, 0);
     expect(a.score.value).toBe(Math.round((achieved / possible) * 100));
     expect(a.score.formula).toContain(`${achieved} / ${possible}`);
@@ -168,5 +168,69 @@ describe("Unbekannte Daten und Score", () => {
     expect(finding(a, "understanding.description").title).toBe("Meaningful repository description");
     expect(finding(a, "understanding.description").evidence[0]!.label).toBe("GitHub API: description");
     expect(a.score.formula).toMatch(/^Score = sum/);
+  });
+});
+
+describe("Demo-Erkennung (usability.visual_demo@2)", () => {
+  const web = (readme: string, homepage = "") =>
+    cloneFixture("web-app", (f) => {
+      f.repo.homepage = homepage;
+      f.readme = { path: "README.md", text: readme };
+    });
+  const readme = (line: string) => `# Shiftboard\n\nShift planning for small teams, running in the browser without installation.\n\n${line}\n\n## Setup\n\nSee docs.\n`;
+
+  it("README-Link auf das Website-Feld gilt als Demo: nur der Screenshot fehlt, Schwere sinkt", async () => {
+    const a = audit(await fixtureSnapshot("web-app", "users", web(readme("[Open the app](http://Example.com/App)"), "https://example.com/app/")));
+    const f = finding(a, "usability.visual_demo");
+    expect(f.id).toBe("usability.visual_demo@2");
+    expect(f).toMatchObject({ status: "missing", severity: "low", weight: 3, partialCredit: 2, variant: "screenshot_only" });
+    expect(f.task).toContain("Screenshot");
+    expect(f.task).not.toContain("Demo-Link in die README");
+    expect(f.effortMinutes).toEqual([10, 20]);
+    expect(f.evidence[0]).toMatchObject({ kind: "file", lines: [5, 5] });
+    expect(f.evidence[0]!.label).toContain("Zeile 5: http://Example.com/App");
+    expect(f.evidence[0]!.label).toContain("Website-Feld");
+    expect(f.guide?.action).toBe("Screenshot in die README einfügen");
+    expect(f.guide?.template).toBeUndefined();
+  });
+
+  it("Unterpfade der Homepage zählen, ähnliche Präfixe nicht", async () => {
+    const sub = audit(await fixtureSnapshot("web-app", "users", web(readme("[Viewer](https://example.com/app/viewer.html?x=1#top)"), "https://example.com/app")));
+    expect(finding(sub, "usability.visual_demo")).toMatchObject({ variant: "screenshot_only", severity: "low" });
+    const other = audit(await fixtureSnapshot("web-app", "users", web(readme("[Open](https://example.com/application)"), "https://example.com/app")));
+    expect(finding(other, "usability.visual_demo")).toMatchObject({ status: "missing", severity: "high" });
+    expect(finding(other, "usability.visual_demo").variant).toBeUndefined();
+  });
+
+  it("GitHub Pages des Besitzers gilt als Demo, fremde Pages nicht", async () => {
+    const own = audit(await fixtureSnapshot("web-app", "users", web(readme("[Start](https://repolaunch-fixtures.github.io/web-app/)"))));
+    expect(finding(own, "usability.visual_demo")).toMatchObject({ variant: "screenshot_only" });
+    expect(finding(own, "usability.visual_demo").evidence[0]!.label).toContain("GitHub Pages des Besitzers");
+    const foreign = audit(await fixtureSnapshot("web-app", "users", web(readme("[Start](https://someone-else.github.io/web-app/)"))));
+    expect(finding(foreign, "usability.visual_demo")).toMatchObject({ status: "missing", severity: "high" });
+  });
+
+  it("Bild oder Aufnahme bleibt erfüllt; ohne Demo und Bild bleibt die volle Schwere", async () => {
+    const img = audit(await fixtureSnapshot("web-app", "users", web(readme("![Dashboard](docs/screen.png)"))));
+    expect(finding(img, "usability.visual_demo").status).toBe("present");
+    const video = audit(await fixtureSnapshot("web-app", "users", web(readme("[Walkthrough](https://youtu.be/abc123)"))));
+    expect(finding(video, "usability.visual_demo").status).toBe("present");
+    const none = audit(await fixtureSnapshot("web-app", "users", web(readme("Nothing to click here."))));
+    expect(finding(none, "usability.visual_demo")).toMatchObject({ status: "missing", severity: "high" });
+    expect(finding(none, "usability.visual_demo").partialCredit).toBeUndefined();
+  });
+
+  it("Demo-Erkennung und nächster Schritt werten dieselbe Zeile gleich", async () => {
+    const a = audit(await fixtureSnapshot("web-app", "users", web(readme("[Generator öffnen](https://example.com/app/)"), "https://example.com/app/")));
+    expect(finding(a, "distribution.next_step")).toMatchObject({ status: "present" });
+    expect(finding(a, "distribution.next_step").evidence[0]!.lines).toEqual(finding(a, "usability.visual_demo").evidence[0]!.lines);
+  });
+
+  it("Teilgutschrift fließt in Score und Kategorie ein", async () => {
+    const a = audit(await fixtureSnapshot("web-app", "users", web(readme("[Open](https://example.com/app)"), "https://example.com/app")));
+    const usability = a.score.byCategory.find((c) => c.category === "usability")!;
+    const expected = a.findings.filter((f) => f.category === "usability" && (f.status === "present" || f.status === "missing")).reduce((n, f) => n + (f.status === "present" ? f.weight : (f.partialCredit ?? 0)), 0);
+    expect(usability.achieved).toBe(expected);
+    expect(a.score.formula).toContain("Teilgutschriften");
   });
 });

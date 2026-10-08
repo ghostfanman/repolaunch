@@ -46,7 +46,7 @@ export function suggestTopics(ctx: GuideContext): string[] {
   return [...new Set(out)].filter((x) => /^[a-z0-9][a-z0-9-]{0,49}$/.test(x) && !existing.has(x));
 }
 
-type Builder = (ctx: GuideContext, L: (de: string, en: string) => string, u: ReturnType<typeof urls>) => TaskGuide;
+type Builder = (ctx: GuideContext, L: (de: string, en: string) => string, u: ReturnType<typeof urls>, variant?: string) => TaskGuide;
 
 function commitStep(L: (de: string, en: string) => string): GuideStep {
   return { text: L("Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig.", "Click “Commit changes…” at the top right and then “Commit changes” in the dialog. Done.") };
@@ -195,19 +195,28 @@ const GUIDES: Record<string, Builder> = {
       ),
     ),
 
-  "usability.visual_demo": (ctx, L, u) => ({
-    action: L("Screenshot oder Demo-Link in die README einfügen", "Add a screenshot or demo link to the README"),
+  "usability.visual_demo": (ctx, L, u, variant) => ({
+    action: variant === "screenshot_only" ? L("Screenshot in die README einfügen", "Add a screenshot to the README") : L("Screenshot oder Demo-Link in die README einfügen", "Add a screenshot or demo link to the README"),
     steps: [
       { text: L("Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“).", "Take a screenshot of your project (Windows: Win+Shift+S, Mac: Cmd+Shift+4, Linux: “Print” key).") },
       { text: L("Öffne die README im Bearbeitungsmodus:", "Open the README in edit mode:"), link: { label: L("README bearbeiten", "Edit README"), url: u.edit(ctx.readmePath ?? "README.md") } },
-      { text: L("Klicke unter die Einleitung und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein.", "Click below the introduction and drag the image file into the text field. GitHub uploads the image and inserts the link for you.") },
+      {
+        text:
+          variant === "screenshot_only"
+            ? L("Klicke in die Zeile unter dem vorhandenen Demo-Link und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein.", "Click into the line below the existing demo link and drag the image file into the text field. GitHub uploads the image and inserts the link for you.")
+            : L("Klicke unter die Einleitung und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein.", "Click below the introduction and drag the image file into the text field. GitHub uploads the image and inserts the link for you."),
+      },
       { text: L("Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“.", "Replace the text in the square brackets of the image link with a short description, e.g. “App start page”.") },
       commitStep(L),
     ],
-    template: {
-      label: L("Alternative: Link zu einer Demo", "Alternative: link to a demo"),
-      content: L("[Live-Demo ansehen](https://[Adresse deiner Demo])", "[Try the live demo](https://[address of your demo])"),
-    },
+    // Ist der Demo-Link schon da, braucht es keine Vorlage dafür.
+    template:
+      variant === "screenshot_only"
+        ? undefined
+        : {
+            label: L("Alternative: Link zu einer Demo", "Alternative: link to a demo"),
+            content: L("[Live-Demo ansehen](https://[Adresse deiner Demo])", "[Try the live demo](https://[address of your demo])"),
+          },
   }),
 
   "usability.docs": (ctx, L, u) =>
@@ -462,11 +471,11 @@ const GUIDES: Record<string, Builder> = {
   }),
 };
 
-export function buildGuide(ruleId: string, ctx: GuideContext): TaskGuide | undefined {
+export function buildGuide(ruleId: string, ctx: GuideContext, variant?: string): TaskGuide | undefined {
   const b = GUIDES[ruleId];
   if (!b) return undefined;
   const L = (de: string, en: string) => (ctx.lang === "de" ? de : en);
-  return b(ctx, L, urls(ctx.snapshot));
+  return b(ctx, L, urls(ctx.snapshot), variant);
 }
 
 export function hasGuide(ruleId: string): boolean {

@@ -125,6 +125,10 @@ export interface Finding {
   exclusionReason?: string;
   /** Schritt-für-Schritt-Anleitung für die GitHub-Webseite, nur bei offenen Aufgaben. */
   guide?: TaskGuide;
+  /** Nur bei "missing": teilweise erfüllt. Dieser Teil des Gewichts wird im Score angerechnet, die Schwere richtet sich nach dem Rest. */
+  partialCredit?: number;
+  /** Ausprägung eines Befunds, wenn eine Regel mehrere fehlende Zustände unterscheidet (z. B. "screenshot_only"). */
+  variant?: string;
 }
 
 /** Ein Schritt einer Anleitung. Links zeigen nur auf github.com oder docs.github.com. */
