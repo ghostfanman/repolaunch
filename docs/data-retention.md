@@ -31,6 +31,8 @@ Nur nach ausdrücklicher Zustimmung im Ergebnis. Übermittelt werden genau die v
 
 ## Analyse per Issue (für alle)
 
+Für den Hinweis zur Vergleichbarkeit liest der Workflow zusätzlich die letzten 100 Issues dieses Repositorys und von höchstens drei früheren Anfragen zum selben Repository die Kommentare. Verwendet werden nur Regelwerk, Score, Commit und Datum aus Berichten von `github-actions[bot]`; gespeichert wird davon nichts. In der Web-App werden Aufträge verschiedener Personen nie miteinander verglichen.
+
 Wer das Issue-Formular nutzt, veröffentlicht die Anfrage als Issue. RepoLaunch selbst speichert nichts: Der Workflow schreibt den Bericht als Kommentar, schließt das Issue und lädt die Dateien als Artefakt hoch (7 Tage). Issue und Kommentar bleiben öffentlich, bis die Person mit Schreibrechten sie löscht oder sperrt. Das Formular weist vor dem Absenden darauf hin und verlangt eine Bestätigung. Für die Grenzen pro Stunde liest der Workflow nur die Issues der letzten Stunde (Nummer, Zeit, Autor, Text) und speichert sie nicht.
 
 ## Audit per GitHub Actions

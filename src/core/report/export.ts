@@ -4,7 +4,7 @@
 import { strToU8, zipSync } from "fflate";
 import type { AiPackageResult } from "../ai/generate";
 import type { AuditResult, Language, RepoSnapshot, UserContext } from "../types";
-import { renderAuditMarkdown, renderLaunchPlanMarkdown, renderMarketingDrafts, renderMonetizationMarkdown, renderReadmeSuggested, type ExportFileInfo } from "./markdown";
+import { renderAuditMarkdown, renderLaunchPlanMarkdown, renderMarketingDrafts, renderMonetizationMarkdown, renderReadmeSuggested, type ExportFileInfo, type ReportContext } from "./markdown";
 
 export const GENERATOR = { name: "RepoLaunch", version: "0.1.0" };
 
@@ -46,7 +46,7 @@ export interface ExportBundle {
   contents: Record<string, string>;
 }
 
-export function buildExport(snapshot: RepoSnapshot, audit: AuditResult, user: UserContext, ai: AiPackageResult | null): ExportBundle {
+export function buildExport(snapshot: RepoSnapshot, audit: AuditResult, user: UserContext, ai: AiPackageResult | null, context: ReportContext = {}): ExportBundle {
   const lang = user.language;
   const generated: Record<string, string | null> = {
     "README.suggested.md": ai ? renderReadmeSuggested(ai, lang) : null,
@@ -88,7 +88,7 @@ export function buildExport(snapshot: RepoSnapshot, audit: AuditResult, user: Us
 
   const contents: Record<string, string> = {
     "audit.json": auditJson,
-    "audit.md": renderAuditMarkdown(snapshot, audit, user, files, ai),
+    "audit.md": renderAuditMarkdown(snapshot, audit, user, files, ai, context),
   };
   for (const [name, text] of Object.entries(generated)) if (text) contents[name] = text;
 

@@ -94,6 +94,20 @@ export interface RepoSnapshot {
   site?: SiteCheck;
 }
 
+/**
+ * Frühere Analyse desselben Repositorys, nur wenn sie belegbar vorliegt (z. B. als früherer Bericht im
+ * Issue-Verlauf). Dient nur dem Hinweis zur Vergleichbarkeit; nichts davon fließt in die Bewertung ein.
+ */
+export interface PreviousAudit {
+  /** Fundstelle, z. B. "Issue 2 in ghostfanman/repolaunch". */
+  reference: string;
+  /** Datum der früheren Analyse (YYYY-MM-DD). */
+  date: string;
+  rulesetVersion: string;
+  score: number | null;
+  commitSha: string | null;
+}
+
 /** Merkmale aus dem ausgelieferten HTML der Website, ohne JavaScript. Zeilen beziehen sich auf das HTML. */
 export interface SiteFacts {
   title: { text: string; line: number } | null;

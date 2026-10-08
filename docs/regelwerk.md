@@ -24,6 +24,18 @@ Eine Regelversion steigt, wenn sich ihre Auswertung ändert. Reine Gewichtsände
 
 Ohne Website-Feld oder mit einer Adresse auf github.com sind die Regeln nicht relevant (das Feld selbst bewertet `distribution.homepage`). Ist der Abruf abgeschaltet (`REPOLAUNCH_SITE_CHECK=0`) oder fehlgeschlagen, gelten sie als unbekannt und senken nur die Abdeckung. Enthält das HTML keine Links, aber Skripte, bleiben Impressum und Datenschutz unbekannt, weil RepoLaunch kein JavaScript ausführt.
 
+## Vergleichbarkeit von Scores
+
+Ein Score ist nur innerhalb derselben Regelwerkversion vergleichbar. Neue Regeln, andere Gewichte oder eine geänderte Bewertung verschieben ihn auch ohne Änderung am Repository. Der Bericht nennt die Version deshalb direkt neben dem Score und enthält dazu einen festen Hinweis.
+
+Frühere Audits werden nur verwendet, wenn sie belegbar vorliegen:
+
+- **Analyse per Issue:** Der Workflow sucht in den letzten 100 Issues dieses Repositorys den neuesten früheren Bericht zum selben Repository. Er liest höchstens drei Kommentarlisten und zählt nur Kommentare von `github-actions[bot]`. Neue Berichte tragen dafür einen unsichtbaren Vermerk (`<!-- repolaunch-audit {...} -->`); ältere werden aus dem sichtbaren Text gelesen. Gefunden werden Regelwerk, Score und Commit. Weicht das Regelwerk ab, sagt ein Satz, dass der Unterschied auch vom Regelwerk stammen kann; bei gleichem Commit nennt er das ausdrücklich.
+- **Web-App (SQLite):** Aufträge sind privat und nur über ihren Schlüssel lesbar. Ein Abgleich über Aufträge hinweg würde offenlegen, dass jemand anderes dasselbe Repository wann geprüft hat. Deshalb gibt es dort nur den festen Hinweis.
+- **Workflow-Formular unter Actions:** keine Historie, fester Hinweis.
+
+Ohne belegten früheren Bericht bleibt es beim festen Hinweis; RepoLaunch erfindet keine Historie.
+
 ## Reihenfolge der fünf Aufgaben
 
 Die Aufgaben werden nach diesen Kriterien sortiert, in dieser Reihenfolge (Code: `compareTasks` in `src/core/rules/engine.ts`):

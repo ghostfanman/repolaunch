@@ -15,7 +15,7 @@ import { createSiteFetcher } from "@/core/site/fetch";
 import type { SiteFetcher } from "@/core/site/types";
 import { applyRuleOverrides, DEFAULT_RULE_CONFIG } from "@/core/rules/config";
 import { runAudit } from "@/core/rules/engine";
-import { GOALS, PROJECT_TYPES, type Goal, type Language, type ProjectType, type UserContext } from "@/core/types";
+import { GOALS, PROJECT_TYPES, type Goal, type Language, type PreviousAudit, type ProjectType, type UserContext } from "@/core/types";
 import { t } from "@/i18n/messages";
 
 /** Standardabschnitte des KI-Pakets, wie in der Web-Oberfläche vorausgewählt. */
@@ -35,6 +35,8 @@ export interface CliDeps {
   log?: (line: string) => void;
   /** Link auf den Workflow-Lauf mit den Artefakten, wenn der Bericht nicht auf der Lauf-Seite selbst erscheint (z. B. als Issue-Kommentar). */
   artifactsUrl?: string;
+  /** Belegte frühere Analyse desselben Repositorys (nur für den Hinweis zur Vergleichbarkeit). */
+  previous?: PreviousAudit;
 }
 
 export interface CliResult {
@@ -43,6 +45,8 @@ export interface CliResult {
   files: string[];
   outputDir?: string;
   artifactName?: string;
+  /** Kennzahlen des Audits, z. B. für einen maschinenlesbaren Vermerk im Issue-Kommentar. */
+  audit?: { fullName: string; rulesetVersion: string; score: number | null; commitSha: string; analyzedAt: string };
 }
 
 function fail(lang: Language, message: string, exitCode = 2): CliResult {
@@ -157,7 +161,7 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
   }
 
   // 4. Export als Dateien (das Actions-Artefakt wird von GitHub selbst als ZIP angeboten)
-  const bundle = buildExport(snapshot, audit, user, ai);
+  const bundle = buildExport(snapshot, audit, user, ai, { previous: deps.previous });
   const outputDir = path.resolve(env.OUTPUT_DIR || "repolaunch-output");
   mkdirSync(outputDir, { recursive: true });
   const files = Object.keys(bundle.contents);
@@ -185,5 +189,12 @@ export async function runAuditCli(env: Record<string, string | undefined>, deps:
   }
   const summary = `${head.join("\n")}\n${bundle.contents["audit.md"]}`;
   log(`${snapshot.fullName} @ ${snapshot.commitSha}: Score ${audit.score.value}, ${audit.tasks.length} Aufgaben, Dateien: ${files.join(", ")}`);
-  return { exitCode: 0, summary, files, outputDir, artifactName };
+  return {
+    exitCode: 0,
+    summary,
+    files,
+    outputDir,
+    artifactName,
+    audit: { fullName: snapshot.fullName, rulesetVersion: audit.rulesetVersion, score: audit.score.value, commitSha: snapshot.commitSha, analyzedAt: snapshot.analyzedAt },
+  };
 }

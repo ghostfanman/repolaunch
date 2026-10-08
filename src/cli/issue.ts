@@ -2,8 +2,9 @@
 // "RepoLaunch: Analyse per Issue" ruft diese Funktion auf, der Bericht kommt als Kommentar zurück.
 // Der Issue-Text ist untrusted data: Er wird nur geparst und geprüft, nie ausgeführt.
 
-import { runAuditCli, type CliDeps } from "@/cli/audit";
-import type { Language } from "@/core/types";
+import { runAuditCli, type CliDeps, type CliResult } from "@/cli/audit";
+import { parseRepoInput, suggestRepoInput } from "@/core/repo-input";
+import type { Language, PreviousAudit } from "@/core/types";
 
 /** Überschriften des Formulars (.github/ISSUE_TEMPLATE/repolaunch-audit.yml). Ein Test hält beide synchron. */
 export const FORM_LABELS = {
@@ -33,9 +34,19 @@ export interface RecentIssue {
   body: string;
 }
 
+export interface IssueComment {
+  author: string;
+  authorType: string;
+  body: string;
+  createdAt: string;
+}
+
 export interface IssueApi {
   /** Issues (ohne Pull Requests), die seit dem Zeitpunkt aktualisiert wurden. */
   listRecentIssues(sinceIso: string): Promise<RecentIssue[]>;
+  /** Die letzten 100 Issues (ohne Pull Requests), neueste zuerst; für die Suche nach früheren Berichten. */
+  listIssues(): Promise<RecentIssue[]>;
+  listComments(issueNumber: number): Promise<IssueComment[]>;
   comment(issueNumber: number, body: string): Promise<void>;
   close(issueNumber: number, reason: "completed" | "not_planned"): Promise<void>;
 }
@@ -55,16 +66,19 @@ export function githubIssueApi(repository: string, token: string, fetchImpl: typ
     if (!res.ok) throw new Error(`GitHub-API ${init.method ?? "GET"} ${new URL(url).pathname} -> ${res.status}`);
     return res.json();
   }
+  type RawIssue = { number: number; created_at: string; user: { login: string } | null; body: string | null; pull_request?: unknown };
+  const toIssues = (data: RawIssue[]): RecentIssue[] =>
+    data.filter((i) => !i.pull_request).map((i) => ({ number: i.number, createdAt: i.created_at, author: i.user?.login ?? "", body: i.body ?? "" }));
   return {
     async listRecentIssues(sinceIso) {
-      const data = (await call(`${base}?state=all&since=${encodeURIComponent(sinceIso)}&per_page=100&sort=created&direction=desc`)) as Array<{
-        number: number;
-        created_at: string;
-        user: { login: string } | null;
-        body: string | null;
-        pull_request?: unknown;
-      }>;
-      return data.filter((i) => !i.pull_request).map((i) => ({ number: i.number, createdAt: i.created_at, author: i.user?.login ?? "", body: i.body ?? "" }));
+      return toIssues((await call(`${base}?state=all&since=${encodeURIComponent(sinceIso)}&per_page=100&sort=created&direction=desc`)) as RawIssue[]);
+    },
+    async listIssues() {
+      return toIssues((await call(`${base}?state=all&per_page=100&sort=created&direction=desc`)) as RawIssue[]);
+    },
+    async listComments(issueNumber) {
+      const data = (await call(`${base}/${issueNumber}/comments?per_page=30`)) as Array<{ user: { login: string; type: string } | null; body: string | null; created_at: string }>;
+      return data.map((c) => ({ author: c.user?.login ?? "", authorType: c.user?.type ?? "", body: c.body ?? "", createdAt: c.created_at }));
     },
     async comment(issueNumber, body) {
       await call(`${base}/${issueNumber}/comments`, { method: "POST", body: JSON.stringify({ body }) });
@@ -103,6 +117,87 @@ function optionCode(v: string | undefined): string | undefined {
 export function newIssueUrl(repository: string | undefined): string | null {
   if (!repository || !/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(repository)) return null;
   return `https://github.com/${repository}/issues/new?template=repolaunch-audit.yml`;
+}
+
+/** Vermerk am Ende eines Berichtskommentars, unsichtbar in der Darstellung, für spätere Vergleiche. */
+const MARKER_RE = /<!-- repolaunch-audit (\{[^\n]*?\}) -->/;
+
+export function reportMarker(a: NonNullable<CliResult["audit"]>): string {
+  return `<!-- repolaunch-audit ${JSON.stringify({ repo: a.fullName, ruleset: a.rulesetVersion, score: a.score, commit: a.commitSha, analyzedAt: a.analyzedAt })} -->`;
+}
+
+const VERSION_RE = /^\d{4}\.\d{1,2}\.\d+(\+[\w.-]+)?$/;
+
+/**
+ * Liest Repository, Regelwerk, Score und Commit aus einem früheren Berichtskommentar: zuerst aus dem Vermerk,
+ * für Berichte vor Regelwerk 2026.10.2 aus dem sichtbaren Text. Liefert null, wenn etwas fehlt oder nicht passt.
+ */
+export function parseReportComment(raw: string): { fullName: string; rulesetVersion: string; score: number | null; commitSha: string | null } | null {
+  const body = raw.replace(/\u2060/g, "");
+  const marker = MARKER_RE.exec(body);
+  if (marker) {
+    try {
+      const m = JSON.parse(marker[1]!) as { repo?: unknown; ruleset?: unknown; score?: unknown; commit?: unknown };
+      const ok =
+        typeof m.repo === "string" &&
+        /^[\w.-]+\/[\w.-]+$/.test(m.repo) &&
+        typeof m.ruleset === "string" &&
+        VERSION_RE.test(m.ruleset) &&
+        (m.score === null || (typeof m.score === "number" && Number.isInteger(m.score) && m.score >= 0 && m.score <= 100)) &&
+        (m.commit === undefined || m.commit === null || (typeof m.commit === "string" && /^[0-9a-f]{40}$/.test(m.commit)));
+      if (ok) return { fullName: m.repo as string, rulesetVersion: m.ruleset as string, score: m.score as number | null, commitSha: (m.commit as string | null | undefined) ?? null };
+    } catch {
+      // Vermerk unlesbar: weiter mit dem sichtbaren Text
+    }
+  }
+  const name = /^# RepoLaunch[- ]audit: (\S+)$/im.exec(body)?.[1]?.replace(/\\/g, "");
+  const ruleset = /(?:Regelwerk|Ruleset):? (?:\*\*)?`([^`\s]+)`/.exec(body)?.[1];
+  const score = /\*\*(\d{1,3}) \/ 100\*\*/.exec(body)?.[1];
+  const commit = /(?:Analysierter Commit|Analysed commit|Analyzed commit): `([0-9a-f]{40})`/.exec(body)?.[1] ?? null;
+  if (!name || !/^[\w.-]+\/[\w.-]+$/.test(name) || !ruleset || !VERSION_RE.test(ruleset)) return null;
+  const value = score === undefined ? null : Number(score);
+  return { fullName: name, rulesetVersion: ruleset, score: value !== null && value <= 100 ? value : null, commitSha: commit };
+}
+
+/** Bot, unter dem der Workflow mit GITHUB_TOKEN kommentiert. Nur dessen Berichte zählen als Beleg. */
+const REPORT_AUTHOR = "github-actions[bot]";
+
+/**
+ * Sucht den letzten belegten Bericht zum selben Repository in früheren Formular-Issues (neueste zuerst,
+ * höchstens drei Kommentarabrufe). Ohne Fund: undefined. Es wird nichts geschätzt oder ergänzt.
+ */
+export async function findPreviousAudit(api: IssueApi, target: string, currentIssue: number, repository: string | undefined): Promise<PreviousAudit | undefined> {
+  const wanted = target.toLowerCase();
+  const candidates = (await api.listIssues())
+    .filter((i) => i.number < currentIssue && isFormIssue(i.body) && formRepo(i.body)?.toLowerCase() === wanted)
+    .sort((a, b) => b.number - a.number)
+    .slice(0, 3);
+  for (const issue of candidates) {
+    const comments = await api.listComments(issue.number);
+    for (const c of comments) {
+      if (c.author !== REPORT_AUTHOR || c.authorType !== "Bot") continue;
+      const parsed = parseReportComment(c.body);
+      if (!parsed || parsed.fullName.toLowerCase() !== wanted) continue;
+      return {
+        reference: repository ? `Issue ${issue.number} in ${repository}` : `Issue ${issue.number}`,
+        date: c.createdAt.slice(0, 10),
+        rulesetVersion: parsed.rulesetVersion,
+        score: parsed.score,
+        commitSha: parsed.commitSha,
+      };
+    }
+  }
+  return undefined;
+}
+
+/** owner/repo aus dem Formularfeld, mit derselben Prüfung wie der Audit selbst. */
+function formRepo(body: string): string | null {
+  const raw = parseIssueForm(body).repo;
+  const direct = parseRepoInput(raw);
+  if (direct.ok) return `${direct.owner}/${direct.repo}`;
+  const suggestion = suggestRepoInput(raw);
+  const retry = suggestion ? parseRepoInput(suggestion) : null;
+  return retry?.ok ? `${retry.owner}/${retry.repo}` : null;
 }
 
 export function isFormIssue(body: string): boolean {
@@ -189,9 +284,9 @@ export async function runIssueAudit(input: IssueAuditInput, api: IssueApi, deps:
   const lang: Language = langCode === "en" ? "en" : "de";
   const de = lang === "de";
 
-  async function finish(text: string, closedAs: "completed" | "not_planned", extra: Partial<IssueAuditResult> = {}): Promise<IssueAuditResult> {
+  async function finish(text: string, closedAs: "completed" | "not_planned", extra: Partial<IssueAuditResult> = {}, marker = ""): Promise<IssueAuditResult> {
     const body = neutralizeGitHubRefs(
-      `${truncateComment(text, de ? "Bericht gekürzt. Der vollständige Bericht liegt als audit.md im Artefakt des Workflow-Laufs." : "Report truncated. The full report is available as audit.md in the workflow run artifact.")}\n\n${footer(de, input.runUrl, input.repository)}\n`,
+      `${truncateComment(text, de ? "Bericht gekürzt. Der vollständige Bericht liegt als audit.md im Artefakt des Workflow-Laufs." : "Report truncated. The full report is available as audit.md in the workflow run artifact.")}\n\n${footer(de, input.runUrl, input.repository)}\n${marker ? `\n${marker}\n` : ""}`,
     );
     await api.comment(input.issueNumber, body);
     await api.close(input.issueNumber, closedAs);
@@ -230,7 +325,17 @@ export async function runIssueAudit(input: IssueAuditInput, api: IssueApi, deps:
     GITHUB_TOKEN: input.githubToken,
     OUTPUT_DIR: input.outputDir,
   };
-  const result = await runAuditCli(env, { ...deps, provider: null, artifactsUrl: input.runUrl });
+  // Frühere Berichte zum selben Repository im Issue-Verlauf: nur als Hinweis zur Vergleichbarkeit, Fehler hier stoppen nichts.
+  let previous: PreviousAudit | undefined;
+  const target = formRepo(input.issueBody);
+  if (target) {
+    try {
+      previous = await findPreviousAudit(api, target, input.issueNumber, input.repository);
+    } catch (err) {
+      log(`Frühere Berichte nicht lesbar: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+  const result = await runAuditCli(env, { ...deps, provider: null, artifactsUrl: input.runUrl, previous });
   if (result.exitCode !== 0) {
     const retry = newIssueUrl(input.repository);
     const tips = de
@@ -252,5 +357,5 @@ export async function runIssueAudit(input: IssueAuditInput, api: IssueApi, deps:
         ];
     return finish(`${result.summary}\n${tips.join("\n")}`, "not_planned");
   }
-  return finish(result.summary, "completed", { artifactName: result.artifactName, outputDir: result.outputDir });
+  return finish(result.summary, "completed", { artifactName: result.artifactName, outputDir: result.outputDir }, result.audit ? reportMarker(result.audit) : "");
 }

@@ -69,7 +69,7 @@ describe("Anleitungen für Einsteiger", () => {
     const order = ["## Das Wichtigste in Kürze", "## Fünf priorisierte Aufgaben", "**So geht's:**", "## Begriffe kurz erklärt", "## Interner Bereitschaftsscore", "## Alle Befunde"].map((h) => md.indexOf(h));
     for (const i of order) expect(i).toBeGreaterThan(-1);
     expect([...order].sort((x, y) => x - y)).toEqual(order);
-    expect(md).toContain("**36 von 100 Punkten.**");
+    expect(md).toMatch(/\*\*36 von 100 Punkten\*\* \(Regelwerk `2026\.10\.\d+`\)\./);
     expect(md).toMatch(/`distribution\.funding`: nicht relevant\. .*Aktiv mit Ziel "Sponsoren", "Supportkunden"\./);
     expect(md).toContain("[README bearbeiten](https://github.com/repolaunch-fixtures/web-app/edit/main/README.md)");
   });

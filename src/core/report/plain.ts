@@ -1,7 +1,7 @@
 // Verständliche Einordnung für Einsteiger: Score in Worten, Stärken und kurze Begriffserklärungen.
 // Die Einordnung beschreibt nur den internen Score; sie ist keine Erfolgsprognose.
 
-import type { AuditResult, Finding, Language } from "../types";
+import type { AuditResult, Finding, Language, PreviousAudit } from "../types";
 
 export function scoreVerdict(value: number | null, lang: Language): string {
   const de = lang === "de";
@@ -32,4 +32,27 @@ const GLOSSARY: { match: RegExp; term: Record<Language, string>; text: Record<La
 /** Begriffe, die im übergebenen Text vorkommen, mit kurzer Erklärung. */
 export function glossaryFor(text: string, lang: Language): { term: string; text: string }[] {
   return GLOSSARY.filter((g) => g.match.test(text)).map((g) => ({ term: g.term[lang], text: g.text[lang] }));
+}
+
+/**
+ * Konkreter Satz zu einer belegten früheren Analyse. Weicht die Regelwerkversion ab, sagt er ausdrücklich,
+ * dass ein Unterschied auch vom Regelwerk stammen kann. Ohne frühere Analyse gibt es keinen Satz.
+ */
+export function previousAuditSentence(prev: PreviousAudit, current: { rulesetVersion: string; commitSha: string }, lang: Language): string {
+  const de = lang === "de";
+  const score = prev.score === null ? (de ? "ohne Score" : "without a score") : de ? `${prev.score} von 100 Punkten` : `${prev.score} out of 100 points`;
+  const sameCommit = prev.commitSha !== null && prev.commitSha === current.commitSha;
+  const commit = prev.commitSha ? (de ? `, Commit \`${prev.commitSha.slice(0, 7)}\`` : `, commit \`${prev.commitSha.slice(0, 7)}\``) : "";
+  const head = de
+    ? `Frühere Analyse dieses Repositorys (${prev.reference}, ${prev.date}): ${score} mit Regelwerk \`${prev.rulesetVersion}\`${commit}.`
+    : `Earlier analysis of this repository (${prev.reference}, ${prev.date}): ${score} with ruleset \`${prev.rulesetVersion}\`${commit}.`;
+  const outside = de ? "Angaben außerhalb des Commits (z. B. Beschreibung, Topics, Releases, Website)" : "information outside the commit (e.g. description, topics, releases, website)";
+  if (prev.rulesetVersion !== current.rulesetVersion) {
+    return de
+      ? `${head} Das Regelwerk ist seitdem ein anderes (\`${current.rulesetVersion}\`): Ein Unterschied im Score kann auch vom Regelwerk stammen, nicht nur von Änderungen am Repository.${sameCommit ? ` Analysiert wurde derselbe Commit; ein Unterschied stammt daher aus dem Regelwerk oder aus ${outside}.` : ""}`
+      : `${head} The ruleset has changed since (\`${current.rulesetVersion}\`): a difference in score may also come from the ruleset, not only from changes to the repository.${sameCommit ? ` The same commit was analysed; a difference therefore comes from the ruleset or from ${outside}.` : ""}`;
+  }
+  return de
+    ? `${head} Gleiches Regelwerk, die Scores sind vergleichbar.${sameCommit ? ` Derselbe Commit; ein Unterschied stammt aus ${outside}.` : ""}`
+    : `${head} Same ruleset, the scores are comparable.${sameCommit ? ` Same commit; a difference comes from ${outside}.` : ""}`;
 }

@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { FORM_LABELS, githubIssueApi, ISSUE_LIMITS, isFormIssue, neutralizeGitHubRefs, parseIssueForm, runIssueAudit, truncateComment, type IssueApi, type RecentIssue } from "@/cli/issue";
+import { FORM_LABELS, githubIssueApi, ISSUE_LIMITS, isFormIssue, neutralizeGitHubRefs, parseIssueForm, parseReportComment, runIssueAudit, truncateComment, type IssueApi, type IssueComment, type RecentIssue } from "@/cli/issue";
 import { fixtureTransport } from "@/core/github/fixture-transport";
 import { GOALS, PROJECT_TYPES } from "@/core/types";
 import { FIXTURE_REPOS } from "@/fixtures/repos";
@@ -47,9 +47,19 @@ function body(o: { repo?: string; goal?: string; language?: string; type?: strin
 class FakeIssues implements IssueApi {
   comments: { n: number; body: string }[] = [];
   closed: { n: number; reason: string }[] = [];
-  constructor(public recent: RecentIssue[] = []) {}
+  /** Frühere Kommentare je Issue für die Suche nach früheren Berichten. */
+  history: Record<number, IssueComment[]> = {};
+  commentReads: number[] = [];
+  constructor(public recent: RecentIssue[] = [], public all: RecentIssue[] = recent) {}
   async listRecentIssues() {
     return this.recent;
+  }
+  async listIssues() {
+    return this.all;
+  }
+  async listComments(n: number) {
+    this.commentReads.push(n);
+    return this.history[n] ?? [];
   }
   async comment(n: number, b: string) {
     this.comments.push({ n, body: b });
@@ -243,5 +253,64 @@ describe("Bausteine", () => {
     ]);
     expect(JSON.parse(calls[2]!.body!)).toEqual({ state: "closed", state_reason: "completed" });
     expect(() => githubIssueApi("evil.com/x/../y", "t")).toThrow();
+  });
+});
+
+describe("Frühere Berichte und Vergleichbarkeit", () => {
+  const bot = (body: string, createdAt = "2026-10-08T07:36:13Z"): IssueComment => ({ author: "github-actions[bot]", authorType: "Bot", body, createdAt });
+  // Ausschnitt eines Berichts im Format vor Regelwerk 2026.10.2 (ohne Vermerk)
+  const OLD_REPORT = "# RepoLaunch-Audit: repolaunch-fixtures/web-app\n\n- Analysierter Commit: `2222222222222222222222222222222222222222` (Default-Branch `main`)\n\n**30 / 100**, Abdeckung 100 %\n\n- Regelwerk: `2026.10.0`\n";
+
+  it("liest Vermerk und, bei älteren Berichten, den sichtbaren Text", () => {
+    expect(parseReportComment(OLD_REPORT)).toEqual({ fullName: "repolaunch-fixtures/web-app", rulesetVersion: "2026.10.0", score: 30, commitSha: "2".repeat(40) });
+    const marked = `irgendein Text\n<!-- repolaunch-audit {"repo":"a/b","ruleset":"2026.10.2","score":85,"commit":"${"f".repeat(40)}","analyzedAt":"x"} -->`;
+    expect(parseReportComment(marked)).toEqual({ fullName: "a/b", rulesetVersion: "2026.10.2", score: 85, commitSha: "f".repeat(40) });
+    expect(parseReportComment("# RepoLaunch: Limit erreicht")).toBeNull();
+    expect(parseReportComment('<!-- repolaunch-audit {"repo":"a/b","ruleset":"evil`x","score":85} -->')).toBeNull();
+  });
+
+  it("anderes Regelwerk: konkreter Satz mit alter Version und altem Score, gleicher Commit wird genannt", async () => {
+    const earlier = { number: 2, createdAt: "2026-10-08T06:43:37Z", author: "alice", body: body() };
+    const api = new FakeIssues([], [earlier]);
+    api.history[2] = [{ author: "alice", authorType: "User", body: "danke", createdAt: "2026-10-08T06:50:00Z" }, bot(OLD_REPORT)];
+    await runIssueAudit(input(), api, { transport, log: quiet, now: () => NOW });
+    const c = api.comments[0]!.body;
+    expect(c).toContain("Frühere Analyse dieses Repositorys (Issue 2 in ghostfanman/repolaunch, 2026-10-08): 30 von 100 Punkten mit Regelwerk `2026.10.0`, Commit `2222222`.");
+    expect(c).toContain("Ein Unterschied im Score kann auch vom Regelwerk stammen");
+    expect(c).toContain("Analysiert wurde derselbe Commit");
+    expect(c).toMatch(/<!-- repolaunch-audit \{"repo":"repolaunch-fixtures\/web-app","ruleset":"2026\.10\.\d+","score":\d+,"commit":"2{40}"/);
+  });
+
+  it("ohne früheren Bericht bleibt es beim festen Hinweis; fremde Kommentare und andere Repositories zählen nicht", async () => {
+    const other = { number: 3, createdAt: "2026-10-08T06:00:00Z", author: "bob", body: body({ repo: "repolaunch-fixtures/cli-tool" }) };
+    const faked = { number: 4, createdAt: "2026-10-08T06:10:00Z", author: "mallory", body: body() };
+    const api = new FakeIssues([], [other, faked]);
+    api.history[3] = [bot(OLD_REPORT.replace("web-app", "cli-tool"))];
+    api.history[4] = [{ author: "mallory", authorType: "User", body: OLD_REPORT, createdAt: "2026-10-08T06:11:00Z" }];
+    await runIssueAudit(input(), api, { transport, log: quiet, now: () => NOW });
+    const c = api.comments[0]!.body;
+    expect(c).toContain("Scores sind nur innerhalb derselben Regelwerkversion vergleichbar.");
+    expect(c).not.toContain("Frühere Analyse");
+    expect(api.commentReads).toEqual([4]);
+  });
+
+  it("Fehler beim Lesen früherer Berichte stoppen den Audit nicht", async () => {
+    const api = new FakeIssues([], [{ number: 2, createdAt: "2026-10-08T06:43:37Z", author: "alice", body: body() }]);
+    api.listComments = async () => {
+      throw new Error("500");
+    };
+    const r = await runIssueAudit(input(), api, { transport, log: quiet, now: () => NOW });
+    expect(r.closedAs).toBe("completed");
+    expect(api.comments[0]!.body).not.toContain("Frühere Analyse");
+  });
+
+  it("Version steht neben dem Score, der Nutzungshinweis nennt die Vergleichbarkeit", async () => {
+    const api = new FakeIssues();
+    await runIssueAudit(input(), api, { transport, log: quiet, now: () => NOW });
+    const c = api.comments[0]!.body;
+    expect(c).toMatch(/\*\*\d+ von 100 Punkten\*\* \(Regelwerk `2026\.10\.\d+`\)\./);
+    expect(c).toMatch(/\*\*\d+ \/ 100\*\* \(Regelwerk `2026\.10\.\d+`\), Abdeckung/);
+    expect(c).not.toContain("um den Fortschritt zu sehen");
+    expect(c).toContain("Fortschritt zeigt der Score nur im Vergleich mit einem Bericht derselben Regelwerkversion");
   });
 });

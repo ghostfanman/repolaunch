@@ -249,8 +249,12 @@ export function ReportView({ lang, view }: { lang: Language; view: JobView }) {
             <span>
               {m.report.coverage}: {Math.round(s.coverage * 100)} %
             </span>
+            <span>
+              {m.report.rulesetVersion}: <code>{audit.rulesetVersion}</code>
+            </span>
           </div>
         )}
+        <p className="muted">{m.report.comparability}</p>
         <details>
           <summary>{m.report.calculation}</summary>
           <p>{s.formula}</p>

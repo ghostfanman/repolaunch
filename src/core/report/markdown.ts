@@ -3,8 +3,8 @@
 import type { AiPackageResult } from "../ai/generate";
 import { t } from "@/i18n/messages";
 import { fencedBlock, inlineText, safeUrl, stripControl } from "../security/sanitize";
-import type { AuditResult, Category, Evidence, Finding, Language, RepoSnapshot, TaskGuide, UserContext } from "../types";
-import { glossaryFor, scoreVerdict, strengths } from "./plain";
+import type { AuditResult, Category, Evidence, Finding, Language, PreviousAudit, RepoSnapshot, TaskGuide, UserContext } from "../types";
+import { glossaryFor, previousAuditSentence, scoreVerdict, strengths } from "./plain";
 
 const CATEGORY_ORDER: Category[] = ["understanding", "usability", "trust", "distribution"];
 
@@ -44,7 +44,12 @@ export interface ExportFileInfo {
   reason?: string;
 }
 
-export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, user: UserContext, files: ExportFileInfo[], ai: AiPackageResult | null): string {
+/** Zusätzliche, belegte Angaben für den Bericht, die nicht zur Bewertung gehören. */
+export interface ReportContext {
+  previous?: PreviousAudit;
+}
+
+export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, user: UserContext, files: ExportFileInfo[], ai: AiPackageResult | null, context: ReportContext = {}): string {
   const lang = user.language;
   const m = t(lang);
   const de = lang === "de";
@@ -54,7 +59,8 @@ export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, 
 
   // Kurzfassung für Einsteiger
   out.push(`## ${m.report.inShort}`, "");
-  out.push(`${s.value === null ? "" : `**${s.value} ${m.report.points}.** `}${scoreVerdict(s.value, lang)}`, "");
+  const version = `${m.report.rulesetVersion} \`${audit.rulesetVersion}\``;
+  out.push(`${s.value === null ? "" : `**${s.value} ${m.report.points}** (${version}). `}${scoreVerdict(s.value, lang)}`, "");
   out.push(`- ${m.report.projectType}: ${classification}`, `- ${m.report.goal}: ${m.goals[user.goal]}`, "");
   const good = strengths(audit);
   out.push(`**${m.report.strengthsLabel}:** ${good.length ? good.map((f) => inlineText(f.title)).join(", ") : m.report.noStrengths}`, "");
@@ -82,7 +88,9 @@ export function renderAuditMarkdown(snapshot: RepoSnapshot, audit: AuditResult, 
 
   // Score und Kennzahlen
   out.push(`## ${m.report.scoreHeading}`, "", `> ${m.report.scoreDisclaimer}`, "");
-  out.push(s.value === null ? m.report.scoreNone : `**${s.value} / 100**, ${m.report.coverage} ${Math.round(s.coverage * 100)} %`, "");
+  out.push(s.value === null ? `${m.report.scoreNone} (${version})` : `**${s.value} / 100** (${version}), ${m.report.coverage} ${Math.round(s.coverage * 100)} %`, "");
+  out.push(`> ${m.report.comparability}`, "");
+  if (context.previous) out.push(previousAuditSentence(context.previous, { rulesetVersion: audit.rulesetVersion, commitSha: snapshot.commitSha }, lang), "");
   out.push(`${m.report.calculation}: ${s.formula}`, "");
   out.push(`| ${de ? "Kategorie" : "Category"} | ${de ? "Erfüllt" : "Met"} | ${de ? "Bewertet" : "Scored"} | ${de ? "Unbekannt" : "Unknown"} |`, "| --- | --- | --- | --- |");
   for (const c of s.byCategory) out.push(`| ${m.categories[c.category]} | ${c.achieved} | ${c.possible} | ${c.unknownWeight} |`);
