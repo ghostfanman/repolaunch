@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { classifyProject } from "@/core/analysis/classify";
-import { applyRuleOverrides, DEFAULT_RULE_CONFIG, RULESET_VERSION } from "@/core/rules/config";
+import { applyRuleOverrides, DEFAULT_RULE_CONFIG, effectiveWeight, RULESET_VERSION } from "@/core/rules/config";
 import { RULES } from "@/core/rules/definitions";
 import { openWeight, runAudit } from "@/core/rules/engine";
-import type { Goal, ProjectType, RepoSnapshot } from "@/core/types";
+import { GOALS, PROJECT_TYPES, type Goal, type ProjectType, type RepoSnapshot } from "@/core/types";
 import { cloneFixture, fixtureSnapshot, NOW, user } from "./helpers";
 
 function finding(audit: ReturnType<typeof runAudit>, ruleId: string) {
@@ -58,8 +58,42 @@ describe("Projekttypabhängige Gewichtung", () => {
     const s = await fixtureSnapshot("web-app");
     expect(finding(audit(s, "users"), "distribution.commercial_offer").status).toBe("not_relevant");
     expect(finding(audit(s, "saas_customers"), "distribution.commercial_offer").severity).toBe("high");
-    expect(finding(audit(s, "users"), "trust.contributing").severity).toBe("low");
+    expect(finding(audit(await fixtureSnapshot("cli-tool"), "users"), "trust.contributing").severity).toBe("low");
+    expect(finding(audit(s, "users"), "trust.contributing").status).toBe("not_relevant");
     expect(finding(audit(s, "contributors"), "trust.contributing").severity).toBe("high");
+  });
+
+  it("Webprodukt mit Ziel Nutzer: Mitwirkenden-Regeln zählen nicht, die Sicherheitsrichtlinie schon", async () => {
+    const a = audit(await fixtureSnapshot("web-app"), "users");
+    for (const id of ["trust.contributing", "trust.releases", "trust.changelog", "trust.code_of_conduct", "distribution.contributor_entry"]) {
+      expect(finding(a, id), id).toMatchObject({ status: "not_relevant", weight: 0 });
+      expect(a.tasks.some((t) => t.findingId.startsWith(`${id}@`)), id).toBe(false);
+    }
+    expect(finding(a, "trust.security_policy")).toMatchObject({ status: "missing", weight: 2 });
+    // Andere Ziele desselben Projekttyps bleiben unverändert
+    expect(finding(audit(await fixtureSnapshot("web-app"), "saas_customers"), "trust.releases").weight).toBe(1);
+  });
+
+  it("feste Kombinationsgewichte ändern nur genau ihre Kombination", () => {
+    const changed: string[] = [];
+    for (const [id, cfg] of Object.entries(DEFAULT_RULE_CONFIG.rules)) {
+      const additive = { ...cfg, comboWeights: undefined };
+      for (const t of PROJECT_TYPES) for (const g of GOALS) if (effectiveWeight(cfg, t, g) !== effectiveWeight(additive, t, g)) changed.push(`${id}:${t}:${g}`);
+    }
+    expect(changed.sort()).toEqual(["trust.changelog:webapp:users", "trust.contributing:webapp:users", "trust.releases:webapp:users"]);
+    const cfg = applyRuleOverrides(DEFAULT_RULE_CONFIG, { rules: { "trust.releases": { comboWeights: { webapp: { users: 2 }, cli: { sponsors: 0 } } } } });
+    expect(effectiveWeight(cfg.rules["trust.releases"]!, "webapp", "users")).toBe(2);
+    expect(effectiveWeight(cfg.rules["trust.releases"]!, "cli", "sponsors")).toBe(0);
+    expect(effectiveWeight(cfg.rules["trust.releases"]!, "cli", "users")).toBe(3);
+    expect(() => applyRuleOverrides(DEFAULT_RULE_CONFIG, { rules: { "trust.releases": { comboWeights: { webapp: { users: 4 } } } } })).toThrow();
+    expect(() => applyRuleOverrides(DEFAULT_RULE_CONFIG, { rules: { "trust.releases": { comboWeights: { rocket: { users: 1 } } } } })).toThrow();
+  });
+
+  it("30-Tage-Plan: erstes oder nächstes Release richtet sich nach den Daten, auch wenn die Regel abgeschaltet ist", async () => {
+    const a = audit(await fixtureSnapshot("web-app"), "users");
+    expect(a.launchPlan.tasks.some((x) => x.title === "Erstes Release vorbereiten" && x.findingIds.length === 0)).toBe(true);
+    const cli = audit(await fixtureSnapshot("cli-tool"), "users");
+    expect(cli.launchPlan.tasks.some((x) => x.title === "Nächstes Release vorbereiten")).toBe(true);
   });
 
   it("Regelwerk ist versioniert und jede Regel konfiguriert", () => {

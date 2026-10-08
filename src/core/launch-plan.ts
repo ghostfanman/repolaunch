@@ -5,7 +5,6 @@ import type { Finding, LaunchPlan, LaunchPlanTask, PrioritizedTask, RepoSnapshot
 export function buildLaunchPlan(findings: Finding[], tasks: PrioritizedTask[], user: UserContext, snapshot: RepoSnapshot): LaunchPlan {
   const de = user.language === "de";
   const plan: LaunchPlanTask[] = [];
-  const byId = new Map(findings.map((f) => [f.id, f]));
 
   // Woche 1 und 2: priorisierte Aufgaben aus dem Audit
   tasks.forEach((t, i) => {
@@ -19,19 +18,22 @@ export function buildLaunchPlan(findings: Finding[], tasks: PrioritizedTask[], u
     });
   });
 
-  const releasesMissing = byId.get("trust.releases@1")?.status === "missing";
+  const releasesFinding = findings.find((f) => f.ruleId === "trust.releases");
+  const releasesMissing = releasesFinding?.status === "missing";
+  // "Erstes" oder "nächstes" Release hängt an den Daten, nicht an der Bewertung: Die Regel kann für ein Ziel abgeschaltet sein.
+  const hasRelease = snapshot.releases.items.length > 0 || snapshot.releases.tagsFound === true;
   const archived = snapshot.meta.archived;
 
   if (!archived) {
     plan.push({
       week: 2,
-      title: releasesMissing ? (de ? "Erstes Release vorbereiten" : "Prepare a first release") : (de ? "Nächstes Release vorbereiten" : "Prepare the next release"),
+      title: hasRelease ? (de ? "Nächstes Release vorbereiten" : "Prepare the next release") : (de ? "Erstes Release vorbereiten" : "Prepare a first release"),
       why: de
         ? "Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung."
         : "A release bundles the improvements and gives a concrete reason for the announcement.",
       effort: de ? "30 bis 90 Min." : "30 to 90 min",
       signal: de ? "Release mit Notes veröffentlicht" : "Release with notes published",
-      findingIds: releasesMissing ? ["trust.releases@1"] : [],
+      findingIds: releasesMissing && releasesFinding ? [releasesFinding.id] : [],
     });
     plan.push({
       week: 3,
