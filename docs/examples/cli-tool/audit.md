@@ -188,7 +188,7 @@ Prüfregel und Belege: Website-Feld gesetzt (`distribution.homepage@1`), siehe �
 
 **76 / 100**, Abdeckung 100 %
 
-Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte bewerteter Regeln × 100 = 35 / 46 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 46 / 46.
+Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = 35 / 46 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 46 / 46.
 
 | Kategorie | Erfüllt | Bewertet | Unbekannt |
 | --- | --- | --- | --- |
@@ -197,7 +197,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
 | Vertrauen | 12 | 15 | 0 |
 | Verbreitung und Vermarktung | 2 | 7 | 0 |
 
-- Regelwerk: `2026.10.0`
+- Regelwerk: `2026.10.1`
 - API-Anfragen: 7 (0 × 304), 2756 B
 - Sterne (nur Anzeige, nicht bewertet): 42
 
@@ -304,7 +304,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
     ```
   
 
-#### Screenshot, Animation oder Demo (`usability.visual_demo@1`)
+#### Screenshot, Animation oder Demo (`usability.visual_demo@2`)
 
 - Status: **fehlt**, Schwere: niedrig, Gewicht: 1
 - Begründung: Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss.
@@ -328,7 +328,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
 
 - Belege:
 
-  - [README.md: kein Bild außer Badges und kein Link auf Demo/Screenshot/Video](https://github.com/repolaunch-fixtures/cli-tool/blob/1111111111111111111111111111111111111111/README.md)
+  - [README.md: kein Bild außer Badges, kein Link auf Screenshot oder Video und kein Demo-Link (Website-Feld, GitHub Pages oder als Demo beschriftet)](https://github.com/repolaunch-fixtures/cli-tool/blob/1111111111111111111111111111111111111111/README.md)
 
 #### Weiterführende Dokumentation (`usability.docs@1`)
 
@@ -549,12 +549,18 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
 
 ## Nicht bewertete Regeln
 
-- `usability.api_reference`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0).
-- `usability.template_flag`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0).
-- `trust.code_of_conduct`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0).
-- `distribution.funding`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0).
-- `distribution.commercial_offer`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0).
-- `distribution.contributor_entry`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0).
+- `usability.api_reference`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Bibliothek".
+- `usability.template_flag`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Vorlage".
+- `trust.code_of_conduct`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Aktiv mit Ziel "Mehr Mitwirkende".
+- `distribution.funding`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Aktiv mit Ziel "Sponsoren", "Supportkunden".
+- `distribution.commercial_offer`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Aktiv mit Ziel "Supportkunden", "SaaS-Kunden".
+- `distribution.contributor_entry`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Aktiv mit Ziel "Mehr Mitwirkende".
+- `usability.site_reachable`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Webprodukt / SaaS".
+- `distribution.site_title`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Webprodukt / SaaS".
+- `distribution.site_description`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Webprodukt / SaaS".
+- `distribution.site_og_image`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Webprodukt / SaaS".
+- `trust.site_imprint`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Webprodukt / SaaS".
+- `trust.site_privacy`: nicht relevant. Für Projekttyp "CLI-Tool" und Ziel "Mehr Nutzer" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Webprodukt / SaaS".
 
 ## Inhalt dieses Exports
 

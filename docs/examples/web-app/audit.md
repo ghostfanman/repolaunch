@@ -168,7 +168,7 @@ Alternative: Link zu einer Demo:
 
 Erwartete Wirkung (Hypothese): Höhere Klickrate auf Demo bzw. Installation, besonders bei Webprodukten.
 
-Prüfregel und Belege: Screenshot, Animation oder Demo (`usability.visual_demo@1`), siehe „Alle Befunde“.
+Prüfregel und Belege: Screenshot, Animation oder Demo (`usability.visual_demo@2`), siehe „Alle Befunde“.
 
 ## Begriffe kurz erklärt
 
@@ -184,7 +184,7 @@ Prüfregel und Belege: Screenshot, Animation oder Demo (`usability.visual_demo@1
 
 **36 / 100**, Abdeckung 100 %
 
-Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte bewerteter Regeln × 100 = 16 / 45 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 45 / 45.
+Berechnung: Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = 16 / 45 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 45 / 45.
 
 | Kategorie | Erfüllt | Bewertet | Unbekannt |
 | --- | --- | --- | --- |
@@ -193,7 +193,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
 | Vertrauen | 8 | 14 | 0 |
 | Verbreitung und Vermarktung | 3 | 11 | 0 |
 
-- Regelwerk: `2026.10.0`
+- Regelwerk: `2026.10.1`
 - API-Anfragen: 7 (0 × 304), 1672 B
 - Sterne (nur Anzeige, nicht bewertet): 7
 
@@ -358,7 +358,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
 
   - [README.md: keine Voraussetzungen/Requirements genannt; kein engines/requires-python/rust-version im Manifest](https://github.com/repolaunch-fixtures/web-app/blob/2222222222222222222222222222222222222222/README.md)
 
-#### Screenshot, Animation oder Demo (`usability.visual_demo@1`)
+#### Screenshot, Animation oder Demo (`usability.visual_demo@2`)
 
 - Status: **fehlt**, Schwere: hoch, Gewicht: 3
 - Begründung: Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss.
@@ -368,7 +368,7 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
 - So geht's: siehe Aufgabe 5 oben
 - Belege:
 
-  - [README.md: kein Bild außer Badges und kein Link auf Demo/Screenshot/Video](https://github.com/repolaunch-fixtures/web-app/blob/2222222222222222222222222222222222222222/README.md)
+  - [README.md: kein Bild außer Badges, kein Link auf Screenshot oder Video und kein Demo-Link (Website-Feld, GitHub Pages oder als Demo beschriftet)](https://github.com/repolaunch-fixtures/web-app/blob/2222222222222222222222222222222222222222/README.md)
 
 #### Weiterführende Dokumentation (`usability.docs@1`)
 
@@ -665,13 +665,19 @@ Berechnung: Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte be
 
 ## Nicht bewertete Regeln
 
-- `usability.cli_reference`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0).
-- `usability.api_reference`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0).
-- `usability.template_flag`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0).
-- `trust.code_of_conduct`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0).
-- `distribution.registry`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0).
-- `distribution.funding`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0).
-- `distribution.contributor_entry`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0).
+- `usability.cli_reference`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "CLI-Tool".
+- `usability.api_reference`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Bibliothek".
+- `usability.template_flag`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "Vorlage".
+- `trust.code_of_conduct`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0). Aktiv mit Ziel "Mehr Mitwirkende".
+- `distribution.registry`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp "CLI-Tool", "Bibliothek".
+- `distribution.funding`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0). Aktiv mit Ziel "Sponsoren", "Supportkunden".
+- `distribution.contributor_entry`: nicht relevant. Für Projekttyp "Webprodukt / SaaS" und Ziel "SaaS-Kunden" nicht relevant (Gewicht 0). Aktiv mit Ziel "Mehr Mitwirkende".
+- `usability.site_reachable`: nicht relevant. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel "Website-Feld gesetzt".
+- `distribution.site_title`: nicht relevant. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel "Website-Feld gesetzt".
+- `distribution.site_description`: nicht relevant. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel "Website-Feld gesetzt".
+- `distribution.site_og_image`: nicht relevant. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel "Website-Feld gesetzt".
+- `trust.site_imprint`: nicht relevant. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel "Website-Feld gesetzt".
+- `trust.site_privacy`: nicht relevant. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel "Website-Feld gesetzt".
 
 ## Nutzerangaben (nicht belegt)
 

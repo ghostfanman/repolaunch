@@ -18,6 +18,8 @@ const NOW = new Date("2026-10-07T12:00:00Z");
 const EXAMPLES: { dir: string; fixture: string; user: UserContext }[] = [
   { dir: "cli-tool", fixture: "cli-tool", user: { goal: "users", language: "de" } },
   { dir: "web-app", fixture: "web-app", user: { goal: "saas_customers", language: "de", audience: "Kleine Teams mit Schichtbetrieb" } },
+  // Nachgebildeter Fall aus Issue #2: Webprodukt mit Live-Seite, Website-Prüfung aus Fixtures
+  { dir: "invoice-kit", fixture: "invoice-kit", user: { goal: "users", language: "de" } },
 ];
 
 for (const ex of EXAMPLES) {

@@ -2,6 +2,28 @@
 
 Jede Regel hat eine eigene Version (`regel@n`), die Gewichtung je Projekttyp und Ziel steht in `src/core/rules/config.ts` und ist über die Regelwerkversion versioniert. Ein Bericht nennt beide; alte Berichte bleiben damit nachvollziehbar.
 
+## Versionen
+
+| Regelwerk | Änderung |
+| --- | --- |
+| 2026.10.0 | Erste Fassung mit 27 Regeln. |
+| 2026.10.1 | `usability.visual_demo` 1 → 2: Link auf das Website-Feld (auch Unterpfade) oder auf GitHub Pages des Besitzers gilt als Demo; "Demo-Link vorhanden, Screenshot fehlt" ist ein eigener Befund mit Teilgutschrift (offenes Gewicht 1). Neue Regeln, jeweils @1: `usability.site_reachable`, `distribution.site_title`, `distribution.site_description`, `distribution.site_og_image`, `trust.site_imprint`, `trust.site_privacy`. Gewichte: `trust.contributing`, `trust.releases`, `trust.changelog` für webapp mit Ziel users auf 0 (Logik der Regeln unverändert, daher weiter @1). Abgeschaltete Regeln nennen das Ziel, mit dem sie aktiv würden. |
+
+Eine Regelversion steigt, wenn sich ihre Auswertung ändert. Reine Gewichtsänderungen erhöhen nur die Regelwerkversion, weil die Gewichte zum Regelwerk gehören und nicht zur einzelnen Regel. Ein Bericht mit `usability.visual_demo@1` stammt also aus 2026.10.0 und kannte die Homepage- und Pages-Erkennung noch nicht.
+
+### Website-Regeln (nur Webprodukte)
+
+| Regel | Gewicht webapp | Bewertung |
+| --- | --- | --- |
+| `usability.site_reachable` | 3 | 2xx erfüllt, 404/410 fehlt, andere Statuscodes und fehlgeschlagener Abruf unbekannt |
+| `distribution.site_title` | 2 | nicht leeres title-Element |
+| `distribution.site_description` | 2 | meta name="description" mit Inhalt |
+| `distribution.site_og_image` | 1 | meta property="og:image" mit Inhalt (Bild wird nicht abgerufen) |
+| `trust.site_imprint` | 1 | Link mit Text oder Ziel Impressum, Imprint oder Legal Notice; Hinweis, keine Rechtsberatung |
+| `trust.site_privacy` | 2 | Link mit Text oder Ziel Datenschutz oder Privacy; Hinweis, keine Rechtsberatung |
+
+Ohne Website-Feld oder mit einer Adresse auf github.com sind die Regeln nicht relevant (das Feld selbst bewertet `distribution.homepage`). Ist der Abruf abgeschaltet (`REPOLAUNCH_SITE_CHECK=0`) oder fehlgeschlagen, gelten sie als unbekannt und senken nur die Abdeckung. Enthält das HTML keine Links, aber Skripte, bleiben Impressum und Datenschutz unbekannt, weil RepoLaunch kein JavaScript ausführt.
+
 ## Gewichtsmodell
 
 1. Grundgewicht je Projekttyp (`weights`, 0 bis 3).

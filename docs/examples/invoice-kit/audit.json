@@ -1,0 +1,1653 @@
+{
+  "generator": {
+    "name": "RepoLaunch",
+    "version": "0.1.0"
+  },
+  "schemaVersion": 1,
+  "repository": {
+    "source": "fixture",
+    "fixtureName": "invoice-kit",
+    "fullName": "repolaunch-fixtures/invoice-kit",
+    "htmlUrl": "https://github.com/repolaunch-fixtures/invoice-kit",
+    "defaultBranch": "main",
+    "commitSha": "f288a59553f844fe3bb919768ff314e4c8fded5a",
+    "analyzedAt": "2026-10-07T12:00:00.000Z",
+    "meta": {
+      "description": "E-Rechnung (XRechnung 3.0) & PDF-Rechnung kostenlos erstellen – unbegrenzt, ohne Abo, ohne Anmeldung. Daten bleiben im Browser. Für Freelancer, Kleinunternehmer & KMU.",
+      "topics": [
+        "e-rechnung",
+        "einvoicing",
+        "en16931",
+        "freelancer",
+        "invoice-generator",
+        "kleinunternehmer",
+        "pdf",
+        "rechnung",
+        "xrechnung"
+      ],
+      "homepage": "https://repolaunch-fixtures.github.io/invoice-kit/",
+      "archived": false,
+      "disabled": false,
+      "fork": false,
+      "isTemplate": false,
+      "hasIssues": true,
+      "hasDiscussions": false,
+      "pushedAt": "2026-10-06T09:00:00Z",
+      "createdAt": "2025-03-01T10:00:00Z",
+      "license": {
+        "spdxId": "MIT",
+        "name": "MIT License"
+      }
+    },
+    "display": {
+      "stars": 0
+    },
+    "tree": {
+      "entries": 37,
+      "scannedDirs": [
+        "",
+        ".github",
+        "docs"
+      ],
+      "truncated": false
+    },
+    "readme": {
+      "state": "present",
+      "path": "README.md",
+      "size": 8991
+    },
+    "files": {
+      "package.json": {
+        "state": "present",
+        "path": "package.json",
+        "size": 190
+      },
+      "pyproject.toml": {
+        "state": "missing",
+        "path": "pyproject.toml"
+      },
+      "Cargo.toml": {
+        "state": "missing",
+        "path": "Cargo.toml"
+      },
+      "go.mod": {
+        "state": "missing",
+        "path": "go.mod"
+      },
+      "composer.json": {
+        "state": "missing",
+        "path": "composer.json"
+      },
+      "action.yml": {
+        "state": "missing",
+        "path": "action.yml"
+      },
+      "action.yaml": {
+        "state": "missing",
+        "path": "action.yaml"
+      },
+      ".github/FUNDING.yml": {
+        "state": "missing",
+        "path": ".github/FUNDING.yml"
+      },
+      "docs/README.md": {
+        "state": "missing",
+        "path": "docs/README.md"
+      },
+      "docs/index.md": {
+        "state": "missing",
+        "path": "docs/index.md"
+      }
+    },
+    "releases": {
+      "state": "missing",
+      "items": [],
+      "tagsFound": false
+    },
+    "goodFirstIssues": {
+      "state": "not_checked",
+      "count": 0
+    },
+    "stats": {
+      "requests": 9,
+      "notModified": 0,
+      "bytes": 16829,
+      "durationMs": 5
+    },
+    "notes": []
+  },
+  "user": {
+    "goal": "users",
+    "language": "de"
+  },
+  "audit": {
+    "schemaVersion": 1,
+    "rulesetVersion": "2026.10.1",
+    "generatedAt": "2026-10-07T12:00:00.000Z",
+    "classification": {
+      "detected": "webapp",
+      "used": "webapp",
+      "overridden": false,
+      "signals": [
+        {
+          "type": "webapp",
+          "reason": "Paket ist als private markiert und nicht zur Veröffentlichung gedacht",
+          "evidence": "package.json"
+        },
+        {
+          "type": "webapp",
+          "reason": "index.html im Wurzelverzeichnis",
+          "evidence": "Dateiliste"
+        }
+      ]
+    },
+    "findings": [
+      {
+        "id": "understanding.description@1",
+        "ruleId": "understanding.description",
+        "ruleVersion": 1,
+        "category": "understanding",
+        "title": "Aussagekräftige Repository-Beschreibung",
+        "rationale": "Die Beschreibung erscheint in Suchergebnissen, Vorschauen und Listen. Sie ist oft der erste Kontakt.",
+        "status": "present",
+        "severity": "none",
+        "weight": 3,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "GitHub API: description",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit",
+            "snippet": "E-Rechnung (XRechnung 3.0) & PDF-Rechnung kostenlos erstellen – unbegrenzt, ohne Abo, ohne Anmeldung. Daten bleiben im Browser. Für Freelancer, Kleinunternehmer & KMU."
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "understanding.readme@1",
+        "ruleId": "understanding.readme",
+        "ruleVersion": 1,
+        "category": "understanding",
+        "title": "README vorhanden",
+        "rationale": "Die README ist laut GitHub meist das Erste, was Besucher sehen. Ohne sie fehlt jede Erklärung.",
+        "status": "present",
+        "severity": "none",
+        "weight": 3,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "README.md (8991 B)",
+            "path": "README.md",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "understanding.intro@1",
+        "ruleId": "understanding.intro",
+        "ruleVersion": 1,
+        "category": "understanding",
+        "title": "Einleitender Absatz in der README",
+        "rationale": "Ein kurzer Absatz direkt unter dem Titel erklärt Zweck und Nutzen, bevor Details folgen.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Einleitung",
+            "path": "README.md",
+            "lines": [
+              3,
+              3
+            ],
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md#L3-L3",
+            "snippet": "Invoice Kit erstellt CII-XML für XRechnung und ZUGFeRD-/Factur-X-PDFs mit eingebetteter XML. Der Viewer liest CII, UBL und XML-Anhänge in PDFs. Alle Rechnungsdaten werden ausschließlich lokal im Browser verarbeitet. Es gibt kein Benutzerkonto und keinen Server für Rechnungsdaten."
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "understanding.audience@1",
+        "ruleId": "understanding.audience",
+        "ruleVersion": 1,
+        "category": "understanding",
+        "title": "Zielgruppe und Nutzen benannt",
+        "rationale": "Besucher entscheiden schneller, wenn Funktionen, Anwendungsfälle oder die Zielgruppe ausdrücklich genannt sind.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Abschnitt \"Funktionen\"",
+            "path": "README.md",
+            "lines": [
+              7,
+              15
+            ],
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md#L7-L15",
+            "snippet": "## Funktionen\n\n- Rechnungsvorschau, XML-Export, PDF-Export, Drucken sowie JSON-Sicherung und Import.\n- Sieben Rechnungssprachen, mehrere Steuersätze, steuerfreie Fälle, Rechnungskorrekturen, Leistungszeiträume, Skonto und Fremdwährungen.\n- Unentgeltliche Rechnungen für Geschenke und Werbezwecke: Unter „Zahlung“ → „Berechnung“ auswählbar. Die Positionen zeigen den Warenwert, ein Nachlass von 100 %  …"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "understanding.example@1",
+        "ruleId": "understanding.example",
+        "ruleVersion": 1,
+        "category": "understanding",
+        "title": "Konkretes Nutzungsbeispiel",
+        "rationale": "Ein kurzes Beispiel zeigt schneller als jede Beschreibung, wie sich das Projekt anfühlt.",
+        "status": "present",
+        "severity": "none",
+        "weight": 1,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Codebeispiel",
+            "path": "README.md",
+            "lines": [
+              32,
+              34
+            ],
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md#L32-L34",
+            "snippet": "```sh\npython3 -m http.server 8765 --bind 127.0.0.1\n```"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "usability.quickstart@1",
+        "ruleId": "usability.quickstart",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Dokumentierter Schnellstart",
+        "rationale": "Ein klarer erster Schritt (Installation oder Start) ist die Voraussetzung jeder Nutzung.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Abschnitt \"Lokal starten und testen\"",
+            "path": "README.md",
+            "lines": [
+              28,
+              38
+            ],
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md#L28-L38",
+            "snippet": "## Lokal starten und testen\n\nVoraussetzungen: Node.js ab Version 22 und Python 3. Es sind keine npm-Abhängigkeiten erforderlich.\n\n```sh\npython3 -m http.server 8765 --bind 127.0.0.1\n```\n\nÖffne anschließend `http://127.0.0.1:8765/`. JavaScript-Module benötigen einen HTTP-Server; direktes Öffnen per `file://` reicht nicht.\n\n```sh"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "usability.prerequisites@1",
+        "ruleId": "usability.prerequisites",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Voraussetzungen genannt",
+        "rationale": "Fehlende Angaben zu Laufzeit oder Versionen führen zu fehlgeschlagenen ersten Versuchen.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Voraussetzung im Text",
+            "path": "README.md",
+            "lines": [
+              30,
+              30
+            ],
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md#L30-L30",
+            "snippet": "Voraussetzungen: Node.js ab Version 22 und Python 3. Es sind keine npm-Abhängigkeiten erforderlich."
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "usability.visual_demo@2",
+        "ruleId": "usability.visual_demo",
+        "ruleVersion": 2,
+        "category": "usability",
+        "title": "Screenshot, Animation oder Demo",
+        "rationale": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss. Ein Demo-Link ist vorhanden, es fehlt nur ein Bild der Anwendung.",
+        "status": "missing",
+        "severity": "low",
+        "weight": 3,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Demo-Link in Zeile 5: https://repolaunch-fixtures.github.io/invoice-kit/ (entspricht dem Website-Feld des Repositorys)",
+            "path": "README.md",
+            "lines": [
+              5,
+              5
+            ],
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md#L5-L5",
+            "snippet": "[Generator öffnen](https://repolaunch-fixtures.github.io/invoice-kit/) · [Viewer öffnen](https://repolaunch-fixtures.github.io/invoice-kit/anzeigen.html)"
+          },
+          {
+            "kind": "absence",
+            "label": "README.md: kein Bild außer Badges und kein Link auf Screenshot oder Video",
+            "path": "README.md",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md"
+          }
+        ],
+        "task": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
+        "effort": "10 bis 20 Min.",
+        "effortMinutes": [
+          10,
+          20
+        ],
+        "impactHypothesis": "Besucher sehen schon auf der Repository-Seite, was sie erwartet, bevor sie die Demo öffnen.",
+        "partialCredit": 2,
+        "variant": "screenshot_only",
+        "guide": {
+          "action": "Screenshot in die README einfügen",
+          "steps": [
+            {
+              "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
+            },
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Klicke in die Zeile unter dem vorhandenen Demo-Link und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein."
+            },
+            {
+              "text": "Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ]
+        }
+      },
+      {
+        "id": "usability.docs@1",
+        "ruleId": "usability.docs",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Weiterführende Dokumentation",
+        "rationale": "Über den Einstieg hinaus brauchen Nutzer eine Stelle für Details: docs-Ordner, Wiki oder Doku-Seite.",
+        "status": "present",
+        "severity": "none",
+        "weight": 1,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Verzeichnis docs/",
+            "path": "docs",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/tree/f288a59553f844fe3bb919768ff314e4c8fded5a/docs"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "usability.cli_reference@1",
+        "ruleId": "usability.cli_reference",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Befehle und Optionen dokumentiert",
+        "rationale": "CLI-Nutzer suchen Befehle, Flags und Beispiele. Ohne Referenz bleibt nur das Ausprobieren.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "cli"
+          ]
+        }
+      },
+      {
+        "id": "usability.api_reference@1",
+        "ruleId": "usability.api_reference",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "API-Referenz",
+        "rationale": "Bibliotheksnutzer brauchen eine Übersicht der öffentlichen Funktionen oder einen Link zur Referenz.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Bibliothek\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "library"
+          ]
+        }
+      },
+      {
+        "id": "usability.template_flag@1",
+        "ruleId": "usability.template_flag",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Als Template-Repository nutzbar",
+        "rationale": "Mit der Template-Einstellung bietet GitHub \"Use this template\" an; das senkt die Hürde für Vorlagen deutlich.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Vorlage\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "template"
+          ]
+        }
+      },
+      {
+        "id": "trust.license@1",
+        "ruleId": "trust.license",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Lizenzinformation",
+        "rationale": "Ohne erkennbare Lizenz ist unklar, ob und wie andere das Projekt nutzen dürfen. Das ist keine Rechtsberatung.",
+        "status": "present",
+        "severity": "none",
+        "weight": 3,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "GitHub API: license.spdx_id (GitHub-Lizenzerkennung)",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit",
+            "snippet": "MIT (MIT License)"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "trust.maintenance@1",
+        "ruleId": "trust.maintenance",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Erkennbarer Wartungsstatus",
+        "rationale": "Nutzer prüfen, ob ein Projekt gepflegt wird. Archivierte oder lange inaktive Projekte wirken riskant.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "GitHub API: pushed_at (letzter Push auf einen beliebigen Branch)",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit",
+            "snippet": "2026-10-06T09:00:00Z (vor 1 Tagen)"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "trust.releases@1",
+        "ruleId": "trust.releases",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Versionierte Releases oder Tags",
+        "rationale": "Releases geben Nutzern stabile Stände und zeigen Fortschritt nachvollziehbar.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\", \"Sponsoren\", \"Supportkunden\", \"SaaS-Kunden\".",
+        "activeWith": {
+          "goals": [
+            "contributors",
+            "sponsors",
+            "support_clients",
+            "saas_customers"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "trust.contributing@1",
+        "ruleId": "trust.contributing",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Beitragsrichtlinien",
+        "rationale": "CONTRIBUTING-Dateien verlinkt GitHub automatisch bei Issues und Pull Requests. Sie senken die Einstiegshürde.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\", \"Sponsoren\", \"Supportkunden\", \"SaaS-Kunden\".",
+        "activeWith": {
+          "goals": [
+            "contributors",
+            "sponsors",
+            "support_clients",
+            "saas_customers"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "trust.security_policy@1",
+        "ruleId": "trust.security_policy",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Sicherheitsrichtlinie",
+        "rationale": "Eine SECURITY.md sagt, wie Schwachstellen vertraulich gemeldet werden. Für Unternehmen ist das oft ein Prüfpunkt.",
+        "status": "missing",
+        "severity": "medium",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "absence",
+            "label": "Dateiliste @ f288a59: keine Datei security.md, security.txt, security in /, .github/, docs/",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/tree/f288a59553f844fe3bb919768ff314e4c8fded5a"
+          }
+        ],
+        "task": "Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.",
+        "effort": "15 bis 30 Min.",
+        "effortMinutes": [
+          15,
+          30
+        ],
+        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern.",
+        "guide": {
+          "action": "Sicherheitsrichtlinie mit Meldeweg anlegen",
+          "steps": [
+            {
+              "text": "Schalte zuerst vertrauliche Meldungen ein: Einstellungen → „Advanced Security“ (je nach Ansicht „Code security“) → bei „Private vulnerability reporting“ auf „Enable“ klicken.",
+              "link": {
+                "label": "Sicherheitseinstellungen",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/settings/security_analysis"
+              }
+            },
+            {
+              "text": "Öffne die neue Datei SECURITY.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "SECURITY.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Finvoice-kit%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Sicherheitsrichtlinie\n\n## Sicherheitslücke melden\n\nBitte melde Sicherheitslücken nicht öffentlich als Issue, sondern vertraulich über [Report a vulnerability](https://github.com/repolaunch-fixtures/invoice-kit/security/advisories/new).\n\n## Unterstützte Versionen\n\n| Version | Unterstützt |\n| --- | --- |\n| [z. B. 1.x] | ja |\n| [ältere Versionen] | nein |\n\n## Reaktionszeit\n\nIch bemühe mich, innerhalb von [Zeitraum, z. B. 14 Tagen] zu antworten. Das ist keine Garantie.\n",
+            "filename": "SECURITY.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/invoice-kit/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Finvoice-kit%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+          }
+        }
+      },
+      {
+        "id": "trust.contact@1",
+        "ruleId": "trust.contact",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Kontakt- oder Supportweg",
+        "rationale": "Nutzer brauchen einen Weg für Fragen und Fehlerberichte: Issues, Discussions oder ein Kontaktabschnitt.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "GitHub API: has_issues / has_discussions",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit",
+            "snippet": "true / false"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "trust.code_of_conduct@1",
+        "ruleId": "trust.code_of_conduct",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Verhaltenskodex",
+        "rationale": "Ein Verhaltenskodex signalisiert neuen Mitwirkenden, wie Zusammenarbeit abläuft.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\".",
+        "activeWith": {
+          "goals": [
+            "contributors"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "trust.changelog@1",
+        "ruleId": "trust.changelog",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Änderungsprotokoll",
+        "rationale": "Ein Changelog oder Release Notes zeigen, was sich ändert, und erleichtern Updates.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\", \"Sponsoren\", \"Supportkunden\", \"SaaS-Kunden\".",
+        "activeWith": {
+          "goals": [
+            "contributors",
+            "sponsors",
+            "support_clients",
+            "saas_customers"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "distribution.topics@1",
+        "ruleId": "distribution.topics",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Passende Topics",
+        "rationale": "Topics machen ein Repository über GitHub-Themenseiten und Suche auffindbar.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "GitHub API: topics",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit",
+            "snippet": "e-rechnung, einvoicing, en16931, freelancer, invoice-generator, kleinunternehmer, pdf, rechnung, xrechnung"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "distribution.homepage@1",
+        "ruleId": "distribution.homepage",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website-Feld gesetzt",
+        "rationale": "Das Website-Feld erscheint prominent neben der Beschreibung und führt zu Demo, Doku oder Produktseite.",
+        "status": "present",
+        "severity": "none",
+        "weight": 3,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "GitHub API: homepage",
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit",
+            "snippet": "https://repolaunch-fixtures.github.io/invoice-kit/"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "distribution.next_step@1",
+        "ruleId": "distribution.next_step",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Klarer nächster Schritt oben in der README",
+        "rationale": "Wer die ersten Zeilen liest, sollte sofort wissen, was als Nächstes zu tun ist: installieren, Demo öffnen oder Doku lesen.",
+        "status": "present",
+        "severity": "none",
+        "weight": 3,
+        "evidence": [
+          {
+            "kind": "file",
+            "label": "Handlungslink im oberen Teil",
+            "path": "README.md",
+            "lines": [
+              5,
+              5
+            ],
+            "url": "https://github.com/repolaunch-fixtures/invoice-kit/blob/f288a59553f844fe3bb919768ff314e4c8fded5a/README.md#L5-L5",
+            "snippet": "[Generator öffnen](https://repolaunch-fixtures.github.io/invoice-kit/) · [Viewer öffnen](https://repolaunch-fixtures.github.io/invoice-kit/anzeigen.html)"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "distribution.registry@1",
+        "ruleId": "distribution.registry",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Verweis auf Paketregister",
+        "rationale": "Ein Link oder Badge zum Paketregister zeigt, dass eine installierbare Version existiert. Die Veröffentlichung selbst wurde nicht extern geprüft.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\", \"Bibliothek\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "cli",
+            "library"
+          ]
+        }
+      },
+      {
+        "id": "distribution.funding@1",
+        "ruleId": "distribution.funding",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Finanzierungsmöglichkeit sichtbar",
+        "rationale": "Wer Sponsoren sucht, muss einen Weg zum Unterstützen anbieten. GitHub zeigt FUNDING.yml als Sponsor-Button an.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Sponsoren\", \"Supportkunden\".",
+        "activeWith": {
+          "goals": [
+            "sponsors",
+            "support_clients"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "distribution.commercial_offer@1",
+        "ruleId": "distribution.commercial_offer",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Kommerzielles Angebot benannt",
+        "rationale": "Wer zahlende Kunden sucht, muss sagen, was man kaufen kann und wie man Kontakt aufnimmt.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Supportkunden\", \"SaaS-Kunden\".",
+        "activeWith": {
+          "goals": [
+            "support_clients",
+            "saas_customers"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "distribution.contributor_entry@1",
+        "ruleId": "distribution.contributor_entry",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Einstiegsaufgaben für Mitwirkende",
+        "rationale": "Offene Issues mit dem Label \"good first issue\" geben neuen Mitwirkenden einen konkreten Startpunkt.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\".",
+        "activeWith": {
+          "goals": [
+            "contributors"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "usability.site_reachable@1",
+        "ruleId": "usability.site_reachable",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Website: erreichbar",
+        "rationale": "Bei einem Webprodukt ist die Website der eigentliche Einstieg. Ist sie nicht erreichbar, endet der Besuch dort.",
+        "status": "present",
+        "severity": "none",
+        "weight": 3,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "Abruf der Website https://repolaunch-fixtures.github.io/invoice-kit/: Status 200",
+            "url": "https://repolaunch-fixtures.github.io/invoice-kit/",
+            "snippet": "GET https://repolaunch-fixtures.github.io/invoice-kit/\nHTTP 200, text/html; charset=utf-8, 2829 B"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "distribution.site_title@1",
+        "ruleId": "distribution.site_title",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Seitentitel",
+        "rationale": "Der Seitentitel (title-Element) erscheint in Suchergebnissen, Lesezeichen und Browser-Tabs.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "Website: title-Element im HTML",
+            "url": "https://repolaunch-fixtures.github.io/invoice-kit/",
+            "lines": [
+              6,
+              6
+            ],
+            "snippet": "Invoice Kit: E-Rechnung (XRechnung) & PDF-Rechnung kostenlos erstellen"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "distribution.site_description@1",
+        "ruleId": "distribution.site_description",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Meta-Beschreibung",
+        "rationale": "Suchmaschinen und Link-Vorschauen zeigen die Meta-Beschreibung oft als Kurztext unter dem Titel.",
+        "status": "present",
+        "severity": "none",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "field",
+            "label": "Website: meta description im HTML",
+            "url": "https://repolaunch-fixtures.github.io/invoice-kit/",
+            "lines": [
+              7,
+              7
+            ],
+            "snippet": "E-Rechnung kostenlos erstellen: ZUGFeRD-PDF und XRechnung 3.0 mit Eingabeprüfung, GiroCode, Reverse Charge, 7 Sprachen. Ohne Anmeldung, ohne Abo, Daten bleiben im Browser."
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null
+      },
+      {
+        "id": "distribution.site_og_image@1",
+        "ruleId": "distribution.site_og_image",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Vorschaubild für geteilte Links",
+        "rationale": "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens.",
+        "status": "missing",
+        "severity": "low",
+        "weight": 1,
+        "evidence": [
+          {
+            "kind": "absence",
+            "label": "Kein meta-Element property=\"og:image\" mit Inhalt im ausgelieferten HTML von https://repolaunch-fixtures.github.io/invoice-kit/",
+            "url": "https://repolaunch-fixtures.github.io/invoice-kit/"
+          }
+        ],
+        "task": "Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property=\"og:image\" und absoluter Adresse darauf.",
+        "effort": "15 bis 45 Min.",
+        "effortMinutes": [
+          15,
+          45
+        ],
+        "impactHypothesis": "Geteilte Links fallen in Feeds und Chats eher auf.",
+        "guide": {
+          "action": "Vorschaubild für geteilte Links einrichten",
+          "steps": [
+            {
+              "text": "Erstelle ein Bild der Anwendung im Querformat, etwa 1200 × 630 Pixel, zum Beispiel aus einem Screenshot."
+            },
+            {
+              "text": "Lade das Bild dorthin hoch, wo die Dateien deiner Website liegen (auf GitHub: „Add file“ → „Upload files“)."
+            },
+            {
+              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
+              "link": {
+                "label": "index.html bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
+              }
+            },
+            {
+              "text": "Füge die Vorlage im Bereich zwischen <head> und </head> ein und ersetze alles in eckigen Klammern [ ]."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "<meta property=\"og:image\" content=\"https://[Adresse deiner Website]/[Bildname].png\">"
+          },
+          "note": "Die Adresse muss vollständig sein (mit https://), sonst zeigen viele Dienste das Bild nicht."
+        }
+      },
+      {
+        "id": "trust.site_imprint@1",
+        "ruleId": "trust.site_imprint",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Website: Impressum verlinkt",
+        "rationale": "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung.",
+        "status": "missing",
+        "severity": "low",
+        "weight": 1,
+        "evidence": [
+          {
+            "kind": "absence",
+            "label": "Im ausgelieferten HTML von https://repolaunch-fixtures.github.io/invoice-kit/ (ohne JavaScript, 5 Links) kein Link mit Text oder Ziel Impressum, Imprint oder Legal Notice",
+            "url": "https://repolaunch-fixtures.github.io/invoice-kit/"
+          }
+        ],
+        "task": "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.",
+        "effort": "15 bis 60 Min.",
+        "effortMinutes": [
+          15,
+          60
+        ],
+        "impactHypothesis": "Mehr Vertrauen, besonders bei Geschäftskunden.",
+        "guide": {
+          "action": "Impressum prüfen und verlinken",
+          "steps": [
+            {
+              "text": "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist. Im Zweifel rechtlich beraten lassen."
+            },
+            {
+              "text": "Lege die Seite an, zum Beispiel impressum.html neben der Startdatei."
+            },
+            {
+              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
+              "link": {
+                "label": "index.html bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
+              }
+            },
+            {
+              "text": "Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage für den Link",
+            "content": "<a href=\"[impressum.html]\">Impressum</a>"
+          },
+          "note": "RepoLaunch erstellt keine Inhalte für Impressum oder Datenschutzerklärung und prüft sie nicht. Das ist ein Hinweis, keine Rechtsberatung; im Zweifel rechtlich beraten lassen."
+        }
+      },
+      {
+        "id": "trust.site_privacy@1",
+        "ruleId": "trust.site_privacy",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Website: Datenschutzerklärung verlinkt",
+        "rationale": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
+        "status": "missing",
+        "severity": "medium",
+        "weight": 2,
+        "evidence": [
+          {
+            "kind": "absence",
+            "label": "Im ausgelieferten HTML von https://repolaunch-fixtures.github.io/invoice-kit/ (ohne JavaScript, 5 Links) kein Link mit Text oder Ziel Datenschutz oder Privacy",
+            "url": "https://repolaunch-fixtures.github.io/invoice-kit/"
+          }
+        ],
+        "task": "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
+        "effort": "30 bis 120 Min.",
+        "effortMinutes": [
+          30,
+          120
+        ],
+        "impactHypothesis": "Besucher können nachvollziehen, was mit ihren Daten geschieht.",
+        "guide": {
+          "action": "Datenschutzerklärung prüfen und verlinken",
+          "steps": [
+            {
+              "text": "Prüfe, welche Daten deine Website verarbeitet (z. B. Server-Logs, Formulare, Analyse, eingebettete Inhalte) und welche Angaben dafür nötig sind. Im Zweifel rechtlich beraten lassen."
+            },
+            {
+              "text": "Lege die Seite an, zum Beispiel datenschutz.html neben der Startdatei."
+            },
+            {
+              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
+              "link": {
+                "label": "index.html bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
+              }
+            },
+            {
+              "text": "Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage für den Link",
+            "content": "<a href=\"[datenschutz.html]\">Datenschutz</a>"
+          },
+          "note": "RepoLaunch erstellt keine Inhalte für Impressum oder Datenschutzerklärung und prüft sie nicht. Das ist ein Hinweis, keine Rechtsberatung; im Zweifel rechtlich beraten lassen."
+        }
+      }
+    ],
+    "tasks": [
+      {
+        "rank": 1,
+        "findingId": "trust.security_policy@1",
+        "title": "Sicherheitsrichtlinie",
+        "task": "Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.",
+        "severity": "medium",
+        "effort": "15 bis 30 Min.",
+        "impactHypothesis": "Höheres Vertrauen bei professionellen Nutzern.",
+        "why": "Eine SECURITY.md sagt, wie Schwachstellen vertraulich gemeldet werden. Für Unternehmen ist das oft ein Prüfpunkt.",
+        "guide": {
+          "action": "Sicherheitsrichtlinie mit Meldeweg anlegen",
+          "steps": [
+            {
+              "text": "Schalte zuerst vertrauliche Meldungen ein: Einstellungen → „Advanced Security“ (je nach Ansicht „Code security“) → bei „Private vulnerability reporting“ auf „Enable“ klicken.",
+              "link": {
+                "label": "Sicherheitseinstellungen",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/settings/security_analysis"
+              }
+            },
+            {
+              "text": "Öffne die neue Datei SECURITY.md. Die Vorlage ist bereits eingefügt:",
+              "link": {
+                "label": "SECURITY.md anlegen",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Finvoice-kit%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+              }
+            },
+            {
+              "text": "Ersetze alles in eckigen Klammern [ ] durch deine eigenen Angaben und lösche, was nicht passt."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Inhalt der Vorlage",
+            "content": "# Sicherheitsrichtlinie\n\n## Sicherheitslücke melden\n\nBitte melde Sicherheitslücken nicht öffentlich als Issue, sondern vertraulich über [Report a vulnerability](https://github.com/repolaunch-fixtures/invoice-kit/security/advisories/new).\n\n## Unterstützte Versionen\n\n| Version | Unterstützt |\n| --- | --- |\n| [z. B. 1.x] | ja |\n| [ältere Versionen] | nein |\n\n## Reaktionszeit\n\nIch bemühe mich, innerhalb von [Zeitraum, z. B. 14 Tagen] zu antworten. Das ist keine Garantie.\n",
+            "filename": "SECURITY.md",
+            "createUrl": "https://github.com/repolaunch-fixtures/invoice-kit/new/main?filename=SECURITY.md&value=%23%20Sicherheitsrichtlinie%0A%0A%23%23%20Sicherheitsl%C3%BCcke%20melden%0A%0ABitte%20melde%20Sicherheitsl%C3%BCcken%20nicht%20%C3%B6ffentlich%20als%20Issue%2C%20sondern%20vertraulich%20%C3%BCber%20%5BReport%20a%20vulnerability%5D%28https%3A%2F%2Fgithub.com%2Frepolaunch-fixtures%2Finvoice-kit%2Fsecurity%2Fadvisories%2Fnew%29.%0A%0A%23%23%20Unterst%C3%BCtzte%20Versionen%0A%0A%7C%20Version%20%7C%20Unterst%C3%BCtzt%20%7C%0A%7C%20---%20%7C%20---%20%7C%0A%7C%20%5Bz.%20B.%201.x%5D%20%7C%20ja%20%7C%0A%7C%20%5B%C3%A4ltere%20Versionen%5D%20%7C%20nein%20%7C%0A%0A%23%23%20Reaktionszeit%0A%0AIch%20bem%C3%BChe%20mich%2C%20innerhalb%20von%20%5BZeitraum%2C%20z.%20B.%2014%20Tagen%5D%20zu%20antworten.%20Das%20ist%20keine%20Garantie.%0A"
+          }
+        }
+      },
+      {
+        "rank": 2,
+        "findingId": "trust.site_privacy@1",
+        "title": "Website: Datenschutzerklärung verlinkt",
+        "task": "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
+        "severity": "medium",
+        "effort": "30 bis 120 Min.",
+        "impactHypothesis": "Besucher können nachvollziehen, was mit ihren Daten geschieht.",
+        "why": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
+        "guide": {
+          "action": "Datenschutzerklärung prüfen und verlinken",
+          "steps": [
+            {
+              "text": "Prüfe, welche Daten deine Website verarbeitet (z. B. Server-Logs, Formulare, Analyse, eingebettete Inhalte) und welche Angaben dafür nötig sind. Im Zweifel rechtlich beraten lassen."
+            },
+            {
+              "text": "Lege die Seite an, zum Beispiel datenschutz.html neben der Startdatei."
+            },
+            {
+              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
+              "link": {
+                "label": "index.html bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
+              }
+            },
+            {
+              "text": "Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage für den Link",
+            "content": "<a href=\"[datenschutz.html]\">Datenschutz</a>"
+          },
+          "note": "RepoLaunch erstellt keine Inhalte für Impressum oder Datenschutzerklärung und prüft sie nicht. Das ist ein Hinweis, keine Rechtsberatung; im Zweifel rechtlich beraten lassen."
+        }
+      },
+      {
+        "rank": 3,
+        "findingId": "usability.visual_demo@2",
+        "title": "Screenshot, Animation oder Demo",
+        "task": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
+        "severity": "low",
+        "effort": "10 bis 20 Min.",
+        "impactHypothesis": "Besucher sehen schon auf der Repository-Seite, was sie erwartet, bevor sie die Demo öffnen.",
+        "why": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss. Ein Demo-Link ist vorhanden, es fehlt nur ein Bild der Anwendung.",
+        "guide": {
+          "action": "Screenshot in die README einfügen",
+          "steps": [
+            {
+              "text": "Mache einen Screenshot deines Projekts (Windows: Win+Umschalt+S, Mac: Cmd+Umschalt+4, Linux: Taste „Druck“)."
+            },
+            {
+              "text": "Öffne die README im Bearbeitungsmodus:",
+              "link": {
+                "label": "README bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/README.md"
+              }
+            },
+            {
+              "text": "Klicke in die Zeile unter dem vorhandenen Demo-Link und ziehe die Bilddatei in das Textfeld. GitHub lädt das Bild hoch und fügt den Link selbst ein."
+            },
+            {
+              "text": "Ersetze den Text in den eckigen Klammern des Bild-Links durch eine kurze Beschreibung, z. B. „Startseite der App“."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ]
+        }
+      },
+      {
+        "rank": 4,
+        "findingId": "trust.site_imprint@1",
+        "title": "Website: Impressum verlinkt",
+        "task": "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.",
+        "severity": "low",
+        "effort": "15 bis 60 Min.",
+        "impactHypothesis": "Mehr Vertrauen, besonders bei Geschäftskunden.",
+        "why": "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung.",
+        "guide": {
+          "action": "Impressum prüfen und verlinken",
+          "steps": [
+            {
+              "text": "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist. Im Zweifel rechtlich beraten lassen."
+            },
+            {
+              "text": "Lege die Seite an, zum Beispiel impressum.html neben der Startdatei."
+            },
+            {
+              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
+              "link": {
+                "label": "index.html bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
+              }
+            },
+            {
+              "text": "Füge den Link gut sichtbar ein, zum Beispiel im Fußbereich vor </body>, und ersetze die Platzhalter."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage für den Link",
+            "content": "<a href=\"[impressum.html]\">Impressum</a>"
+          },
+          "note": "RepoLaunch erstellt keine Inhalte für Impressum oder Datenschutzerklärung und prüft sie nicht. Das ist ein Hinweis, keine Rechtsberatung; im Zweifel rechtlich beraten lassen."
+        }
+      },
+      {
+        "rank": 5,
+        "findingId": "distribution.site_og_image@1",
+        "title": "Website: Vorschaubild für geteilte Links",
+        "task": "Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property=\"og:image\" und absoluter Adresse darauf.",
+        "severity": "low",
+        "effort": "15 bis 45 Min.",
+        "impactHypothesis": "Geteilte Links fallen in Feeds und Chats eher auf.",
+        "why": "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens.",
+        "guide": {
+          "action": "Vorschaubild für geteilte Links einrichten",
+          "steps": [
+            {
+              "text": "Erstelle ein Bild der Anwendung im Querformat, etwa 1200 × 630 Pixel, zum Beispiel aus einem Screenshot."
+            },
+            {
+              "text": "Lade das Bild dorthin hoch, wo die Dateien deiner Website liegen (auf GitHub: „Add file“ → „Upload files“)."
+            },
+            {
+              "text": "Die Website kommt aus diesem Repository. Öffne die Startdatei index.html im Bearbeitungsmodus:",
+              "link": {
+                "label": "index.html bearbeiten",
+                "url": "https://github.com/repolaunch-fixtures/invoice-kit/edit/main/index.html"
+              }
+            },
+            {
+              "text": "Füge die Vorlage im Bereich zwischen <head> und </head> ein und ersetze alles in eckigen Klammern [ ]."
+            },
+            {
+              "text": "Klicke oben rechts auf „Commit changes…“ und im Fenster noch einmal auf „Commit changes“. Fertig."
+            }
+          ],
+          "template": {
+            "label": "Vorlage zum Kopieren",
+            "content": "<meta property=\"og:image\" content=\"https://[Adresse deiner Website]/[Bildname].png\">"
+          },
+          "note": "Die Adresse muss vollständig sein (mit https://), sonst zeigen viele Dienste das Bild nicht."
+        }
+      }
+    ],
+    "score": {
+      "value": 85,
+      "achievedWeight": 40,
+      "possibleWeight": 47,
+      "unknownWeight": 0,
+      "coverage": 1,
+      "byCategory": [
+        {
+          "category": "understanding",
+          "achieved": 11,
+          "possible": 11,
+          "unknownWeight": 0
+        },
+        {
+          "category": "usability",
+          "achieved": 10,
+          "possible": 11,
+          "unknownWeight": 0
+        },
+        {
+          "category": "trust",
+          "achieved": 7,
+          "possible": 12,
+          "unknownWeight": 0
+        },
+        {
+          "category": "distribution",
+          "achieved": 12,
+          "possible": 13,
+          "unknownWeight": 0
+        }
+      ],
+      "excluded": [
+        {
+          "ruleId": "usability.cli_reference",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\"."
+        },
+        {
+          "ruleId": "usability.api_reference",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Bibliothek\"."
+        },
+        {
+          "ruleId": "usability.template_flag",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Vorlage\"."
+        },
+        {
+          "ruleId": "trust.releases",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\", \"Sponsoren\", \"Supportkunden\", \"SaaS-Kunden\"."
+        },
+        {
+          "ruleId": "trust.contributing",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\", \"Sponsoren\", \"Supportkunden\", \"SaaS-Kunden\"."
+        },
+        {
+          "ruleId": "trust.code_of_conduct",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\"."
+        },
+        {
+          "ruleId": "trust.changelog",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\", \"Sponsoren\", \"Supportkunden\", \"SaaS-Kunden\"."
+        },
+        {
+          "ruleId": "distribution.registry",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\", \"Bibliothek\"."
+        },
+        {
+          "ruleId": "distribution.funding",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Sponsoren\", \"Supportkunden\"."
+        },
+        {
+          "ruleId": "distribution.commercial_offer",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Supportkunden\", \"SaaS-Kunden\"."
+        },
+        {
+          "ruleId": "distribution.contributor_entry",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\"."
+        }
+      ],
+      "formula": "Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = 40 / 47 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 47 / 47."
+    },
+    "monetization": {
+      "required": false,
+      "summary": "Für dein Ziel ist kein Geschäftsmodell erforderlich. Nicht jedes Repository braucht eines; die Optionen dienen nur der Orientierung.",
+      "licenseNote": "Erkannte Lizenz: MIT (GitHub-Lizenzerkennung). Freizügige Lizenzen erlauben in der Regel auch Dritten kommerzielle Nutzung, einschließlich eigener gehosteter Angebote. Keine Rechtsberatung.",
+      "options": [
+        {
+          "type": "sponsoring",
+          "title": "Sponsoring",
+          "fit": "conditional",
+          "reasons": [
+            "Möglich, aber meist geringe Beträge."
+          ],
+          "whoPays": "Einzelpersonen und Unternehmen, die das Projekt nutzen",
+          "forWhat": "Fortbestand und Pflege des Projekts, ohne direkte Gegenleistung",
+          "prerequisites": [
+            "GitHub Sponsors: Teilnahmeberechtigung und Einrichtung durch dich (siehe GitHub-Dokumentation)",
+            ".github/FUNDING.yml und ein Hinweis in der README",
+            "Sichtbare, verlässliche Pflege"
+          ],
+          "effort": "1 bis 3 Std. Einrichtung, danach laufende Pflege der Sponsorenkommunikation",
+          "targetCustomers": "Firmen mit Abhängigkeit vom Projekt, zufriedene Einzelnutzer",
+          "priceHypothesis": "Stufen von 5, 25 und 100 € pro Monat (Testhypothese)"
+        },
+        {
+          "type": "paid_setup",
+          "title": "Bezahltes Setup",
+          "fit": "conditional",
+          "reasons": [
+            "Nur sinnvoll, wenn die Einrichtung für Kunden spürbar aufwendig ist."
+          ],
+          "whoPays": "Teams, die das Projekt einsetzen wollen, aber keine Zeit für Installation und Konfiguration haben",
+          "forWhat": "Installation, Konfiguration und Übergabe in ihrer Umgebung",
+          "prerequisites": [
+            "Reproduzierbare Installation (z. B. Docker) und klare Grenzen des Angebots",
+            "Kontaktweg und Angebotsbeschreibung in README oder Website"
+          ],
+          "effort": "Je Kunde 2 bis 8 Std.",
+          "targetCustomers": "Kleine Firmen und Teams ohne eigenes Betriebsteam",
+          "priceHypothesis": "Einmalig 300 bis 1.500 € je Installation (Testhypothese)"
+        },
+        {
+          "type": "support_maintenance",
+          "title": "Support und Wartung",
+          "fit": "conditional",
+          "reasons": [
+            "Möglich, sobald Unternehmen das Projekt produktiv nutzen."
+          ],
+          "whoPays": "Unternehmen, die das Projekt produktiv einsetzen",
+          "forWhat": "Verbindlichen Ansprechpartner, Reaktionszeiten, Updates und Fehlerbehebung",
+          "prerequisites": [
+            "Erkennbar gepflegtes Projekt mit Releases",
+            "Klar definierte Reaktionszeiten, die du einhalten kannst",
+            "Sicherheitsrichtlinie und Kontaktweg"
+          ],
+          "effort": "Laufend, je Kunde einige Stunden pro Monat",
+          "targetCustomers": "Firmen mit geschäftskritischer Nutzung",
+          "priceHypothesis": "Ab 150 € pro Monat für einen festen Reaktionsrahmen (Testhypothese)"
+        },
+        {
+          "type": "training",
+          "title": "Schulung",
+          "fit": "conditional",
+          "reasons": [
+            "Dokumentation vorhanden, auf die Schulungen aufbauen können."
+          ],
+          "whoPays": "Teams, die das Projekt schneller oder tiefer nutzen wollen",
+          "forWhat": "Workshops, Einführungen oder Beratungsstunden",
+          "prerequisites": [
+            "Dokumentation, auf die eine Schulung aufbauen kann",
+            "Nachfrage, z. B. wiederkehrende Fragen in Issues"
+          ],
+          "effort": "Vorbereitung 1 bis 3 Tage, danach je Termin",
+          "targetCustomers": "Teams in Unternehmen, Agenturen",
+          "priceHypothesis": "500 bis 1.500 € pro halbem Tag (Testhypothese)"
+        },
+        {
+          "type": "hosted_version",
+          "title": "Gehostete Version",
+          "fit": "conditional",
+          "reasons": [
+            "Webprodukt; gehosteter Betrieb verkauft Komfort."
+          ],
+          "whoPays": "Nutzer, die das Produkt ohne eigenen Betrieb verwenden wollen",
+          "forWhat": "Betrieb, Updates, Backups und Verfügbarkeit",
+          "prerequisites": [
+            "Betriebsfähiges Webprodukt mit Mandantentrennung",
+            "Datenschutz, Impressum, AGB und Zahlungsabwicklung",
+            "Prüfung, ob Lizenz und Rechte Dritter ein gehostetes Angebot erlauben (keine Rechtsberatung)"
+          ],
+          "effort": "Hoch: Wochen bis Monate, danach laufender Betrieb",
+          "targetCustomers": "Kleine Teams ohne IT-Betrieb",
+          "priceHypothesis": "10 bis 30 € pro Monat und Team (Testhypothese)"
+        },
+        {
+          "type": "commercial_features",
+          "title": "Zusätzliche kommerzielle Funktionen",
+          "fit": "unlikely",
+          "reasons": [
+            "Passt nicht zu deinem Ziel."
+          ],
+          "whoPays": "Fortgeschrittene oder geschäftliche Nutzer",
+          "forWhat": "Funktionen über den offenen Kern hinaus, z. B. Team- oder Integrationsfunktionen",
+          "prerequisites": [
+            "Klare Trennung zwischen offenem Kern und kommerziellem Teil",
+            "Rechte an allen Beiträgen klären; keine automatische Lizenzänderung (keine Rechtsberatung)"
+          ],
+          "effort": "Mittel bis hoch, abhängig vom Funktionsumfang",
+          "targetCustomers": "Unternehmen mit erweiterten Anforderungen",
+          "priceHypothesis": "50 bis 300 € pro Jahr und Lizenz (Testhypothese)"
+        }
+      ],
+      "disclaimers": [
+        "Preise sind Testhypothesen, keine erhobenen Marktpreise.",
+        "Keine Rechtsberatung. Bestehende Lizenzen, Rechte Dritter und Beiträge anderer beachten.",
+        "Keine automatische Lizenzänderung; Dual Licensing wird nicht pauschal empfohlen.",
+        "GitHub Sponsors setzt Teilnahmeberechtigung und Einrichtung durch den Maintainer voraus.",
+        "Die Analyse eines öffentlichen Repositorys ist keine Erlaubnis, dessen Inhalte kommerziell weiterzuverwenden."
+      ]
+    },
+    "launchPlan": {
+      "basis": "rules",
+      "tasks": [
+        {
+          "week": 1,
+          "title": "Sicherheitsrichtlinie",
+          "why": "Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.",
+          "effort": "15 bis 30 Min.",
+          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
+          "findingIds": [
+            "trust.security_policy@1"
+          ]
+        },
+        {
+          "week": 1,
+          "title": "Website: Datenschutzerklärung verlinkt",
+          "why": "Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.",
+          "effort": "30 bis 120 Min.",
+          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
+          "findingIds": [
+            "trust.site_privacy@1"
+          ]
+        },
+        {
+          "week": 1,
+          "title": "Screenshot, Animation oder Demo",
+          "why": "Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.",
+          "effort": "10 bis 20 Min.",
+          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
+          "findingIds": [
+            "usability.visual_demo@2"
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Website: Impressum verlinkt",
+          "why": "Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.",
+          "effort": "15 bis 60 Min.",
+          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
+          "findingIds": [
+            "trust.site_imprint@1"
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Website: Vorschaubild für geteilte Links",
+          "why": "Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property=\"og:image\" und absoluter Adresse darauf.",
+          "effort": "15 bis 45 Min.",
+          "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
+          "findingIds": [
+            "distribution.site_og_image@1"
+          ]
+        },
+        {
+          "week": 2,
+          "title": "Erstes Release vorbereiten",
+          "why": "Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung.",
+          "effort": "30 bis 90 Min.",
+          "signal": "Release mit Notes veröffentlicht",
+          "findingIds": []
+        },
+        {
+          "week": 3,
+          "title": "Release ankündigen",
+          "why": "Kurze, ehrliche Ankündigung mit Nutzen, Installationsweg und Link. Keine Versprechen zu Reichweite.",
+          "effort": "30 bis 60 Min.",
+          "signal": "Besuche und Rückfragen nach der Ankündigung (sofern messbar)",
+          "findingIds": []
+        },
+        {
+          "week": 3,
+          "title": "In einer passenden Entwicklercommunity vorstellen",
+          "why": "Eine Community wählen, in der die Zielgruppe tatsächlich aktiv ist, und deren Regeln zu Eigenwerbung beachten.",
+          "effort": "30 bis 60 Min.",
+          "signal": "Qualifizierte Rückmeldungen, Issues oder Installationen",
+          "findingIds": []
+        },
+        {
+          "week": 4,
+          "title": "Rückmeldungen auswerten",
+          "why": "Fragen und Issues sammeln; die häufigste Frage direkt in der README beantworten.",
+          "effort": "30 bis 60 Min.",
+          "signal": "Anzahl wiederkehrender Fragen sinkt",
+          "findingIds": []
+        },
+        {
+          "week": 4,
+          "title": "Erneut auditieren und vergleichen",
+          "why": "Neuer Audit auf dem aktuellen Commit zeigt, welche Befunde erledigt sind.",
+          "effort": "5 bis 10 Min.",
+          "signal": "Weniger fehlende Befunde mit hoher Schwere",
+          "findingIds": []
+        }
+      ]
+    },
+    "injectionFlags": []
+  },
+  "ai": null,
+  "export": {
+    "files": [
+      {
+        "name": "audit.json",
+        "included": true
+      },
+      {
+        "name": "audit.md",
+        "included": true
+      },
+      {
+        "name": "README.suggested.md",
+        "included": false,
+        "reason": "Wird nur mit dem optionalen KI-Launch-Paket erzeugt, das nicht ausgeführt wurde."
+      },
+      {
+        "name": "launch-plan.md",
+        "included": true
+      },
+      {
+        "name": "monetization-plan.md",
+        "included": true
+      },
+      {
+        "name": "marketing-drafts.md",
+        "included": false,
+        "reason": "Wird nur mit dem optionalen KI-Launch-Paket erzeugt, das nicht ausgeführt wurde."
+      }
+    ]
+  }
+}

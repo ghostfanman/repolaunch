@@ -80,7 +80,7 @@ REPOLAUNCH_DEMO=1 AI_PROVIDER=fake npm start
 ```sh
 npm run typecheck
 npm run lint
-npm test                    # 174 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, LLM-Fehler, Exporte, Ende-zu-Ende
+npm test                    # 258 Tests: URL-Validierung, Regeln, unbekannte Daten, Injection, XSS, Limits, Website-Prüfung mit SSRF-Schutz, LLM-Fehler, Exporte, Ende-zu-Ende
 npm run build
 npm run smoke:browser       # gegen laufenden Server mit REPOLAUNCH_DEMO=1 AI_PROVIDER=fake (axe-core, WCAG 2.2 A/AA)
 npm run smoke:live          # Live-Audit eines öffentlichen Repositorys, Standard: ghostfanman/invoice-kit (nur lesend)
@@ -135,6 +135,7 @@ Alle Einstellungen über Umgebungsvariablen, siehe [.env.example](.env.example).
 - [Betrieb mit Docker oder auf einem VPS](docs/operations.md)
 - [Roadmap (nur Architektur)](docs/roadmap.md)
 - [Bestandene Prüfungen und Blocker](docs/checks.md)
+- [Regelwerk, Versionen und Gewichtung](docs/regelwerk.md)
 - Beispielberichte: [CLI-Tool](docs/examples/cli-tool/audit.md), [Webprodukt](docs/examples/web-app/audit.md)
 
 ## Maintainer

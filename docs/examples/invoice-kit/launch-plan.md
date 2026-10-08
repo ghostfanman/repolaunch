@@ -1,9 +1,9 @@
-# 30-Tage-Launch-Plan: repolaunch-fixtures/web-app
+# 30-Tage-Launch-Plan: repolaunch-fixtures/invoice-kit
 
 > Demo-Modus: Diese Daten stammen aus erfundenen Fixtures, nicht von GitHub.
 
-- Repository: [repolaunch-fixtures/web-app](https://github.com/repolaunch-fixtures/web-app)
-- Analysierter Commit: `2222222222222222222222222222222222222222` (Default-Branch `main`)
+- Repository: [repolaunch-fixtures/invoice-kit](https://github.com/repolaunch-fixtures/invoice-kit)
+- Analysierter Commit: `f288a59553f844fe3bb919768ff314e4c8fded5a` (Default-Branch `main`)
 - Analysezeit: 2026-10-07T12:00:00.000Z
 
 ## 30-Tage-Plan (regelbasiert)
@@ -12,25 +12,25 @@ Abgeleitet aus den Befunden. Erwartete Wirkungen sind Hypothesen, keine Zusagen.
 
 ### Woche 1
 
-- [ ] **Website-Feld gesetzt** (2 bis 10 Min.) `distribution.homepage@1`
-  Trage im Repository unter "About" eine Website ein (Demo, Doku oder Produktseite).
-  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Aussagekräftige Repository-Beschreibung** (5 bis 15 Min.) `understanding.description@1`
-  Formuliere die Beschreibung als einen Satz: Was ist das Projekt, für wen, welcher Nutzen.
-  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
 - [ ] **Sicherheitsrichtlinie** (15 bis 30 Min.) `trust.security_policy@1`
   Lege SECURITY.md an: Meldeweg (z. B. private Sicherheitsmeldung über GitHub), unterstützte Versionen, Reaktionszeit ohne Garantie.
+  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
+- [ ] **Website: Datenschutzerklärung verlinkt** (30 bis 120 Min.) `trust.site_privacy@1`
+  Prüfe, welche Angaben zur Datenverarbeitung deine Website braucht, und verlinke eine Datenschutzerklärung gut sichtbar. Im Zweifel rechtlich beraten lassen.
+  Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
+- [ ] **Screenshot, Animation oder Demo** (10 bis 20 Min.) `usability.visual_demo@2`
+  Ergänze einen Screenshot der Anwendung in der README, zum Beispiel direkt unter dem vorhandenen Demo-Link.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
 
 ### Woche 2
 
-- [ ] **Zielgruppe und Nutzen benannt** (20 bis 60 Min.) `understanding.audience@1`
-  Ergänze einen Abschnitt "Funktionen" oder "Für wen" mit drei bis fünf konkreten Punkten.
+- [ ] **Website: Impressum verlinkt** (15 bis 60 Min.) `trust.site_imprint@1`
+  Prüfe, ob für deine Website ein Impressum nötig oder sinnvoll ist, und verlinke es gut sichtbar, zum Beispiel im Fußbereich. Im Zweifel rechtlich beraten lassen.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Screenshot, Animation oder Demo** (20 bis 60 Min.) `usability.visual_demo@2`
-  Füge einen aktuellen Screenshot, eine kurze Aufnahme oder einen Demo-Link in die README ein.
+- [ ] **Website: Vorschaubild für geteilte Links** (15 bis 45 Min.) `distribution.site_og_image@1`
+  Lege ein Vorschaubild an (etwa 1200 × 630 Pixel) und verweise mit meta property="og:image" und absoluter Adresse darauf.
   Messbares Signal: Befund ist bei erneutem Audit "vorhanden"
-- [ ] **Erstes Release vorbereiten** (30 bis 90 Min.) `trust.releases@1`
+- [ ] **Erstes Release vorbereiten** (30 bis 90 Min.)
   Ein Release bündelt die Verbesserungen und gibt einen konkreten Anlass für die Ankündigung.
   Messbares Signal: Release mit Notes veröffentlicht
 

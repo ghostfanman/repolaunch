@@ -112,7 +112,7 @@
       "requests": 7,
       "notModified": 0,
       "bytes": 1672,
-      "durationMs": 4
+      "durationMs": 5
     },
     "notes": []
   },
@@ -123,7 +123,7 @@
   },
   "audit": {
     "schemaVersion": 1,
-    "rulesetVersion": "2026.10.0",
+    "rulesetVersion": "2026.10.1",
     "generatedAt": "2026-10-07T12:00:00.000Z",
     "classification": {
       "detected": "webapp",
@@ -475,9 +475,9 @@
         }
       },
       {
-        "id": "usability.visual_demo@1",
+        "id": "usability.visual_demo@2",
         "ruleId": "usability.visual_demo",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "usability",
         "title": "Screenshot, Animation oder Demo",
         "rationale": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss.",
@@ -487,7 +487,7 @@
         "evidence": [
           {
             "kind": "absence",
-            "label": "README.md: kein Bild außer Badges und kein Link auf Demo/Screenshot/Video",
+            "label": "README.md: kein Bild außer Badges, kein Link auf Screenshot oder Video und kein Demo-Link (Website-Feld, GitHub Pages oder als Demo beschriftet)",
             "path": "README.md",
             "url": "https://github.com/repolaunch-fixtures/web-app/blob/2222222222222222222222222222222222222222/README.md"
           }
@@ -593,7 +593,13 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "cli"
+          ]
+        }
       },
       {
         "id": "usability.api_reference@1",
@@ -610,7 +616,13 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Bibliothek\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "library"
+          ]
+        }
       },
       {
         "id": "usability.template_flag@1",
@@ -627,7 +639,13 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Vorlage\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "template"
+          ]
+        }
       },
       {
         "id": "trust.license@1",
@@ -866,7 +884,13 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\".",
+        "activeWith": {
+          "goals": [
+            "contributors"
+          ],
+          "projectTypes": []
+        }
       },
       {
         "id": "trust.changelog@1",
@@ -1061,7 +1085,14 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\", \"Bibliothek\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "cli",
+            "library"
+          ]
+        }
       },
       {
         "id": "distribution.funding@1",
@@ -1078,7 +1109,14 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Sponsoren\", \"Supportkunden\".",
+        "activeWith": {
+          "goals": [
+            "sponsors",
+            "support_clients"
+          ],
+          "projectTypes": []
+        }
       },
       {
         "id": "distribution.commercial_offer@1",
@@ -1150,7 +1188,145 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\".",
+        "activeWith": {
+          "goals": [
+            "contributors"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "usability.site_reachable@1",
+        "ruleId": "usability.site_reachable",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Website: erreichbar",
+        "rationale": "Bei einem Webprodukt ist die Website der eigentliche Einstieg. Ist sie nicht erreichbar, endet der Besuch dort. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\".",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [
+          {
+            "kind": "note",
+            "label": "Website nicht abgerufen: kein Website-Feld gesetzt"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+      },
+      {
+        "id": "distribution.site_title@1",
+        "ruleId": "distribution.site_title",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Seitentitel",
+        "rationale": "Der Seitentitel (title-Element) erscheint in Suchergebnissen, Lesezeichen und Browser-Tabs. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\".",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [
+          {
+            "kind": "note",
+            "label": "Website nicht abgerufen: kein Website-Feld gesetzt"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+      },
+      {
+        "id": "distribution.site_description@1",
+        "ruleId": "distribution.site_description",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Meta-Beschreibung",
+        "rationale": "Suchmaschinen und Link-Vorschauen zeigen die Meta-Beschreibung oft als Kurztext unter dem Titel. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\".",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [
+          {
+            "kind": "note",
+            "label": "Website nicht abgerufen: kein Website-Feld gesetzt"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+      },
+      {
+        "id": "distribution.site_og_image@1",
+        "ruleId": "distribution.site_og_image",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Vorschaubild für geteilte Links",
+        "rationale": "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\".",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [
+          {
+            "kind": "note",
+            "label": "Website nicht abgerufen: kein Website-Feld gesetzt"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+      },
+      {
+        "id": "trust.site_imprint@1",
+        "ruleId": "trust.site_imprint",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Website: Impressum verlinkt",
+        "rationale": "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\".",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [
+          {
+            "kind": "note",
+            "label": "Website nicht abgerufen: kein Website-Feld gesetzt"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+      },
+      {
+        "id": "trust.site_privacy@1",
+        "ruleId": "trust.site_privacy",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Website: Datenschutzerklärung verlinkt",
+        "rationale": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung. Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\".",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [
+          {
+            "kind": "note",
+            "label": "Website nicht abgerufen: kein Website-Feld gesetzt"
+          }
+        ],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
       }
     ],
     "tasks": [
@@ -1304,7 +1480,7 @@
       },
       {
         "rank": 5,
-        "findingId": "usability.visual_demo@1",
+        "findingId": "usability.visual_demo@2",
         "title": "Screenshot, Animation oder Demo",
         "task": "Füge einen aktuellen Screenshot, eine kurze Aufnahme oder einen Demo-Link in die README ein.",
         "severity": "high",
@@ -1377,40 +1553,70 @@
         {
           "ruleId": "usability.cli_reference",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\"."
         },
         {
           "ruleId": "usability.api_reference",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Bibliothek\"."
         },
         {
           "ruleId": "usability.template_flag",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Vorlage\"."
         },
         {
           "ruleId": "trust.code_of_conduct",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\"."
         },
         {
           "ruleId": "distribution.registry",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"CLI-Tool\", \"Bibliothek\"."
         },
         {
           "ruleId": "distribution.funding",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Sponsoren\", \"Supportkunden\"."
         },
         {
           "ruleId": "distribution.contributor_entry",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"Webprodukt / SaaS\" und Ziel \"SaaS-Kunden\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\"."
+        },
+        {
+          "ruleId": "usability.site_reachable",
+          "status": "not_relevant",
+          "reason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+        },
+        {
+          "ruleId": "distribution.site_title",
+          "status": "not_relevant",
+          "reason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+        },
+        {
+          "ruleId": "distribution.site_description",
+          "status": "not_relevant",
+          "reason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+        },
+        {
+          "ruleId": "distribution.site_og_image",
+          "status": "not_relevant",
+          "reason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+        },
+        {
+          "ruleId": "trust.site_imprint",
+          "status": "not_relevant",
+          "reason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
+        },
+        {
+          "ruleId": "trust.site_privacy",
+          "status": "not_relevant",
+          "reason": "Ohne abrufbare Website im Website-Feld gibt es nichts zu prüfen; das Feld selbst bewertet die Regel \"Website-Feld gesetzt\"."
         }
       ],
-      "formula": "Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte bewerteter Regeln × 100 = 16 / 45 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 45 / 45."
+      "formula": "Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = 16 / 45 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 45 / 45."
     },
     "monetization": {
       "required": true,
@@ -1581,7 +1787,7 @@
           "effort": "20 bis 60 Min.",
           "signal": "Befund ist bei erneutem Audit \"vorhanden\"",
           "findingIds": [
-            "usability.visual_demo@1"
+            "usability.visual_demo@2"
           ]
         },
         {

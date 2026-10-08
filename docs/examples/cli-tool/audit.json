@@ -121,7 +121,7 @@
       "requests": 7,
       "notModified": 0,
       "bytes": 2756,
-      "durationMs": 53
+      "durationMs": 64
     },
     "notes": []
   },
@@ -131,7 +131,7 @@
   },
   "audit": {
     "schemaVersion": 1,
-    "rulesetVersion": "2026.10.0",
+    "rulesetVersion": "2026.10.1",
     "generatedAt": "2026-10-07T12:00:00.000Z",
     "classification": {
       "detected": "cli",
@@ -343,9 +343,9 @@
         "impactHypothesis": null
       },
       {
-        "id": "usability.visual_demo@1",
+        "id": "usability.visual_demo@2",
         "ruleId": "usability.visual_demo",
-        "ruleVersion": 1,
+        "ruleVersion": 2,
         "category": "usability",
         "title": "Screenshot, Animation oder Demo",
         "rationale": "Bei sichtbaren Produkten zeigt ein Bild sofort, was man bekommt. Bei CLIs ist es ein Pluspunkt, kein Muss.",
@@ -355,7 +355,7 @@
         "evidence": [
           {
             "kind": "absence",
-            "label": "README.md: kein Bild außer Badges und kein Link auf Demo/Screenshot/Video",
+            "label": "README.md: kein Bild außer Badges, kein Link auf Screenshot oder Video und kein Demo-Link (Website-Feld, GitHub Pages oder als Demo beschriftet)",
             "path": "README.md",
             "url": "https://github.com/repolaunch-fixtures/cli-tool/blob/1111111111111111111111111111111111111111/README.md"
           }
@@ -489,7 +489,13 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Bibliothek\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "library"
+          ]
+        }
       },
       {
         "id": "usability.template_flag@1",
@@ -506,7 +512,13 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Vorlage\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "template"
+          ]
+        }
       },
       {
         "id": "trust.license@1",
@@ -727,7 +739,13 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\".",
+        "activeWith": {
+          "goals": [
+            "contributors"
+          ],
+          "projectTypes": []
+        }
       },
       {
         "id": "trust.changelog@1",
@@ -949,7 +967,14 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Sponsoren\", \"Supportkunden\".",
+        "activeWith": {
+          "goals": [
+            "sponsors",
+            "support_clients"
+          ],
+          "projectTypes": []
+        }
       },
       {
         "id": "distribution.commercial_offer@1",
@@ -966,7 +991,14 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Supportkunden\", \"SaaS-Kunden\".",
+        "activeWith": {
+          "goals": [
+            "support_clients",
+            "saas_customers"
+          ],
+          "projectTypes": []
+        }
       },
       {
         "id": "distribution.contributor_entry@1",
@@ -983,7 +1015,151 @@
         "effort": null,
         "effortMinutes": null,
         "impactHypothesis": null,
-        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\".",
+        "activeWith": {
+          "goals": [
+            "contributors"
+          ],
+          "projectTypes": []
+        }
+      },
+      {
+        "id": "usability.site_reachable@1",
+        "ruleId": "usability.site_reachable",
+        "ruleVersion": 1,
+        "category": "usability",
+        "title": "Website: erreichbar",
+        "rationale": "Bei einem Webprodukt ist die Website der eigentliche Einstieg. Ist sie nicht erreichbar, endet der Besuch dort.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "webapp"
+          ]
+        }
+      },
+      {
+        "id": "distribution.site_title@1",
+        "ruleId": "distribution.site_title",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Seitentitel",
+        "rationale": "Der Seitentitel (title-Element) erscheint in Suchergebnissen, Lesezeichen und Browser-Tabs.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "webapp"
+          ]
+        }
+      },
+      {
+        "id": "distribution.site_description@1",
+        "ruleId": "distribution.site_description",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Meta-Beschreibung",
+        "rationale": "Suchmaschinen und Link-Vorschauen zeigen die Meta-Beschreibung oft als Kurztext unter dem Titel.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "webapp"
+          ]
+        }
+      },
+      {
+        "id": "distribution.site_og_image@1",
+        "ruleId": "distribution.site_og_image",
+        "ruleVersion": 1,
+        "category": "distribution",
+        "title": "Website: Vorschaubild für geteilte Links",
+        "rationale": "Mit einem Open-Graph-Bild (og:image) zeigen soziale Netzwerke und Messenger beim Teilen ein Bild statt eines leeren Rahmens.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "webapp"
+          ]
+        }
+      },
+      {
+        "id": "trust.site_imprint@1",
+        "ruleId": "trust.site_imprint",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Website: Impressum verlinkt",
+        "rationale": "Ein Impressum zeigt, wer hinter dem Angebot steht; viele Besucher und Geschäftskunden suchen danach. In einigen Ländern, etwa Deutschland, kann für bestimmte Websites eine Pflicht dazu bestehen. Das ist ein Hinweis, keine Rechtsberatung.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "webapp"
+          ]
+        }
+      },
+      {
+        "id": "trust.site_privacy@1",
+        "ruleId": "trust.site_privacy",
+        "ruleVersion": 1,
+        "category": "trust",
+        "title": "Website: Datenschutzerklärung verlinkt",
+        "rationale": "Eine Datenschutzerklärung zeigt, welche Daten die Website verarbeitet. Je nach Land und Datenverarbeitung kann sie vorgeschrieben sein, etwa nach der DSGVO. Das ist ein Hinweis, keine Rechtsberatung.",
+        "status": "not_relevant",
+        "severity": "none",
+        "weight": 0,
+        "evidence": [],
+        "task": null,
+        "effort": null,
+        "effortMinutes": null,
+        "impactHypothesis": null,
+        "exclusionReason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\".",
+        "activeWith": {
+          "goals": [],
+          "projectTypes": [
+            "webapp"
+          ]
+        }
       }
     ],
     "tasks": [
@@ -1207,35 +1383,65 @@
         {
           "ruleId": "usability.api_reference",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Bibliothek\"."
         },
         {
           "ruleId": "usability.template_flag",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Vorlage\"."
         },
         {
           "ruleId": "trust.code_of_conduct",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\"."
         },
         {
           "ruleId": "distribution.funding",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Sponsoren\", \"Supportkunden\"."
         },
         {
           "ruleId": "distribution.commercial_offer",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Supportkunden\", \"SaaS-Kunden\"."
         },
         {
           "ruleId": "distribution.contributor_entry",
           "status": "not_relevant",
-          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0)."
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Aktiv mit Ziel \"Mehr Mitwirkende\"."
+        },
+        {
+          "ruleId": "usability.site_reachable",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\"."
+        },
+        {
+          "ruleId": "distribution.site_title",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\"."
+        },
+        {
+          "ruleId": "distribution.site_description",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\"."
+        },
+        {
+          "ruleId": "distribution.site_og_image",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\"."
+        },
+        {
+          "ruleId": "trust.site_imprint",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\"."
+        },
+        {
+          "ruleId": "trust.site_privacy",
+          "status": "not_relevant",
+          "reason": "Für Projekttyp \"CLI-Tool\" und Ziel \"Mehr Nutzer\" nicht relevant (Gewicht 0). Für diesen Projekttyp mit keinem Ziel aktiv; aktiv bei Projekttyp \"Webprodukt / SaaS\"."
         }
       ],
-      "formula": "Score = Summe der Gewichte erfüllter Regeln / Summe der Gewichte bewerteter Regeln × 100 = 35 / 46 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 46 / 46."
+      "formula": "Score = Summe der Gewichte erfüllter Regeln (einschließlich Teilgutschriften) / Summe der Gewichte bewerteter Regeln × 100 = 35 / 46 × 100. Unbekannte und nicht relevante Regeln zählen nicht. Abdeckung = bewertete Gewichte / (bewertete + unbekannte Gewichte) = 46 / 46."
     },
     "monetization": {
       "required": false,
